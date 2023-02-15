@@ -4,32 +4,30 @@ on:
   - push
   - pull_request
 
-run-name: ${{ github.actor }} is testing the application
+run-name: Application tests triggered by ${{ github.actor }}
 
 jobs:
   test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os:
-          - windows-latest
-#          - macos-latest
+        os: windows-latest
         python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-#          pip install tox tox-gh-actions
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
-#      - name: Test with pytest
-#        run: |
-#          pytest
-      - name: Test with tox
-        run: tox
+
+      - name: Test with pytest
+        run: |
+          pytest
