@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 
+import daily_tracker
 import daily_tracker.utils
 import daily_tracker.core.scheduler
 
