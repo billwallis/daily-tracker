@@ -1,4 +1,9 @@
 
+![Tests](https://github.com/Bilbottom/daily-tracker/actions/workflows/tests.yaml/badge.svg)
+
+Daily Tracker
+---
+
 An application for keeping track of tasks throughout the day.
 
 
