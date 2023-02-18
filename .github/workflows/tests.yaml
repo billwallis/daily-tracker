@@ -5,14 +5,14 @@ on: [push]
 run-name: Application tests triggered by ${{ github.actor }}
 
 jobs:
-  test:
+  unit-tests-and-formatting:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os:
           - windows-latest
           - macos-latest
-        python-version: ['3.7', '3.8', '3.9', '3.10']  # TODO: Add 3.11 after resolving https://github.com/Bilbottom/daily-tracker/issues/3
+        python-version: ['3.7', '3.10']  # TODO: Add 3.11 after resolving https://github.com/Bilbottom/daily-tracker/issues/3
 
     steps:
       - uses: actions/checkout@v3
@@ -29,6 +29,7 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
-      - name: Test with pytest
+      - name: Test with pytest and sourcery
         run: |
-          python -m pytest tests
+          pytest tests
+          sourcery review src
