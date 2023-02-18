@@ -30,6 +30,7 @@ jobs:
           pip install -r requirements-dev.txt
 
       - name: Log in to Sourcery
+        shell: bash
         env:
           SOURCERY_TOKEN: ${{ secrets.SOURCERY_TOKEN }}
         run: |
