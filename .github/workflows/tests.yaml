@@ -33,7 +33,7 @@ jobs:
         env:
           SOURCERY_TOKEN: ${{ secrets.SOURCERY_TOKEN }}
         run: |
-          sourcery login --token $SOURCERY_TOKEN
+          sourcery login --token "$SOURCERY_TOKEN"
 
       - name: Test with pytest and sourcery
         run: |
