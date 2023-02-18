@@ -3,6 +3,7 @@ The configuration options of the tracker.
 """
 from __future__ import annotations
 
+import collections
 import pathlib
 from typing import Any, Dict, List
 
@@ -18,6 +19,27 @@ def get_configuration(filepath: str = FILE_PATH) -> Configuration:
     """
     with open(filepath, "r") as f:
         return Configuration(yaml.load(f.read(), yaml.Loader))
+
+
+def _get_configuration(filepath: str = FILE_PATH) -> Configuration:
+    """
+    Read the ``configuration.yaml`` into a Configuration object.
+
+    Uses two different configuration files: a default one that build with the
+    application, and one for the user to edit.
+
+    TODO: Include the API tokens/keys/secrets in the config file, too.
+    """
+    with open(filepath, "r") as f_custom, \
+         open(pathlib.Path(__file__).parent / "configuration.yaml", "r") as f_base:
+        config = yaml.load(f_custom.read(), yaml.Loader)
+
+        config["tracker"]["options"] = collections.ChainMap(
+            config["tracker"]["options"],
+            yaml.load(f_base.read(), yaml.Loader)["tracker"]["options"],
+        )
+
+        return Configuration(config)
 
 
 class Configuration:
