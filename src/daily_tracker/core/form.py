@@ -5,6 +5,9 @@ https://youtu.be/5qOnzF7RsNA
 https://github.com/codefirstio/tkinter-data-entry
 """
 import datetime
+import logging
+import textwrap
+
 import PIL.Image
 import PIL.ImageTk
 import sys
@@ -13,9 +16,10 @@ import tkinter.ttk
 from typing import Any, Union, Optional, List
 
 import daily_tracker.core.actions
+import daily_tracker.utils
 
 
-ICON = "daily_tracker/core/clock-icon.png"
+ICON = daily_tracker.utils.ROOT / "core" / "clock-icon.png"
 STYLE = {
     "font": ("Tahoma", 8),
 }
@@ -83,13 +87,16 @@ class TrackerForm:
         Wrap the action so that we can schedule the next event when it's called.
         """
         self.action_handler.ok_actions()
-        print(
-            f"{30 * '-'}\n"
-            f"Project:  {self.task}\n"
-            f"Detail:   {self.detail}\n"
-            f"Interval: {self.interval}\n"
-            f"Datetime: {self.at_datetime.strftime('%Y-%m-%d %H:%M:%S')}"
-        )
+        logging.info(textwrap.dedent(
+            f"""
+            {30 * '-'}
+            Project:  {self.task}
+            Detail:   {self.detail}
+            Interval: {self.interval}
+            Datetime: {self.at_datetime.strftime('%Y-%m-%d %H:%M:%S')}
+            {30 * '-'}
+            """
+        ))
         self.close_form()
 
     def on_project_change(self, *_) -> None:
@@ -159,7 +166,9 @@ class TrackerForm:
         )
 
         defaults = self.action_handler.get_default_task_and_detail(self.at_datetime)
-        options = self.action_handler.get_dropdown_options()
+        options = self.action_handler.get_dropdown_options(
+            use_jira_sprint=self.action_handler.configuration.use_jira_sprint
+        )
 
         self.project_text_box = TextBox(
             parent=text_box_frame,

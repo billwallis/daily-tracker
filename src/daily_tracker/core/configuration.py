@@ -9,8 +9,10 @@ from typing import Any, Dict, List
 
 import yaml
 
+import daily_tracker.utils
 
-FILE_PATH = "daily_tracker/core/configuration.yaml"
+
+FILE_PATH = daily_tracker.utils.ROOT / "core" / "configuration.yaml"
 
 
 def get_configuration(filepath: str = FILE_PATH) -> Configuration:

@@ -1,6 +1,10 @@
 """
 Utilities to use throughout the modules.
 """
+import pathlib
+
+
+ROOT = pathlib.Path(__file__).parent  # resolve to `src/daily_tracker`
 
 
 def string_list_to_list(string_list: str, sep: str = ",") -> list:

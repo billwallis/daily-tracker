@@ -3,6 +3,7 @@ The tracker generates a pop-up box to record current work which updates local
 files, as well as optionally integrates with other third-party tools.
 """
 import datetime
+import logging
 import sched
 import time
 from typing import Callable, Any, Optional
@@ -103,6 +104,7 @@ class IndefiniteScheduler:
             interval_in_minutes=self._interval,
         )
         self._schedule()
+        logging.debug(f"Next event scheduled for {self._next_schedule_time}")
 
     def _cancel_next(self) -> None:
         """
