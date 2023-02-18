@@ -8,9 +8,9 @@ from .handlers import (
 
 
 __all__ = [
-    "CalendarHandler",
-    "DatabaseHandler",
-    "JiraHandler",
-    "SlackHandler",
-    "Form",
+    CalendarHandler.__name__,
+    DatabaseHandler.__name__,
+    JiraHandler.__name__,
+    SlackHandler.__name__,
+    Form.__name__,
 ]

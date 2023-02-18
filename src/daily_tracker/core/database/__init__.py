@@ -2,5 +2,5 @@ from .database import DatabaseConnector
 
 
 __all__ = [
-    "DatabaseConnector",
+    DatabaseConnector.__name__,
 ]

@@ -7,6 +7,7 @@ coupled to it.
 import abc
 import datetime
 import json
+import logging
 import os
 import re
 from typing import List, Tuple, Optional
@@ -56,7 +57,8 @@ class DatabaseHandler(Handler):
     """
     Handle the connection to the backend database.
     """
-    def __init__(self, database_filepath):
+    def __init__(self, database_filepath: str):
+        logging.debug(f"Loading database file at {database_filepath}...")
         self.connection = daily_tracker.core.database.DatabaseConnector(database_filepath)
 
     def ok_actions(
@@ -68,19 +70,20 @@ class DatabaseHandler(Handler):
         The database actions that need to be executed when the OK button on the
         form is clicked.
         """
+        logging.debug("Doing database actions...")
         if DEBUG_MODE:
-            print("Doing database actions...")
-        else:
-            self._write_to_database(
-                task=form.task,
-                detail=form.detail,
-                at_datetime=form.at_datetime,
-                interval=form.interval,
-            )
+            return
 
-            # Only extract data on the hour -- consider making this more flexible
-            if form.at_datetime.minute == 0 and configuration.save_csv_copy:
-                self.write_to_csv(filepath=configuration.csv_filepath)
+        self._write_to_database(
+            task=form.task,
+            detail=form.detail,
+            at_datetime=form.at_datetime,
+            interval=form.interval,
+        )
+
+        # Only extract data on the hour -- consider making this more flexible
+        if form.at_datetime.minute == 0 and configuration.save_csv_copy:
+            self.write_to_csv(filepath=configuration.csv_filepath)
 
     def get_recent_tasks(self, show_last_n_weeks: int) -> dict:
         """
@@ -202,19 +205,18 @@ class DatabaseHandler(Handler):
         """
         Import the existing CSV file into the SQLite database.
         """
-        column_names = {
-            "Datetime": "date_time",
-            "Task": "task",
-            "Detail": "detail",
-            "Interval": "interval",
-        }
+        column_names = [
+            "date_time",
+            "task",
+            "detail",
+            "interval",
+        ]
         data = (
             pd.read_csv(
                 filepath_or_buffer=filepath,
-                usecols=list(column_names),
-                parse_dates=["Datetime"]
-            )[list(column_names)]
-            .rename(column_names, axis=1)
+                usecols=column_names,
+                parse_dates=["date_time"]
+            )[column_names]
             .fillna("")
         )
         data["date_time"] = data["date_time"].dt.strftime("%Y-%m-%d %H:%M:%S")
@@ -225,6 +227,7 @@ class DatabaseHandler(Handler):
                 INSERT INTO task_last_detail(task, detail, last_date_time)
                     SELECT task, '', '' FROM default_tasks
             """)
+
         data.to_sql(
             name="tracker",
             con=self.connection.engine,
@@ -249,13 +252,11 @@ class CalendarHandler(Handler):
         The calendar actions that need to be executed when the OK button on the
         form is clicked.
         """
-        # sourcery skip: remove-redundant-pass
+        logging.debug("Doing calendar actions...")
         if DEBUG_MODE:
-            print("Doing calendar actions...")
-        else:
-            # Set status?
-            # print("Create some calendar actions!")
-            pass
+            return
+
+        # Do some stuff
 
     def get_appointment_at_datetime(
         self,
@@ -303,17 +304,18 @@ class JiraHandler(Handler):
         The Jira actions that need to be executed when the OK button on the form
         is clicked.
         """
-        # sourcery skip: merge-else-if-into-elif
+        logging.debug("Doing Jira actions...")
+
         if DEBUG_MODE:
-            print("Doing Jira actions...")
-        else:
-            if configuration.post_to_jira:
-                self._post_log_to_jira(
-                    task=form.task,
-                    detail=form.detail,
-                    at_datetime=form.at_datetime,
-                    interval=form.interval
-                )
+            return
+
+        if configuration.post_to_jira:
+            self._post_log_to_jira(
+                task=form.task,
+                detail=form.detail,
+                at_datetime=form.at_datetime,
+                interval=form.interval
+            )
 
     def _post_log_to_jira(
         self,
@@ -384,16 +386,16 @@ class SlackHandler(Handler):
         The Slack actions that need to be executed when the OK button on the
         form is clicked.
         """
-        # sourcery skip: merge-else-if-into-elif
+        logging.debug("Doing Slack actions...")
         if DEBUG_MODE:
-            print("Doing Slack actions...")
-        else:
-            if configuration.post_to_slack:
-                self._post_to_channel(
-                    task=form.task,
-                    detail=form.detail
-                )
-                # Set status?
+            return
+
+        if configuration.post_to_slack:
+            self._post_to_channel(
+                task=form.task,
+                detail=form.detail
+            )
+            # Set status?
 
     def _post_to_channel(self, task: str, detail: str) -> None:
         """

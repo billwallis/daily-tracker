@@ -39,7 +39,7 @@ class ActionHandler:
         self.form = form
 
         self.calendar_handler = daily_tracker.core.handlers.CalendarHandler(self.configuration.linked_calendar)
-        self.database_handler = daily_tracker.core.handlers.DatabaseHandler("tracker.db")
+        self.database_handler = daily_tracker.core.handlers.DatabaseHandler(daily_tracker.utils.ROOT / "tracker.db")
         self.jira_handler = daily_tracker.core.handlers.JiraHandler(**JIRA_CREDENTIALS)
         self.slack_handler = daily_tracker.core.handlers.SlackHandler(**SLACK_CREDENTIALS)
 
@@ -74,7 +74,7 @@ class ActionHandler:
             ("Meetings", current_meeting)
         )
 
-    def get_dropdown_options(self) -> dict:
+    def get_dropdown_options(self, use_jira_sprint: bool) -> dict:
         """
         Return the latest tasks and their most recent detail as a dictionary.
 
@@ -82,14 +82,17 @@ class ActionHandler:
         active sprint if a Jira connection has been configured.
         """
         recent_tasks = self.database_handler.get_recent_tasks(self.configuration.show_last_n_weeks)
+
+        if use_jira_sprint:
+            recent_tickets = [
+                ticket
+                for ticket in self.jira_handler.get_tickets_in_sprint()
+                if ticket not in recent_tasks.keys()
+            ]
+        else:
+            recent_tickets = []
+
         return {
             **recent_tasks,
-            **dict.fromkeys(
-                [
-                    ticket
-                    for ticket in self.jira_handler.get_tickets_in_sprint()
-                    if ticket not in recent_tasks.keys()
-                ],
-                ""
-            ),
+            **dict.fromkeys(recent_tickets, ""),
         }

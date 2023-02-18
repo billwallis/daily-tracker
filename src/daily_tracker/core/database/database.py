@@ -1,9 +1,10 @@
 """
 Maintain the backend SQLite database.
 """
-import pathlib
 import sqlite3
 from typing import Iterable
+
+import daily_tracker.utils
 
 
 class DatabaseConnector:
@@ -11,7 +12,7 @@ class DatabaseConnector:
     Connects to a SQLite database.
     """
     def __init__(self, filepath: str):
-        self.filepath = pathlib.Path(filepath).resolve()
+        self.filepath = filepath
         self.connection = sqlite3.connect(self.filepath, timeout=15)
         self._create_backend()
 
@@ -49,7 +50,7 @@ class DatabaseConnector:
                 """
             ).fetchone()
         ):
-            self.run_query_from_file("daily_tracker/database/create.sql")
+            self.run_query_from_file(daily_tracker.utils.ROOT / "core" / "database" / "create.sql")
 
     def truncate_table(self, table_name: str) -> None:
         """
