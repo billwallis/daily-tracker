@@ -2,6 +2,7 @@
 Daily Tracker
 ---
 ![Tests](https://github.com/Bilbottom/daily-tracker/actions/workflows/tests.yaml/badge.svg)
+[![Sourcery](https://img.shields.io/badge/Sourcery-enabled-brightgreen)](https://sourcery.ai)
 
 
 About
