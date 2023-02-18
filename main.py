@@ -1,5 +1,5 @@
 """
-Entry point into this project.
+Entry point into the application.
 """
 import daily_tracker.main
 
