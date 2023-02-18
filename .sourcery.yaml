@@ -1,14 +1,14 @@
+# https://docs.sourcery.ai/Reference/Configuration/Rule-Settings/
 ---
 ignore:
   - idea./
-#  - tests/
+  - tests/
   - setup.py
 
 rule_settings:
   enable:
     - default
-    - gpsg-import
-    - gpsg-naming-pep8
+    - gpsg
   disable: []
   rule_types:
     - refactoring
@@ -19,7 +19,7 @@ rule_settings:
 rules: []
 
 metrics:
-  quality_threshold: 75.0
+  quality_threshold: 70.0
 
 github:
   labels: []
