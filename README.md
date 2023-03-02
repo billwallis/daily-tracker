@@ -21,7 +21,7 @@ Form UI
 ---
 The form UI is currently built with [tkinter](https://docs.python.org/3/library/tkinter.html) and looks like:
  
-![tkinter-form](/Users/bill.wallis/Repos/daily-tracker/tracker-form-tkinter.png)
+![tkinter-form](tracker-form-tkinter.png)
 
 
 Commits
