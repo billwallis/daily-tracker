@@ -14,6 +14,7 @@
 *.png
 *.jpg
 !/src/daily_tracker/core/clock-icon.png
+!/tracker-form-tkinter.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
