@@ -17,6 +17,13 @@ The clock icon is from [icons8.com](https://icons8.com/):
 - https://icons8.com/icon/2YPST59G2xJZ/clock
 
 
+Form UI
+---
+The form UI is currently built with [tkinter](https://docs.python.org/3/library/tkinter.html) and looks like:
+ 
+![tkinter-form](/Users/bill.wallis/Repos/daily-tracker/tracker-form-tkinter.png)
+
+
 Commits
 ---
 This project uses a mix of [Conventional Commits](https://www.conventionalcommits.org/en) and [gitmojis](https://gitmoji.dev/) for its commit messages. The commit types used follow the [Angular convention](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines) and are:
