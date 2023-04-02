@@ -5,142 +5,90 @@ This requires Outlook to be installed as a desktop application on the device
 running this code, and for it to be toggled to the old version of Outlook ("old"
 as at 2023-01-10).
 
+This is powered by the appscript library which is super helpful, but there are
+some features missing in Outlook on masOS that are available in Outlook on
+Windows. For example, there is no "all-day" flag in the macOS version, and
+recurring events only show the initial event but not the subsequent ones.
+
 The use of appscript has been adapted from:
 
 - https://stackoverflow.com/a/62089384/8213085
+
 
 Additional appscript usage has been determined from using the ASTranslate tool,
 available at:
 
 - https://sourceforge.net/projects/appscript/files/
 """
+from __future__ import annotations
+
 import dataclasses
 import datetime
+from typing import List
 
 import appscript
+from appscript.reference import Reference
+
+from daily_tracker.core import Configuration, Input
+from daily_tracker.integrations.calendars.calendars import Calendar, CalendarEvent
 
 
 @dataclasses.dataclass
-class OutlookEvent:
+class OutlookEvent(CalendarEvent):
     """
-    Events in Outlook, typically referred to as Meetings or Appointments.
+    An Outlook event corresponding to macOS.
     """
 
-    _appointment: appscript.reference.Reference = dataclasses.field(repr=False)
-    subject: str = dataclasses.field(default=None)
-    start: datetime.datetime = dataclasses.field(default=None)
-    end: datetime.datetime = dataclasses.field(default=None)
-    # body: str = dataclasses.field(default=None)
-    categories: list[str] = dataclasses.field(default=list)
-
-    def __post_init__(self):
+    @classmethod
+    def from_appointment(cls, appointment: Reference) -> OutlookEvent:
         """
-        Pull out the appointment details into fields.
+        Generate an OutlookEvent from a macOS Outlook appointment.
+
+        :param appointment: The appscript appointment to generate the event
+         from.
         """
-        self.subject = self._appointment.subject.get()
-        self.start = self._appointment.start_time.get()
-        self.end = self._appointment.end_time.get()
-        # self.body = self._appointment.body.get()
-        self.categories = [
-            cat.name.get() for cat in self._appointment.category.get()
-        ]
+        return OutlookEvent(
+            subject=appointment.subject.get(),
+            start=appointment.start_time.get(),
+            end=appointment.end_time.get(),
+            categories=[cat.name.get() for cat in appointment.category.get()],
+            all_day_event=appointment.start_time.get().hour != 0,
+        )
 
 
-class OutlookConnector:
+class OutlookInput(Input, Calendar):
     """
     Naive implementation of a connector to Outlook on a Mac.
-
-    TODO: Set the calendar ID dynamically rather than hard-coding it.
     """
+    def __init__(self, configuration: Configuration):
+        super().__init__(configuration=configuration)
 
-    def __init__(self):
+        # TODO: Set the calendar ID dynamically rather than hard-coding it
         self.calendar = appscript.app("Microsoft Outlook").calendars.ID(110)
 
     def get_appointments_between_datetimes(
         self,
         start_datetime: datetime.datetime,
         end_datetime: datetime.datetime,
-    ) -> list[OutlookEvent]:
+    ) -> List[OutlookEvent]:
         """
         Return the events in the calendar between the start datetime (inclusive)
-        and end datetime exclusive.
+        and end datetime (exclusive).
         """
         restricted_calendar = self.calendar.calendar_events[
-            (appscript.its.start_time >= start_datetime).AND(
-                appscript.its.end_time < end_datetime
-            )
+            (appscript.its.start_time >= start_datetime).AND(appscript.its.end_time < end_datetime)
         ].get()
-        return [OutlookEvent(app) for app in restricted_calendar]
+        return [OutlookEvent.from_appointment(app) for app in restricted_calendar]
 
-    def get_appointments_at_datetime(
+    def get_appointment_at_datetime(
         self,
         at_datetime: datetime.datetime,
-    ) -> list[OutlookEvent]:
+    ) -> List[OutlookEvent]:
         """
         Return the events in the calendar that are scheduled to on or over the
         supplied datetime.
         """
         restricted_calendar = self.calendar.calendar_events[
-            (appscript.its.start_time <= at_datetime).AND(
-                appscript.its.end_time > at_datetime
-            )
+            (appscript.its.start_time <= at_datetime).AND(appscript.its.end_time > at_datetime)
         ].get()
-        return [OutlookEvent(app) for app in restricted_calendar]
-
-
-def _check_available_calendars() -> None:
-    """
-    Check the available calendars.
-    """
-    for calendar in appscript.app("Microsoft Outlook").calendars.get():
-        print(calendar.properties.get(), "\n")
-
-
-def _test_calendar_usage() -> None:
-    """
-    Test the usage of the appscript.
-
-    Python code generated by running the following AppleScript through the
-    ASTranslate tool:
-
-        tell application "Microsoft Outlook"
-            tell calendar id 13
-                set calEvents to (every calendar event whose start time is greater than (date "Friday, 15 July 2016 at
-                 11:00:00") and start time is less than (date "Friday, 15 July 2016 at 17:00:00"))
-            end tell
-        end tell
-    """
-    calendar = appscript.app("Microsoft Outlook").calendars.ID(
-        110
-    )  # Currently hardcoded
-    # print(calendar.properties.get())
-    for event in calendar.calendar_events[
-        appscript.its.start_time > datetime.datetime.now()
-    ].get():
-        print(
-            event.subject.get(),
-            event.all_day_flag.get(),
-            event.start_time.get(),
-            event.end_time.get(),
-            event.category.get(),
-        )
-        for category in event.category.get():
-            print(category.name.get(), "\n")
-
-
-def _test_classes() -> None:
-    """
-    Test the classes that pull the details.
-    """
-    oc = OutlookConnector()
-
-    appointments = oc.get_appointments_between_datetimes(
-        start_datetime=datetime.datetime.now(),
-        end_datetime=datetime.datetime.now() + datetime.timedelta(days=3),
-    )
-    print(appointments)
-
-    appointments = oc.get_appointments_at_datetime(
-        at_datetime=datetime.datetime.now() + datetime.timedelta(hours=1),
-    )
-    print(appointments)
+        return [OutlookEvent.from_appointment(app) for app in restricted_calendar]

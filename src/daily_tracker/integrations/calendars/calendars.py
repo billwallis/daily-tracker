@@ -1,44 +1,89 @@
 """
 Calendar types available to use for linking.
 """
+import abc
+import dataclasses
 import datetime
-from typing import Protocol
+from typing import List
 
-import daily_tracker
+from daily_tracker.core import Configuration, Task, Input, Output, Entry
 
 
-class Calendar(Protocol):
+@dataclasses.dataclass
+class CalendarEvent:
+    """
+    A calendar event, typically referred to as a _meeting_ or an _appointment_.
+    """
+    subject: str
+    start: datetime.datetime
+    end: datetime.datetime
+    categories: List[str]
+    all_day_event: bool
+
+
+class Calendar(abc.ABC):
     """
     Abstraction of the various calendar types that can be synced with the daily
     tracker.
-    """
 
+    :param configuration: The application configuration.
+    """
+    def __init__(self, configuration: Configuration):
+        """
+
+        :param configuration:
+        """
+        self.configuration = configuration
+
+    @abc.abstractmethod
     def get_appointments_between_datetimes(
         self,
         start_datetime: datetime.datetime,
         end_datetime: datetime.datetime,
-    ) -> list:
+    ) -> List[CalendarEvent]:
         """
         Return the events in the calendar between the start datetime (inclusive)
         and end datetime exclusive.
         """
-        ...
 
-    def get_appointments_at_datetime(
+    @abc.abstractmethod
+    def get_appointment_at_datetime(  # TODO: Rename this to `get_appointments_at_datetime`
         self,
         at_datetime: datetime.datetime,
-    ) -> list:
+        categories_to_exclude: list[str] = None,  # TODO: Figure out where this should live
+    ) -> list[CalendarEvent]:
         """
         Return the events in the calendar that are scheduled to on or over the
         supplied datetime.
         """
-        ...
+
+    def on_event(self, at_datetime: datetime.datetime) -> list[Task]:
+        """
+        Get the current meeting from Outlook, if one exists.
+
+        This excludes meetings that are daily meetings and meetings whose
+        categories are in the supplied list of exclusions.
+        """
+        if not self.configuration.use_calendar_appointments:
+            return []
+
+        categories_to_exclude = self.configuration.appointment_category_exclusions or []
+        events = [
+            event
+            for event in self.get_appointment_at_datetime(at_datetime=at_datetime)
+            if not event.all_day_event
+               and all(i not in event.categories for i in categories_to_exclude)
+        ]
+
+        return [Task(task_name="Meetings", details=events[0].subject if len(events) == 1 else [])]
 
 
-class NoCalendar(Calendar):
+class NoCalendar(Calendar, Input, Output):
     """
     A 'None' calendar.
     """
+    def __bool__(self):
+        return False
 
     def get_appointments_between_datetimes(
         self,
@@ -51,9 +96,10 @@ class NoCalendar(Calendar):
         """
         return []
 
-    def get_appointments_at_datetime(
+    def get_appointment_at_datetime(
         self,
         at_datetime: datetime.datetime,
+        categories_to_exclude: list[str] = None,
     ) -> list:
         """
         Return the events in the calendar that are scheduled to on or over the
@@ -61,22 +107,8 @@ class NoCalendar(Calendar):
         """
         return []
 
+    def on_event(self, at_datetime: datetime.datetime) -> list[Task]:
+        return []
 
-def get_linked_calendar(calendar_type: str) -> Calendar:
-    """
-    Convert the input calendar type string to the concrete representation of the
-    class.
-    """
-    calendars = {
-        "none": NoCalendar,
-        "outlook": daily_tracker.integrations.calendars.OutlookConnector,
-        # "gmail": daily_tracker.integrations.calendars.GmailConnector,
-    }
-    calendar = calendars.get(calendar_type)
-    if calendar is None:
-        raise NotImplementedError(
-            f"The tracker currently does not support connections to {calendar}. Please use one of the following "
-            f"instead: {','.join(calendars.keys())}"
-        )
-
-    return calendar()
+    def post_event(self, entry: Entry) -> None:
+        pass

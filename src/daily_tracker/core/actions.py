@@ -13,6 +13,8 @@ import daily_tracker.integrations
 import daily_tracker.integrations.calendars
 import daily_tracker.utils
 
+from daily_tracker.core.data import Entry
+
 dotenv.load_dotenv(dotenv_path=r".env")
 JIRA_CREDENTIALS = {
     "domain": os.getenv("JIRA_DOMAIN"),
@@ -38,17 +40,19 @@ class ActionHandler:
         )
         self.form = form
 
-        self.calendar_handler = daily_tracker.core.handlers.CalendarHandler(
-            self.configuration.linked_calendar
-        )
         self.database_handler = daily_tracker.core.handlers.DatabaseHandler(
             daily_tracker.utils.ROOT / "tracker.db"
         )
-        self.jira_handler = daily_tracker.core.handlers.JiraHandler(
-            **JIRA_CREDENTIALS
+        self.calendar_handler = daily_tracker.integrations.get_linked_calendar(
+            self.configuration.linked_calendar
+        )(self.configuration)
+        self.jira_handler = daily_tracker.integrations.Jira(
+            **JIRA_CREDENTIALS,
+            configuration=self.configuration,
         )
-        self.slack_handler = daily_tracker.core.handlers.SlackHandler(
-            **SLACK_CREDENTIALS
+        self.slack_handler = daily_tracker.integrations.Slack(
+            **SLACK_CREDENTIALS,
+            configuration=self.configuration,
         )
 
     def ok_actions(self) -> None:
@@ -61,7 +65,17 @@ class ActionHandler:
             self.slack_handler,
             self.jira_handler,
         ]:
-            handler.ok_actions(self.configuration, self.form)
+            if hasattr(handler, "ok_actions"):
+                # For backwards compatibility
+                handler.ok_actions(self.configuration, self.form)
+            else:
+                entry = Entry(
+                    date_time=self.form.at_datetime,
+                    task_name=self.form.task,
+                    detail=self.form.detail,
+                    interval=self.form.interval,
+                )
+                handler.post_event(entry)
 
     def get_default_task_and_detail(
         self,
@@ -82,7 +96,7 @@ class ActionHandler:
             not self.configuration.use_calendar_appointments
             or current_meeting is None
         ):
-            return self.database_handler.get_last_task_and_detail()
+            return self.database_handler.get_last_task_and_detail() or ("", "")
         return self.configuration.appointment_exceptions.get(
             current_meeting,
             ("Meetings", current_meeting),
