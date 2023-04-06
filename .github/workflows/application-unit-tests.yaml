@@ -1,8 +1,10 @@
-name: Tests
-
-on: [push]
-
+name: application-unit-tests
 run-name: Application tests triggered by ${{ github.actor }}
+
+on:
+  push:
+    paths:
+      - 'src/**'
 
 jobs:
   unit-tests-and-formatting:
@@ -15,28 +17,29 @@ jobs:
         python-version: ['3.7', '3.10']  # TODO: Add 3.8, 3.9, and 3.11 after resolving https://github.com/Bilbottom/daily-tracker/issues/3
 
     steps:
-      - uses: actions/checkout@v3
+      - name: 🛎️ Check out repository
+        uses: actions/checkout@v3
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: 🐍 Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install dependencies
+      - name: 🔨 Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install .
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
-      - name: Log in to Sourcery
+      - name: 🔮 Log in to Sourcery
         shell: bash
         env:
           SOURCERY_TOKEN: ${{ secrets.SOURCERY_TOKEN }}
         run: |
           sourcery login --token "$SOURCERY_TOKEN"
 
-      - name: Test with pytest and sourcery
+      - name: ✅ Test with pytest and sourcery
         run: |
           pytest tests
           sourcery review src
