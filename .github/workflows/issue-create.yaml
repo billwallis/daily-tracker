@@ -27,8 +27,8 @@ jobs:
       with:
         project: DATA
         issuetype: Build
-        summary: ${{ issue.title }}
-        description: ${{ issue.body }}
+        summary: ${{ github.event.issue.title }}
+        description: ${{ github.event.issue.body }}
 
     - name: Log created issue
       run: echo "Issue ${{ steps.create-jira-issue.outputs.issue }} was created"
