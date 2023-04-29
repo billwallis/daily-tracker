@@ -27,8 +27,7 @@ The form UI is currently built with [tkinter](https://docs.python.org/3/library/
 Commits
 ---
 This project uses a mix of [Conventional Commits](https://www.conventionalcommits.org/en) and [gitmojis](https://gitmoji.dev/) for its commit messages. The commit types used follow the [Angular convention](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines) and are:
- - `build`: Changes that affect the build system or external dependencies
- - `ci`: Changes to CI configuration files and scripts
+ - `build`: Changes that affect the build system, external dependencies, or CI
  - `docs`: Documentation only changes
  - `feat`: A new feature
  - `fix`: A bug fix
