@@ -36,7 +36,7 @@ tracker:
         Positive whole numbers only.
 
     use-calendar-appointments:
-      value: Yes
+      value: No
       type: boolean
       allowed-values: [Yes, No]
       category: calendar
@@ -59,7 +59,7 @@ tracker:
         from the linked calendar.
 
     linked-calendar:
-      value: outlook
+      value: none
       type: string
       allowed-values: [none, outlook, gmail]
       category: calendar
@@ -80,7 +80,7 @@ tracker:
         Values of "cloud" or "server" only.
 
     use-jira-sprint:
-      value: Yes
+      value: No
       type: boolean
       allowed-values: [Yes, No]
       category: jira
@@ -91,7 +91,7 @@ tracker:
         Values of "Yes" or "No" only.
 
     post-to-jira:
-      value: Yes
+      value: No
       type: boolean
       allowed-values: [Yes, No]
       category: jira
