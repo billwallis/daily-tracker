@@ -33,7 +33,9 @@ class ActionHandler:
         """
         Initialise the main handler and the various handlers to other systems.
         """
-        self.configuration = daily_tracker.core.configuration.get_configuration()
+        self.configuration = (
+            daily_tracker.core.configuration.get_configuration()
+        )
         self.form = form
 
         self.calendar_handler = daily_tracker.core.handlers.CalendarHandler(
@@ -42,7 +44,9 @@ class ActionHandler:
         self.database_handler = daily_tracker.core.handlers.DatabaseHandler(
             daily_tracker.utils.ROOT / "tracker.db"
         )
-        self.jira_handler = daily_tracker.core.handlers.JiraHandler(**JIRA_CREDENTIALS)
+        self.jira_handler = daily_tracker.core.handlers.JiraHandler(
+            **JIRA_CREDENTIALS
+        )
         self.slack_handler = daily_tracker.core.handlers.SlackHandler(
             **SLACK_CREDENTIALS
         )
@@ -74,7 +78,10 @@ class ActionHandler:
             categories_to_exclude=self.configuration.appointment_category_exclusions,
         )
 
-        if not self.configuration.use_calendar_appointments or current_meeting is None:
+        if (
+            not self.configuration.use_calendar_appointments
+            or current_meeting is None
+        ):
             return self.database_handler.get_last_task_and_detail()
         return self.configuration.appointment_exceptions.get(
             current_meeting,
