@@ -10,3 +10,6 @@ addopts = "--cov=daily_tracker"
 testpaths = [
     "tests",
 ]
+
+[tool.isort]
+profile = "black"
