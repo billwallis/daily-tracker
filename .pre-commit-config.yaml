@@ -1,0 +1,63 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+---
+repos:
+  - repo: meta
+    hooks:
+      - id: identity
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: no-commit-to-branch
+        name: Don't allow commits to the main branch
+        args: ["--branch", "main"]
+      - id: trailing-whitespace
+        name: Remove trailing whitespace
+      - id: end-of-file-fixer
+        name: Check that file end with a newline character
+      - id: check-added-large-files
+        name: Check for large files
+
+  # Formatting
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.0-alpha.0
+    hooks:
+      - id: prettier
+        name: Make code pretty
+
+  - repo: https://github.com/hadialqattan/pycln
+    rev: v2.2.1
+    hooks:
+      - id: pycln
+        name: Remove unused imports and variables
+        args: [--config=pyproject.toml]
+
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        name: Check Python formatting
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.11.5
+    hooks:
+      - id: isort
+        name: Sort Python import statements
+        args: ["--profile", "black", "--filter-files"]
+
+  # Refactoring
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.10.1
+    hooks:
+      - id: pyupgrade
+        name: Upgrade Python syntax to the newest version
+        args: ["--py311-plus"]
+
+  - repo: https://github.com/sourcery-ai/sourcery
+    rev: v1.2.0
+    hooks:
+      - id: sourcery
+        name: Check for refactoring opportunities
+        args: [--diff=git diff HEAD, --no-summary]
+        files: db_query_profiler
+        exclude: \.*/__init__\.py
