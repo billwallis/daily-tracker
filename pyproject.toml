@@ -17,6 +17,9 @@ dynamic = ["readme", "dependencies", "optional-dependencies"]
 [project.urls]
 repository = "https://github.com/Bilbottom/daily-tracker"
 
+[project.scripts]
+daily-tracker = "daily_tracker.__main__:main"
+
 
 [tool.setuptools]
 platforms = ["win32"]

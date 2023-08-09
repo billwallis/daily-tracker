@@ -51,7 +51,9 @@ def main() -> None:
         scheduler.schedule_first()
     else:
         # create_env()
-        db_handler = daily_tracker.core.handlers.DatabaseHandler(
-            daily_tracker.utils.ROOT / "tracker.db"
-        )
+        db_handler = daily_tracker.core.handlers.DatabaseHandler(daily_tracker.utils.ROOT / "tracker.db")
         # db_handler.import_history(daily_tracker.utils.ROOT / "tracker.csv")
+
+
+if __name__ == "__main__":
+    main()
