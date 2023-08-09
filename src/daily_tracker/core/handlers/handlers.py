@@ -400,4 +400,4 @@ class SlackHandler(Handler):
         """
         Post the task details to a channel.
         """
-        self.connector.post_to_channel(message=f"*{task}*: {detail}")
+        self.connector.post_message(message=f"*{task}*: {detail}")
