@@ -1,0 +1,22 @@
+---
+tracker:
+  options:
+    # tracker
+    interval: 15
+    run-on-startup: true
+    show-last-n-weeks: 2
+    save-csv-copy: false
+    csv-filepath: /backups/
+
+    # calendar
+    linked-calendar: none
+    use-calendar-appointments: false
+    appointment-category-exclusions: [Planned Work]
+
+    # jira
+    jira-type: cloud
+    use-jira-sprint: false
+    post-to-jira: false
+
+    # slack
+    post-to-slack: false
