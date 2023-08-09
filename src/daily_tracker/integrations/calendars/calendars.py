@@ -2,7 +2,7 @@
 Calendar types available to use for linking.
 """
 import datetime
-from typing_extensions import Protocol
+from typing import Protocol
 
 import daily_tracker
 
@@ -12,6 +12,7 @@ class Calendar(Protocol):
     Abstraction of the various calendar types that can be synced with the daily
     tracker.
     """
+
     def get_appointments_between_datetimes(
         self,
         start_datetime: datetime.datetime,
@@ -23,10 +24,7 @@ class Calendar(Protocol):
         """
         ...
 
-    def get_appointments_at_datetime(
-        self,
-        at_datetime: datetime.datetime
-    ) -> list:
+    def get_appointments_at_datetime(self, at_datetime: datetime.datetime) -> list:
         """
         Return the events in the calendar that are scheduled to on or over the
         supplied datetime.
@@ -38,6 +36,7 @@ class NoCalendar(Calendar):
     """
     A 'None' calendar.
     """
+
     def get_appointments_between_datetimes(
         self,
         start_datetime: datetime.datetime,
@@ -49,10 +48,7 @@ class NoCalendar(Calendar):
         """
         return []
 
-    def get_appointments_at_datetime(
-        self,
-        at_datetime: datetime.datetime
-    ) -> list:
+    def get_appointments_at_datetime(self, at_datetime: datetime.datetime) -> list:
         """
         Return the events in the calendar that are scheduled to on or over the
         supplied datetime.

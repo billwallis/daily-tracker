@@ -23,6 +23,7 @@ class IInput(abc.ABC):
     Abstract base class for objects whose methods need to be resolved before the
     form is generated.
     """
+
     @abc.abstractmethod
     def generate_actions(self) -> None:
         """
@@ -36,6 +37,7 @@ class IOutput(abc.ABC):
     Abstract base class for objects whose methods need to be resolved after the
     form is closed.
     """
+
     @abc.abstractmethod
     def ok_actions(self) -> None:
         """
@@ -48,6 +50,7 @@ class Input(API, IInput):
     """
     Objects whose methods need to be resolved before the form is generated.
     """
+
     APIS: ClassVar = {}
 
     def generate_actions(self) -> None:
@@ -61,6 +64,7 @@ class Output(API, IOutput):
     """
     Objects whose methods need to be resolved after the form is closed.
     """
+
     APIS: ClassVar = {}
 
     def ok_actions(self) -> None:

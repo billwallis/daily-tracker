@@ -6,7 +6,8 @@ import datetime
 import logging
 import sched
 import time
-from typing import Callable, Any, Optional
+from collections.abc import Callable
+from typing import Any
 
 import daily_tracker.core.configuration
 
@@ -66,8 +67,8 @@ class IndefiniteScheduler:
         """
         self._scheduler = sched.scheduler(time.time, time.sleep)
         self._running = False
-        self._next_schedule_time: Optional[datetime.datetime] = None
-        self._next_event: Optional[sched.Event] = None
+        self._next_schedule_time: datetime.datetime | None = None
+        self._next_event: sched.Event | None = None
         self._interval = _get_interval_from_configuration()
         self.action = action
 
@@ -115,13 +116,15 @@ class IndefiniteScheduler:
 
     def schedule_first(
         self,
-        schedule_at: datetime.datetime = datetime.datetime.now()
+        schedule_at: datetime.datetime = datetime.datetime.now(),
     ) -> None:
         """
         Schedule the first event.
         """
         if self._running:
-            raise AssertionError("The `schedule_first` method was called while the scheduler is already running.")
+            raise AssertionError(
+                "The `schedule_first` method was called while the scheduler is already running."
+            )
 
         self._running = True
         self._next_schedule_time = schedule_at

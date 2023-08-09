@@ -5,12 +5,11 @@ from __future__ import annotations
 
 import collections
 import pathlib
-from typing import Any, Dict, List
+from typing import Any
 
 import yaml
 
 import daily_tracker.utils
-
 
 FILE_PATH = daily_tracker.utils.ROOT / "core" / "configuration.yaml"
 
@@ -19,7 +18,7 @@ def get_configuration(filepath: str = FILE_PATH) -> Configuration:
     """
     Read the ``configuration.yaml`` into a Configuration object.
     """
-    with open(filepath, "r") as f:
+    with open(filepath) as f:
         return Configuration(yaml.load(f.read(), yaml.Loader))
 
 
@@ -32,8 +31,9 @@ def _get_configuration(filepath: str = FILE_PATH) -> Configuration:
 
     TODO: Include the API tokens/keys/secrets in the config file, too.
     """
-    with open(filepath, "r") as f_custom, \
-         open(pathlib.Path(__file__).parent / "configuration.yaml", "r") as f_base:
+    with open(filepath) as f_custom, open(
+        pathlib.Path(__file__).parent / "configuration.yaml"
+    ) as f_base:
         config = yaml.load(f_custom.read(), yaml.Loader)
 
         config["tracker"]["options"] = collections.ChainMap(
@@ -53,6 +53,7 @@ class Configuration:
 
     The docstrings should be taken from the ``description`` property.
     """
+
     def __init__(self, configuration: dict):
         self.configuration = configuration
         self.options = self.configuration["tracker"]["options"]
@@ -77,7 +78,7 @@ class Configuration:
         return self._get_option_value("use-calendar-appointments", False)
 
     @property
-    def appointment_category_exclusions(self) -> List[str]:
+    def appointment_category_exclusions(self) -> list[str]:
         return self._get_option_value("appointment-category-exclusions", None)
 
     @property
@@ -105,8 +106,10 @@ class Configuration:
         return self._get_option_value("csv-filepath", str(pathlib.Path.home()))
 
     @property
-    def appointment_exceptions(self) -> Dict[str, str]:
+    def appointment_exceptions(self) -> dict[str, str]:
         return {
             item["name"]: (item["task"], item["detail"])
-            for item in self.configuration["tracker"]["options"]["appointment-exceptions"]["value"]
+            for item in self.configuration["tracker"]["options"][
+                "appointment-exceptions"
+            ]["value"]
         }

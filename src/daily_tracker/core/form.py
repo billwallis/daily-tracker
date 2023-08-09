@@ -7,17 +7,15 @@ https://github.com/codefirstio/tkinter-data-entry
 import datetime
 import logging
 import textwrap
+import tkinter as tk
+import tkinter.ttk
+from typing import Any
 
 import PIL.Image
 import PIL.ImageTk
-import sys
-import tkinter as tk
-import tkinter.ttk
-from typing import Any, Union, Optional, List
 
 import daily_tracker.core.actions
 import daily_tracker.utils
-
 
 ICON = daily_tracker.utils.ROOT / "core" / "clock-icon.png"
 STYLE = {
@@ -25,7 +23,7 @@ STYLE = {
 }
 
 
-def load_icon(filepath: str) -> Union[PIL.ImageTk.PhotoImage, PIL.Image.Image]:
+def load_icon(filepath: str) -> PIL.ImageTk.PhotoImage | PIL.Image.Image:
     """
     Load an image to the ICO format so that it can be used as application icons.
     """
@@ -36,18 +34,21 @@ class TrackerForm:
     """
     The pop-up box for the tracker.
     """
+
     def __init__(self, at_datetime: datetime.datetime):
         """
         Create the form handler.
         """
         self.at_datetime = at_datetime
-        self.action_handler = daily_tracker.core.actions.ActionHandler(form=self)  # noqa
+        self.action_handler = daily_tracker.core.actions.ActionHandler(
+            form=self
+        )  # noqa
         self.interval = self.action_handler.configuration.interval
         self._width = 350
         self._height = 150
-        self._root: Optional[tk.Tk] = None
-        self.project_text_box: Optional[TextBox] = None
-        self.detail_text_box: Optional[TextBox] = None
+        self._root: tk.Tk | None = None
+        self.project_text_box: TextBox | None = None
+        self.detail_text_box: TextBox | None = None
         # self._root.mainloop()
         # Add properties like `is_meeting` and `is_jira_ticket`?
         self.generate_form()
@@ -87,16 +88,18 @@ class TrackerForm:
         Wrap the action so that we can schedule the next event when it's called.
         """
         self.action_handler.ok_actions()
-        logging.info(textwrap.dedent(
-            f"""
-            {30 * '-'}
-            Project:  {self.task}
-            Detail:   {self.detail}
-            Interval: {self.interval}
-            Datetime: {self.at_datetime.strftime('%Y-%m-%d %H:%M:%S')}
-            {30 * '-'}
-            """
-        ))
+        logging.info(
+            textwrap.dedent(
+                f"""
+                {30 * '-'}
+                Project:  {self.task}
+                Detail:   {self.detail}
+                Interval: {self.interval}
+                Datetime: {self.at_datetime.strftime('%Y-%m-%d %H:%M:%S')}
+                {30 * '-'}
+                """
+            )
+        )
         self.close_form()
 
     def on_project_change(self, *_) -> None:
@@ -180,7 +183,9 @@ class TrackerForm:
             parent=text_box_frame,
             label_text="Detail",
             default=defaults[1],
-            values=self.action_handler.database_handler.get_details_for_task(defaults[0]),
+            values=self.action_handler.database_handler.get_details_for_task(
+                defaults[0]
+            ),
         )
 
         self.project_text_box.text_box.bind("<KeyPress>", self.ok_shortcut)
@@ -229,7 +234,14 @@ class TextBox:
     """
     A text box with a label for the main form.
     """
-    def __init__(self, parent: tk.Misc, label_text: str, default: Any, values: List[Any]):
+
+    def __init__(
+        self,
+        parent: tk.Misc,
+        label_text: str,
+        default: Any,
+        values: list[Any],
+    ):
         """
         Set the text box properties and create the widget.
         """

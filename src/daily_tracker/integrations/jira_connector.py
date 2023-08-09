@@ -14,7 +14,6 @@ TODO: This should be updated to pick up the API implementation from the Jira
 """
 import base64
 import json
-from typing import List
 
 import requests
 
@@ -26,6 +25,7 @@ class JiraConnector:
     This just exposes the Jira endpoints in a Pythonic way, but doesn't add any
     layers on top of this.
     """
+
     def __init__(self, url: str, key: str, secret: str):
         self._base_url = url
         self._api_key = key
@@ -39,7 +39,10 @@ class JiraConnector:
         See more at the Atlassian documentation:
             https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/#supply-basic-auth-headers
         """
-        return "Basic " + base64.b64encode(f"{self._api_key}:{self._api_secret}".encode("UTF-8")).decode()
+        return (
+            "Basic "
+            + base64.b64encode(f"{self._api_key}:{self._api_secret}".encode()).decode()
+        )
 
     @property
     def auth_bearer(self) -> str:
@@ -91,7 +94,7 @@ class JiraConnector:
     def search_for_issues_using_jql(
         self,
         jql: str,
-        fields: List[str],
+        fields: list[str],
         start_at: int = 0,
         max_results: int = 50,
     ) -> requests.Response:
@@ -142,7 +145,13 @@ class JiraConnector:
             data={},
         )
 
-    def add_worklog(self, issue_key: str, detail: str, at_datetime: str, interval: int) -> requests.Response:
+    def add_worklog(
+        self,
+        issue_key: str,
+        detail: str,
+        at_datetime: str,
+        interval: int,
+    ) -> requests.Response:
         """
         Call the "Add worklog" endpoint of the API.
 
@@ -159,25 +168,27 @@ class JiraConnector:
             work logs are added in succession.
         """
         endpoint = f"issue/{issue_key}/worklog"
-        payload = json.dumps({
-            "timeSpentSeconds": interval * 60,
-            "comment": {
-                "type": "doc",
-                "version": 1,
-                "content": [
-                    {
-                        "type": "paragraph",
-                        "content": [
-                            {
-                                "text": detail,
-                                "type": "text",
-                            }
-                        ]
-                    }
-                ]
-            },
-            "started": at_datetime
-        })
+        payload = json.dumps(
+            {
+                "timeSpentSeconds": interval * 60,
+                "comment": {
+                    "type": "doc",
+                    "version": 1,
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "text": detail,
+                                    "type": "text",
+                                }
+                            ],
+                        }
+                    ],
+                },
+                "started": at_datetime,
+            }
+        )
         # payload = json.dumps({
         #     "comment": detail,
         #     "started": at_datetime,
@@ -190,42 +201,45 @@ class JiraConnector:
             data=payload,
         )
 
-    def create_issue(self, project_id: str, summary: str, description: str) -> requests.Response:
+    def create_issue(
+        self,
+        project_id: str,
+        summary: str,
+        description: str,
+    ) -> requests.Response:
         """
         Call the "Create issue" endpoint of the API.
 
         https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-post
         """
         endpoint = "issue"
-        payload = json.dumps({
-            "update": {},
-            "fields": {
-                "summary": summary,
-                "issuetype": {
-                    "id": "10001"  # Task
+        payload = json.dumps(
+            {
+                "update": {},
+                "fields": {
+                    "summary": summary,
+                    "issuetype": {"id": "10001"},  # Task
+                    "project": {"id": project_id},
+                    "description": {
+                        "type": "doc",
+                        "version": 1,
+                        "content": [
+                            {
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "text": description,
+                                        "type": "text",
+                                    }
+                                ],
+                            }
+                        ],
+                    },
+                    "labels": [],
+                    "duedate": None,
                 },
-                "project": {
-                    "id": project_id
-                },
-                "description": {
-                    "type": "doc",
-                    "version": 1,
-                    "content": [
-                        {
-                            "type": "paragraph",
-                            "content": [
-                                {
-                                    "text": description,
-                                    "type": "text",
-                                }
-                            ]
-                        }
-                    ]
-                },
-                "labels": [],
-                "duedate": None,
             }
-        })
+        )
         return requests.request(
             method="POST",
             url=self._base_url + endpoint,

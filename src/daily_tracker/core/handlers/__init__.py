@@ -1,16 +1,9 @@
-from .handlers import (
-    CalendarHandler,
-    DatabaseHandler,
-    JiraHandler,
-    SlackHandler,
-    Form,
-)
-
+from .handlers import CalendarHandler, DatabaseHandler, Form, JiraHandler, SlackHandler
 
 __all__ = [
-    CalendarHandler.__name__,
-    DatabaseHandler.__name__,
-    JiraHandler.__name__,
-    SlackHandler.__name__,
-    Form.__name__,
+    "CalendarHandler",
+    "DatabaseHandler",
+    "JiraHandler",
+    "SlackHandler",
+    "Form",
 ]
