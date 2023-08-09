@@ -5,15 +5,14 @@ This is specifically for the Form defined in this project so is purposefully
 coupled to it.
 """
 import abc
+import csv
 import datetime
 import json
 import logging
-import os
+import pathlib
 import re
-from typing import List, Tuple, Optional
+from typing import Any, List, Tuple, Optional
 from typing_extensions import Protocol
-
-import pandas as pd
 
 import daily_tracker.core.configuration
 import daily_tracker.core.database
@@ -22,6 +21,28 @@ import daily_tracker.integrations.calendars
 
 
 DEBUG_MODE = False
+
+
+def read_sql(
+    sql: str,
+    con: daily_tracker.core.database.DatabaseConnector,
+    params: dict,
+) -> List[Tuple[Any, ...]]:
+    """
+    Return the result set from running SQL on a database connection.
+    """
+    with con.connection as conn:
+        results = conn.execute(sql, params)
+
+    return results.fetchall()
+
+
+def to_csv(data: List[Tuple[Any, ...]], path: pathlib.Path) -> None:
+    """
+    Write the data to a CSV file.
+    """
+    with open(path, "w", newline="") as out:
+        csv.writer(out).writerows(data)
 
 
 class Form(Protocol):
@@ -100,13 +121,13 @@ class DatabaseHandler(Handler):
                OR indx = 0  /* Defaults */
             ORDER BY indx, task
         """
-        return dict(
-            pd.read_sql(
-                sql=latest_tasks,
-                con=self.connection.engine,
-                params={"date_modifier": f"-{show_last_n_weeks * 7} days"},
-            ).to_dict("split")["data"]
+        output = read_sql(
+            sql=latest_tasks,
+            con=self.connection,
+            params={"date_modifier": f"-{show_last_n_weeks * 7} days"},
         )
+
+        return dict(output)  # type: ignore
 
     def get_last_task_and_detail(self) -> Tuple[str, str]:
         """
@@ -182,15 +203,15 @@ class DatabaseHandler(Handler):
             WHERE date_time >= DATE('now', :date_modifier)
             ORDER BY date_time
         """
-        pd.read_sql(
+        result = read_sql(
             sql=tracker_history,
-            con=self.connection.engine,
+            con=self.connection,
             params={"date_modifier": f"-{previous_days} days"},
-        ).to_csv(
-            os.path.join(
-                filepath,
-                f"daily-tracker-{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.csv"
-            )
+        )
+        headers = [("date_time", "task", "detail", "interval")]
+        to_csv(
+            data=headers + result,
+            path=pathlib.Path(filepath) / f"daily-tracker-{datetime.datetime.now().strftime('%Y-%m-%d')}.csv",
         )
 
     def truncate_tables(self) -> None:
@@ -200,40 +221,6 @@ class DatabaseHandler(Handler):
         for table in ["tracker", "task_last_detail"]:
             self.connection.truncate_table(table_name=table)
         self.connection.connection.commit()
-
-    def import_history(self, filepath: str) -> None:
-        """
-        Import the existing CSV file into the SQLite database.
-        """
-        column_names = [
-            "date_time",
-            "task",
-            "detail",
-            "interval",
-        ]
-        data = (
-            pd.read_csv(
-                filepath_or_buffer=filepath,
-                usecols=column_names,
-                parse_dates=["date_time"]
-            )[column_names]
-            .fillna("")
-        )
-        data["date_time"] = data["date_time"].dt.strftime("%Y-%m-%d %H:%M:%S")
-
-        self.truncate_tables()
-        with self.connection.connection as conn:
-            conn.execute("""
-                INSERT INTO task_last_detail(task, detail, last_date_time)
-                    SELECT task, '', '' FROM default_tasks
-            """)
-
-        data.to_sql(
-            name="tracker",
-            con=self.connection.engine,
-            if_exists="append",
-            index=False,
-        )
 
 
 class CalendarHandler(Handler):

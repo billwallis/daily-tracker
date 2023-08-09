@@ -16,13 +16,6 @@ class DatabaseConnector:
         self.connection = sqlite3.connect(self.filepath, timeout=15)
         self._create_backend()
 
-    @property
-    def engine(self) -> str:
-        """
-        The database connection to be used with Pandas and SQLAlchemy.
-        """
-        return r"sqlite:///" + str(self.filepath).replace("\\", r"/")
-
     def execute(self, sql: str, parameters: Iterable = None) -> sqlite3.Cursor:
         """
         Shortcut to the execute method on the SQLite connection object.

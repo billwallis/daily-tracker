@@ -53,4 +53,4 @@ def main() -> None:
     else:
         # create_env()
         db_handler = daily_tracker.core.handlers.DatabaseHandler(daily_tracker.utils.ROOT / "tracker.db")
-        db_handler.import_history(daily_tracker.utils.ROOT / "tracker.csv")
+        # db_handler.import_history(daily_tracker.utils.ROOT / "tracker.csv")
