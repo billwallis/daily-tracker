@@ -17,7 +17,7 @@ import PIL.ImageTk
 import daily_tracker.core.actions
 import daily_tracker.utils
 
-ICON = daily_tracker.utils.ROOT / "core" / "clock-icon.png"
+ICON = daily_tracker.utils.ROOT / "resources" / "clock-icon.png"
 STYLE = {
     "font": ("Tahoma", 8),
 }

@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "tracker-configuration",
+  "description": "Configuration for the tracker.",
+
+  "additionalProperties": false,
+  "type": "object",
+  "required": ["tracker"],
+  "properties": {
+    "tracker": {
+      "type": "object",
+      "required": ["options"],
+      "properties": {
+        "options": {
+          "type": "object",
+          "description": "The block of options for the tracker.",
+          "required": [
+            "interval",
+            "run-on-startup",
+            "show-last-n-weeks",
+            "save-csv-copy",
+
+            "linked-calendar",
+            "use-calendar-appointments",
+            "appointment-category-exclusions",
+
+            "jira-type",
+            "use-jira-sprint",
+            "post-to-jira",
+
+            "post-to-slack"
+          ],
+          "properties": {
+            "interval": {
+              "type": "integer",
+              "description": "The time, in minutes, between each of the pop-up boxes.\n\nPositive whole numbers only.",
+              "default": 15,
+              "minimum": 1
+            },
+            "run-on-startup": {
+              "type": "boolean",
+              "description": "Whether or not the tracker should start running when the application is initialised.\n\nValues of `true` or `false` only.",
+              "default": true
+            },
+            "show-last-n-weeks": {
+              "type": "integer",
+              "description": "The number of weeks to look historically for drop-down entries.\n\nNon-negative whole numbers only.",
+              "default": 2,
+              "minimum": 0
+            },
+            "save-csv-copy": {
+              "type": "boolean",
+              "description": "Whether or not the tracker should save a copy of the full history to a CSV file.\n\nIf `true`, then the `csv-filepath` property must be given an absolute filepath of the *directory* to save the file to.\n\nValues of `true` or `false` only.",
+              "default": false
+            },
+            "csv-filepath": {
+              "type": "string",
+              "description": "The absolute filepath of the *directory* to save a CSV copy of the full history to. This will not be used unless the `save-csv-copy` property is set to `true`.",
+              "format": "uri"
+            },
+
+            "linked-calendar": {
+              "type": "string",
+              "description": "The calendar to sync with for meeting defaults.\n\nValues of `none`, `outlook`, or `gmail` only.",
+              "enum": ["none", "outlook", "gmail"]
+            },
+            "use-calendar-appointments": {
+              "type": "boolean",
+              "description": "Whether or not the tracker should auto-fill with meeting details from the linked calendar.\n\nValues of `true` or `false` only.",
+              "default": false
+            },
+            "appointment-category-exclusions": {
+              "type": "array",
+              "description": "The categories to exclude when filling the form with details from the linked calendar.\n\nValues must be a list of strings. The available values should be synced from the linked calendar."
+            },
+
+            "jira-type": {
+              "type": "string",
+              "description": "The Jira platform to connect to.\n\nValues of `none`, `cloud`, or `server` only.",
+              "enum": ["none", "cloud", "server"]
+            },
+            "use-jira-sprint": {
+              "type": "boolean",
+              "description": "Whether or not the tracker should auto-fill with task details from the linked Jira filter.\n\nValues of `true` or `false` only.",
+              "default": false
+            },
+            "post-to-jira": {
+              "type": "boolean",
+              "description": "Whether or not the tracker should update the linked Jira ticket with a worklog.\n\nValues of `true` or `false` only.",
+              "default": false
+            },
+
+            "post-to-slack": {
+              "type": "boolean",
+              "description": "Whether or not the tracker should post a message with the entered pop-up values to a Slack channel.\n\nValues of `true` or `false` only.",
+              "default": false
+            }
+          }
+        }
+      }
+    }
+  }
+}

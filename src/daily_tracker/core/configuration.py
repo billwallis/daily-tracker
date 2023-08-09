@@ -11,10 +11,11 @@ import yaml
 
 import daily_tracker.utils
 
-FILE_PATH = daily_tracker.utils.ROOT / "core" / "configuration.yaml"
+# TODO: Take the default values from the JSON schema validator file
+DEFAULT_CONFIG = daily_tracker.utils.ROOT / "resources" / "configuration.yaml"
 
 
-def get_configuration(filepath: str = FILE_PATH) -> Configuration:
+def get_configuration(filepath: str = DEFAULT_CONFIG) -> Configuration:
     """
     Read the ``configuration.yaml`` into a Configuration object.
     """
@@ -22,18 +23,16 @@ def get_configuration(filepath: str = FILE_PATH) -> Configuration:
         return Configuration(yaml.load(f.read(), yaml.Loader))
 
 
-def _get_configuration(filepath: str = FILE_PATH) -> Configuration:
+def _get_configuration(filepath: str = DEFAULT_CONFIG) -> Configuration:
     """
-    Read the ``configuration.yaml`` into a Configuration object.
+    Read the configuration YAML files into a Configuration object.
 
     Uses two different configuration files: a default one that build with the
     application, and one for the user to edit.
 
-    TODO: Include the API tokens/keys/secrets in the config file, too.
+    TODO: Include the API tokens/keys/secrets in the config file (#5)
     """
-    with open(filepath) as f_custom, open(
-        pathlib.Path(__file__).parent / "configuration.yaml"
-    ) as f_base:
+    with open(filepath) as f_custom, open(DEFAULT_CONFIG) as f_base:
         config = yaml.load(f_custom.read(), yaml.Loader)
 
         config["tracker"]["options"] = collections.ChainMap(
@@ -59,7 +58,7 @@ class Configuration:
         self.options = self.configuration["tracker"]["options"]
 
     def _get_option_value(self, option: str, default: Any) -> Any:
-        return self.options.get(option, {}).get("value", default)
+        return self.options.get(option, default)
 
     @property
     def interval(self) -> int:
@@ -104,12 +103,3 @@ class Configuration:
     @property
     def csv_filepath(self) -> str:
         return self._get_option_value("csv-filepath", str(pathlib.Path.home()))
-
-    @property
-    def appointment_exceptions(self) -> dict[str, str]:
-        return {
-            item["name"]: (item["task"], item["detail"])
-            for item in self.configuration["tracker"]["options"][
-                "appointment-exceptions"
-            ]["value"]
-        }
