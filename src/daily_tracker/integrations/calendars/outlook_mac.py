@@ -41,7 +41,9 @@ class OutlookEvent:
         self.start = self._appointment.start_time.get()
         self.end = self._appointment.end_time.get()
         # self.body = self._appointment.body.get()
-        self.categories = [cat.name.get() for cat in self._appointment.category.get()]
+        self.categories = [
+            cat.name.get() for cat in self._appointment.category.get()
+        ]
 
 
 class OutlookConnector:

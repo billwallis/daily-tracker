@@ -41,7 +41,9 @@ class JiraConnector:
         """
         return (
             "Basic "
-            + base64.b64encode(f"{self._api_key}:{self._api_secret}".encode()).decode()
+            + base64.b64encode(
+                f"{self._api_key}:{self._api_secret}".encode()
+            ).decode()
         )
 
     @property
@@ -63,7 +65,10 @@ class JiraConnector:
             # "Authorization": self.auth_bearer,
         }
 
-    def get_projects_paginated(self, max_results: int = 50) -> requests.Response:
+    def get_projects_paginated(
+        self,
+        max_results: int = 50,
+    ) -> requests.Response:
         """
         Call the "Get projects paginated" endpoint of the API.
 

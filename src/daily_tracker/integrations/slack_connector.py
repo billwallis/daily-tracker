@@ -44,7 +44,9 @@ class SlackConnector:
 if __name__ == "__main__":
     import os
 
-    if slack_connector := SlackConnector(webhook_url=os.getenv("SLACK_WEBHOOK_URL")):
+    if slack_connector := SlackConnector(
+        webhook_url=os.getenv("SLACK_WEBHOOK_URL")
+    ):
         slack_connector.post_message(
             "This is a *test* success message with a link: <https://www.google.com|Google>"
         )

@@ -47,7 +47,9 @@ class OutlookConnector:
     """
 
     def __init__(self):
-        outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+        outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace(
+            "MAPI"
+        )
         self.calendar = outlook.getDefaultFolder(9).Items
         self.calendar.IncludeRecurrences = True
         self.calendar.Sort("[Start]")

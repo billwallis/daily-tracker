@@ -1,7 +1,7 @@
 <div align="center">
 
 [![Python 3.11](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/release/python-3110/)
-[![Tests](https://github.com/Bilbottom/daily-tracker/actions/workflows/application-unit-tests.yaml/badge.svg)](https://github.com/Bilbottom/daily-tracker/actions/workflows/application-unit-tests.yaml)
+[![Tests](https://github.com/Bilbottom/daily-tracker/actions/workflows/unit-tests.yaml/badge.svg)](https://github.com/Bilbottom/daily-tracker/actions/workflows/unit-tests.yaml)
 [![GitHub last commit](https://img.shields.io/github/last-commit/Bilbottom/daily-tracker)](https://shields.io/)
 
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)

@@ -24,7 +24,10 @@ class Calendar(Protocol):
         """
         ...
 
-    def get_appointments_at_datetime(self, at_datetime: datetime.datetime) -> list:
+    def get_appointments_at_datetime(
+        self,
+        at_datetime: datetime.datetime,
+    ) -> list:
         """
         Return the events in the calendar that are scheduled to on or over the
         supplied datetime.
@@ -48,7 +51,10 @@ class NoCalendar(Calendar):
         """
         return []
 
-    def get_appointments_at_datetime(self, at_datetime: datetime.datetime) -> list:
+    def get_appointments_at_datetime(
+        self,
+        at_datetime: datetime.datetime,
+    ) -> list:
         """
         Return the events in the calendar that are scheduled to on or over the
         supplied datetime.

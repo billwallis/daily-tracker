@@ -107,7 +107,9 @@ class TrackerForm:
         When the value of the Project box changes, update the Detail box with
         the latest value from the Project.
         """
-        details = self.action_handler.database_handler.get_details_for_task(self.task)
+        details = self.action_handler.database_handler.get_details_for_task(
+            self.task
+        )
         self.detail_text_box.text_box["values"] = details
         self.detail_text_box.text_box.set(details[0] if details else "")
 
@@ -127,7 +129,9 @@ class TrackerForm:
         self._root = tk.Tk()
         self._root.geometry(f"{self._width}x{self._height}")
         self._root.eval("tk::PlaceWindow . center")  # Middle of screen
-        self._root.title(f"Interval Tracker at {self.date_time} ({self.interval})")
+        self._root.title(
+            f"Interval Tracker at {self.date_time} ({self.interval})"
+        )
         self._root.wm_iconphoto(False, load_icon(ICON))
 
         text_box_frame_outer = tk.Frame(
@@ -168,7 +172,9 @@ class TrackerForm:
             expand=True,
         )
 
-        defaults = self.action_handler.get_default_task_and_detail(self.at_datetime)
+        defaults = self.action_handler.get_default_task_and_detail(
+            self.at_datetime
+        )
         options = self.action_handler.get_dropdown_options(
             use_jira_sprint=self.action_handler.configuration.use_jira_sprint
         )

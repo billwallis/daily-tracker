@@ -1,10 +1,11 @@
-name: Application Unit Tests
-run-name: Application tests triggered by ${{ github.actor }}
+name: Unit Tests
+run-name: Unit tests triggered by ${{ github.actor }}
 
 on:
   push:
     paths:
       - "src/**"
+      - "tests/**"
 
 jobs:
   unit-tests-and-formatting:

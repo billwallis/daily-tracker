@@ -47,7 +47,9 @@ def main() -> None:
     logging.debug(f"Setting root directory to {daily_tracker.utils.ROOT}")
 
     if APPLICATION_CREATED:
-        scheduler = daily_tracker.core.scheduler.IndefiniteScheduler(create_form)
+        scheduler = daily_tracker.core.scheduler.IndefiniteScheduler(
+            create_form
+        )
         scheduler.schedule_first()
     else:
         # create_env()
@@ -55,3 +57,7 @@ def main() -> None:
             daily_tracker.utils.ROOT / "tracker.db"
         )
         # db_handler.import_history(daily_tracker.utils.ROOT / "tracker.csv")
+
+
+if __name__ == "__main__":
+    main()

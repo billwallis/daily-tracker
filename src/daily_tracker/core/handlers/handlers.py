@@ -232,8 +232,10 @@ class CalendarHandler(Handler):
     """
 
     def __init__(self, calendar_type: str):
-        self.connection = daily_tracker.integrations.calendars.get_linked_calendar(
-            calendar_type
+        self.connection = (
+            daily_tracker.integrations.calendars.get_linked_calendar(
+                calendar_type
+            )
         )
 
     def ok_actions(
