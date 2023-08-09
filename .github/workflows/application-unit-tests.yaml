@@ -1,29 +1,22 @@
-name: application-unit-tests
+name: Application Unit Tests
 run-name: Application tests triggered by ${{ github.actor }}
 
 on:
   push:
     paths:
-      - 'src/**'
+      - "src/**"
 
 jobs:
   unit-tests-and-formatting:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-          - windows-latest
-          - macos-latest
-        python-version: ['3.7', '3.10']  # TODO: Add 3.8, 3.9, and 3.11 after resolving https://github.com/Bilbottom/daily-tracker/issues/3
-
+    runs-on: windows-latest
     steps:
       - name: 🛎️ Check out repository
         uses: actions/checkout@v3
 
-      - name: 🐍 Set up Python ${{ matrix.python-version }}
+      - name: 🐍 Set up Python 3.11
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.11
 
       - name: 🔨 Install dependencies
         run: |
