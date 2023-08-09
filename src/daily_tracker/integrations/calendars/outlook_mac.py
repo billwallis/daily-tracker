@@ -16,7 +16,6 @@ available at:
 """
 import dataclasses
 import datetime
-from typing import List
 
 import appscript
 
@@ -26,12 +25,13 @@ class OutlookEvent:
     """
     Events in Outlook, typically referred to as Meetings or Appointments.
     """
+
     _appointment: appscript.reference.Reference = dataclasses.field(repr=False)
     subject: str = dataclasses.field(default=None)
     start: datetime.datetime = dataclasses.field(default=None)
     end: datetime.datetime = dataclasses.field(default=None)
     # body: str = dataclasses.field(default=None)
-    categories: List[str] = dataclasses.field(default=list)
+    categories: list[str] = dataclasses.field(default=list)
 
     def __post_init__(self):
         """
@@ -50,6 +50,7 @@ class OutlookConnector:
 
     TODO: Set the calendar ID dynamically rather than hard-coding it.
     """
+
     def __init__(self):
         self.calendar = appscript.app("Microsoft Outlook").calendars.ID(110)
 
@@ -57,26 +58,30 @@ class OutlookConnector:
         self,
         start_datetime: datetime.datetime,
         end_datetime: datetime.datetime,
-    ) -> List[OutlookEvent]:
+    ) -> list[OutlookEvent]:
         """
         Return the events in the calendar between the start datetime (inclusive)
         and end datetime exclusive.
         """
         restricted_calendar = self.calendar.calendar_events[
-            (appscript.its.start_time >= start_datetime).AND(appscript.its.end_time < end_datetime)
+            (appscript.its.start_time >= start_datetime).AND(
+                appscript.its.end_time < end_datetime
+            )
         ].get()
         return [OutlookEvent(app) for app in restricted_calendar]
 
     def get_appointments_at_datetime(
         self,
         at_datetime: datetime.datetime,
-    ) -> List[OutlookEvent]:
+    ) -> list[OutlookEvent]:
         """
         Return the events in the calendar that are scheduled to on or over the
         supplied datetime.
         """
         restricted_calendar = self.calendar.calendar_events[
-            (appscript.its.start_time <= at_datetime).AND(appscript.its.end_time > at_datetime)
+            (appscript.its.start_time <= at_datetime).AND(
+                appscript.its.end_time > at_datetime
+            )
         ].get()
         return [OutlookEvent(app) for app in restricted_calendar]
 
@@ -103,9 +108,13 @@ def _test_calendar_usage() -> None:
             end tell
         end tell
     """
-    calendar = appscript.app("Microsoft Outlook").calendars.ID(110)  # Currently hardcoded
+    calendar = appscript.app("Microsoft Outlook").calendars.ID(
+        110
+    )  # Currently hardcoded
     # print(calendar.properties.get())
-    for event in calendar.calendar_events[appscript.its.start_time > datetime.datetime.now()].get():
+    for event in calendar.calendar_events[
+        appscript.its.start_time > datetime.datetime.now()
+    ].get():
         print(
             event.subject.get(),
             event.all_day_flag.get(),

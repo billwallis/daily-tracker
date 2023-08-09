@@ -5,14 +5,13 @@
 tracker:
   # Options to configure how the pop-up box functions
   options:
-
     interval:
-      value: 1  # TODO: Change back
+      value: 15
       type: integer
       category: tracker
       description: >
         The time, in minutes, between each of the pop-up boxes.
-        
+
         Positive whole numbers only.
 
     run-on-startup:
@@ -23,7 +22,7 @@ tracker:
       description: >
         Whether or not the tracker should start running when the application is
         initialised.
-        
+
         Values of "Yes" or "No" only.
 
     show-last-n-weeks:
@@ -33,7 +32,7 @@ tracker:
       description: >
         Whether or not the tracker should start running when the application is
         initialised.
-        
+
         Positive whole numbers only.
 
     use-calendar-appointments:
@@ -44,7 +43,7 @@ tracker:
       description: >
         Whether or not the tracker should auto-fill with meeting details from
         the linked calendar.
-        
+
         Values of "Yes" or "No" only.
 
     appointment-category-exclusions:
@@ -55,7 +54,7 @@ tracker:
       description: >
         The categories to exclude when filling the form with details from the
         linked calendar.
-        
+
         Values must be a list of strings. The available values should be synced
         from the linked calendar.
 
@@ -67,7 +66,7 @@ tracker:
       description: >
         Whether or not the tracker should auto-fill with meeting details from
         the linked calendar.
-        
+
         Values of "Yes" or "No" only.
 
     jira-type:
@@ -77,7 +76,7 @@ tracker:
       category: jira
       description: >
         The type of Jira platform to connect to.
-        
+
         Values of "cloud" or "server" only.
 
     use-jira-sprint:
@@ -88,7 +87,7 @@ tracker:
       description: >
         Whether or not the tracker should auto-fill with task details from the
         linked Jira filter.
-        
+
         Values of "Yes" or "No" only.
 
     post-to-jira:
@@ -99,7 +98,7 @@ tracker:
       description: >
         Whether or not the tracker should update the linked Jira ticket in Jira
         with a worklog.
-        
+
         Values of "Yes" or "No" only.
 
     post-to-slack:
@@ -110,7 +109,7 @@ tracker:
       description: >
         Whether or not the tracker should post a message with the entered pop-up
         values to a Slack channel.
-        
+
         Values of "Yes" or "No" only.
 
     save-csv-copy:
@@ -122,7 +121,7 @@ tracker:
         Whether or not the tracker should save a copy of the full history to a
         CSV file. If "Yes" is specified, then the `csv-filepath` property must
         be given an absolute filepath of the *directory* to save the file to.
-        
+
         Values of "Yes" or "No" only.
 
     csv-filepath:
@@ -171,9 +170,9 @@ tracker:
       description: >
         Exceptions to use when filling the form with details from the
         linked calendar.
-        
+
         This is to extend the functionality of the linked calendar to add other
         task values that just "Meeting".
-        
+
         Values must be a list of the meeting names that are the exceptions, with
         a 2-tuple replacement (the new task and detail, respectively).

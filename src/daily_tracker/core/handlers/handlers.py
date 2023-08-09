@@ -11,14 +11,12 @@ import json
 import logging
 import pathlib
 import re
-from typing import Any, List, Tuple, Optional
-from typing_extensions import Protocol
+from typing import Any, Protocol
 
 import daily_tracker.core.configuration
 import daily_tracker.core.database
 import daily_tracker.integrations
 import daily_tracker.integrations.calendars
-
 
 DEBUG_MODE = False
 
@@ -27,7 +25,7 @@ def read_sql(
     sql: str,
     con: daily_tracker.core.database.DatabaseConnector,
     params: dict,
-) -> List[Tuple[Any, ...]]:
+) -> list[tuple[Any, ...]]:
     """
     Return the result set from running SQL on a database connection.
     """
@@ -37,7 +35,7 @@ def read_sql(
     return results.fetchall()
 
 
-def to_csv(data: List[Tuple[Any, ...]], path: pathlib.Path) -> None:
+def to_csv(data: list[tuple[Any, ...]], path: pathlib.Path) -> None:
     """
     Write the data to a CSV file.
     """
@@ -50,6 +48,7 @@ class Form(Protocol):
     The handlers need properties from the form to be able to pass the details
     around for the various methods.
     """
+
     task: str
     detail: str
     at_datetime: datetime.datetime
@@ -78,9 +77,12 @@ class DatabaseHandler(Handler):
     """
     Handle the connection to the backend database.
     """
+
     def __init__(self, database_filepath: str):
         logging.debug(f"Loading database file at {database_filepath}...")
-        self.connection = daily_tracker.core.database.DatabaseConnector(database_filepath)
+        self.connection = daily_tracker.core.database.DatabaseConnector(
+            database_filepath
+        )
 
     def ok_actions(
         self,
@@ -129,7 +131,7 @@ class DatabaseHandler(Handler):
 
         return dict(output)  # type: ignore
 
-    def get_last_task_and_detail(self) -> Tuple[str, str]:
+    def get_last_task_and_detail(self) -> tuple[str, str]:
         """
         Return the most recent task and its detail.
         """
@@ -158,7 +160,7 @@ class DatabaseHandler(Handler):
             ORDER BY MAX(date_time) DESC
             LIMIT 10
             """,
-            {"task": task}
+            {"task": task},
         ).fetchall()
         return [detail[0] for detail in details]
 
@@ -183,7 +185,7 @@ class DatabaseHandler(Handler):
                     "task": task,
                     "detail": detail,
                     "interval": interval,
-                }
+                },
             )
 
     def write_to_csv(self, filepath: str, previous_days: int = None) -> None:
@@ -211,7 +213,8 @@ class DatabaseHandler(Handler):
         headers = [("date_time", "task", "detail", "interval")]
         to_csv(
             data=headers + result,
-            path=pathlib.Path(filepath) / f"daily-tracker-{datetime.datetime.now().strftime('%Y-%m-%d')}.csv",
+            path=pathlib.Path(filepath)
+            / f"daily-tracker-{datetime.datetime.now().strftime('%Y-%m-%d')}.csv",
         )
 
     def truncate_tables(self) -> None:
@@ -227,8 +230,11 @@ class CalendarHandler(Handler):
     """
     Handle the connection to the linked calendar.
     """
+
     def __init__(self, calendar_type: str):
-        self.connection = daily_tracker.integrations.calendars.get_linked_calendar(calendar_type)
+        self.connection = daily_tracker.integrations.calendars.get_linked_calendar(
+            calendar_type
+        )
 
     def ok_actions(
         self,
@@ -248,8 +254,8 @@ class CalendarHandler(Handler):
     def get_appointment_at_datetime(
         self,
         at_datetime: datetime.datetime,
-        categories_to_exclude: List[str],
-    ) -> Optional[str]:
+        categories_to_exclude: list[str],
+    ) -> str | None:
         """
         Get the current meeting from Outlook, if one exists.
 
@@ -261,10 +267,12 @@ class CalendarHandler(Handler):
 
         events = [
             event
-            for event in self.connection.get_appointments_at_datetime(at_datetime=at_datetime)
+            for event in self.connection.get_appointments_at_datetime(
+                at_datetime=at_datetime
+            )
             if all(i not in event.categories for i in categories_to_exclude)
-               # and not event.all_day_event
-               and event.start.hour != 0
+            # and not event.all_day_event
+            and event.start.hour != 0
         ]
 
         return None if len(events) != 1 else events[0].subject
@@ -274,6 +282,7 @@ class JiraHandler(Handler):
     """
     Handle the connection to the linked Jira project.
     """
+
     def __init__(self, url: str, key: str, secret: str):
         self.connector = daily_tracker.integrations.JiraConnector(
             url=url,
@@ -301,7 +310,7 @@ class JiraHandler(Handler):
                 task=form.task,
                 detail=form.detail,
                 at_datetime=form.at_datetime,
-                interval=form.interval
+                interval=form.interval,
             )
 
     def _post_log_to_jira(
@@ -309,7 +318,7 @@ class JiraHandler(Handler):
         task: str,
         detail: str,
         at_datetime: datetime.datetime,
-        interval: int
+        interval: int,
     ) -> None:
         """
         Post the task, detail, and time to the corresponding ticket's worklog.
@@ -321,11 +330,11 @@ class JiraHandler(Handler):
         self.connector.add_worklog(
             issue_key=issue_key[0],
             detail=detail,
-            at_datetime=at_datetime.isoformat() + ".000+0000",
-            interval=interval
+            at_datetime=f"{at_datetime.isoformat()}.000+0000",
+            interval=interval,
         )
 
-    def get_tickets_in_sprint(self, project_key: str = None) -> List[str]:
+    def get_tickets_in_sprint(self, project_key: str = None) -> list[str]:
         """
         Get the list of tickets in the active sprint for the current user.
         """
@@ -341,18 +350,23 @@ class JiraHandler(Handler):
             """
             Inner function to loop over until all tickets have been retrieved.
             """
-            return json.loads(self.connector.search_for_issues_using_jql(
-                jql=jql,
-                fields=fields,
-                start_at=start_at,
-            ).text)
+            return json.loads(
+                self.connector.search_for_issues_using_jql(
+                    jql=jql,
+                    fields=fields,
+                    start_at=start_at,
+                ).text
+            )
 
         results = []
         total = 999
         while len(results) < total:
             response = get_batch_of_tickets(start_at=len(results))
             total = response["total"]
-            results += [f"{issue['key']} {issue['fields']['summary']}" for issue in response["issues"]]
+            results += [
+                f"{issue['key']} {issue['fields']['summary']}"
+                for issue in response["issues"]
+            ]
 
         return results
 
@@ -361,6 +375,7 @@ class SlackHandler(Handler):
     """
     Handle the connection to the linked Slack workspace.
     """
+
     def __init__(self, url: str):
         self.connector = daily_tracker.integrations.SlackConnector(url)
 
@@ -378,10 +393,7 @@ class SlackHandler(Handler):
             return
 
         if configuration.post_to_slack:
-            self._post_to_channel(
-                task=form.task,
-                detail=form.detail
-            )
+            self._post_to_channel(task=form.task, detail=form.detail)
             # Set status?
 
     def _post_to_channel(self, task: str, detail: str) -> None:

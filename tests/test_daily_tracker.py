@@ -3,8 +3,8 @@ import datetime
 import pytest
 
 import daily_tracker
-import daily_tracker.utils
 import daily_tracker.core.scheduler
+import daily_tracker.utils
 
 
 def test__utils__string_list_to_list():

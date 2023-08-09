@@ -1,4 +1,4 @@
-name: issue-create-actions
+name: Issue create actions
 run-name: Issue create actions
 
 on:
@@ -11,24 +11,24 @@ jobs:
     name: Raise Jira Ticket
     runs-on: ubuntu-latest
     steps:
-    - name: 🛎️ Checkout
-      uses: actions/checkout@master
+      - name: 🛎️ Checkout
+        uses: actions/checkout@master
 
-    - name: 🔑 Login
-      uses: atlassian/gajira-login@master
-      env:
-        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+      - name: 🔑 Login
+        uses: atlassian/gajira-login@master
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
-    - name: 🎫 Create Jira Issue
-      id: create-jira-issue
-      uses: atlassian/gajira-create@v3
-      with:
-        project: DATA
-        issuetype: Bug
-        summary: ${{ github.event.issue.title }}
-        description: ${{ github.event.issue.body }}
+      - name: 🎫 Create Jira Issue
+        id: create-jira-issue
+        uses: atlassian/gajira-create@v3
+        with:
+          project: DATA
+          issuetype: Bug
+          summary: ${{ github.event.issue.title }}
+          description: ${{ github.event.issue.body }}
 
-    - name: Log created issue
-      run: echo "Issue ${{ steps.create-jira-issue.outputs.issue }} was created"
+      - name: Log created issue
+        run: echo "Issue ${{ steps.create-jira-issue.outputs.issue }} was created"

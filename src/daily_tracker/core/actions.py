@@ -3,7 +3,6 @@ The actions for the pop-up box.
 """
 import datetime
 import os.path
-from typing import Tuple
 
 import dotenv
 
@@ -13,7 +12,6 @@ import daily_tracker.core.handlers
 import daily_tracker.integrations
 import daily_tracker.integrations.calendars
 import daily_tracker.utils
-
 
 dotenv.load_dotenv(dotenv_path=r".env")
 JIRA_CREDENTIALS = {
@@ -38,10 +36,16 @@ class ActionHandler:
         self.configuration = daily_tracker.core.configuration.get_configuration()
         self.form = form
 
-        self.calendar_handler = daily_tracker.core.handlers.CalendarHandler(self.configuration.linked_calendar)
-        self.database_handler = daily_tracker.core.handlers.DatabaseHandler(daily_tracker.utils.ROOT / "tracker.db")
+        self.calendar_handler = daily_tracker.core.handlers.CalendarHandler(
+            self.configuration.linked_calendar
+        )
+        self.database_handler = daily_tracker.core.handlers.DatabaseHandler(
+            daily_tracker.utils.ROOT / "tracker.db"
+        )
         self.jira_handler = daily_tracker.core.handlers.JiraHandler(**JIRA_CREDENTIALS)
-        self.slack_handler = daily_tracker.core.handlers.SlackHandler(**SLACK_CREDENTIALS)
+        self.slack_handler = daily_tracker.core.handlers.SlackHandler(
+            **SLACK_CREDENTIALS
+        )
 
     def ok_actions(self) -> None:
         """
@@ -55,7 +59,10 @@ class ActionHandler:
         ]:
             handler.ok_actions(self.configuration, self.form)
 
-    def get_default_task_and_detail(self, at_datetime: datetime.datetime) -> Tuple[str, str]:
+    def get_default_task_and_detail(
+        self,
+        at_datetime: datetime.datetime,
+    ) -> tuple[str, str]:
         """
         Get the default values for the input box.
 
@@ -71,7 +78,7 @@ class ActionHandler:
             return self.database_handler.get_last_task_and_detail()
         return self.configuration.appointment_exceptions.get(
             current_meeting,
-            ("Meetings", current_meeting)
+            ("Meetings", current_meeting),
         )
 
     def get_dropdown_options(self, use_jira_sprint: bool) -> dict:
@@ -81,7 +88,9 @@ class ActionHandler:
         This is always the most recent tasks, and optionally the tickets in the
         active sprint if a Jira connection has been configured.
         """
-        recent_tasks = self.database_handler.get_recent_tasks(self.configuration.show_last_n_weeks)
+        recent_tasks = self.database_handler.get_recent_tasks(
+            self.configuration.show_last_n_weeks
+        )
 
         if use_jira_sprint:
             recent_tickets = [

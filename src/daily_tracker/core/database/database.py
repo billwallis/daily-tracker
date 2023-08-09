@@ -2,7 +2,7 @@
 Maintain the backend SQLite database.
 """
 import sqlite3
-from typing import Iterable
+from collections.abc import Iterable
 
 import daily_tracker.utils
 
@@ -11,6 +11,7 @@ class DatabaseConnector:
     """
     Connects to a SQLite database.
     """
+
     def __init__(self, filepath: str):
         self.filepath = filepath
         self.connection = sqlite3.connect(self.filepath, timeout=15)
@@ -26,14 +27,14 @@ class DatabaseConnector:
         """
         Open a file and execute the query inside it.
         """
-        with open(filepath, "r") as f:
+        with open(filepath) as f:
             return self.connection.executescript(f.read())
 
     def _create_backend(self) -> None:
         """
         Create the backend if it doesn't already exist.
         """
-        if not(
+        if not (
             self.connection.execute(
                 """
                 SELECT name
@@ -43,23 +44,23 @@ class DatabaseConnector:
                 """
             ).fetchone()
         ):
-            self.run_query_from_file(daily_tracker.utils.ROOT / "core" / "database" / "create.sql")
+            self.run_query_from_file(
+                daily_tracker.utils.ROOT / "core" / "database" / "create.sql"
+            )
 
     def truncate_table(self, table_name: str) -> None:
         """
         Truncate a table if it exists.
         """
-        if (
-            self.connection.execute(
-                """
-                SELECT name
-                FROM sqlite_master
-                WHERE type = 'table'
-                  AND name = :table_name
-                """,
-                {"table_name": table_name}
-            ).fetchone()
-        ):
+        if self.connection.execute(
+            """
+            SELECT name
+            FROM sqlite_master
+            WHERE type = 'table'
+              AND name = :table_name
+            """,
+            {"table_name": table_name},
+        ).fetchone():
             self.connection.execute(
                 f"""
                 DELETE FROM {table_name} WHERE 1=1
