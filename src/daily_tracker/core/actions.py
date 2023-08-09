@@ -20,7 +20,7 @@ JIRA_CREDENTIALS = {
     "secret": os.getenv("JIRA_SECRET"),
 }
 SLACK_CREDENTIALS = {
-    "url": os.getenv("SLACK_URL"),
+    "url": os.getenv("SLACK_WEBHOOK_URL"),
 }
 
 
