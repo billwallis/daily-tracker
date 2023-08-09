@@ -37,6 +37,7 @@ def get_next_interval(
         value.
     :param interval_in_minutes: The interval, in minutes, between the scheduled
         events.
+
     :return: The next scheduled datetime.
     """
     return datetime.timedelta(minutes=interval_in_minutes) + datetime.datetime(
@@ -55,6 +56,13 @@ class IndefiniteScheduler:
     various applications indefinitely.
     """
 
+    _interval: int
+    _next_schedule_time: datetime.datetime
+    _next_event: sched.Event | None
+    _running: bool
+    _scheduler: sched.scheduler
+    action: Callable[[datetime.datetime], Any]
+
     def __init__(self, action: Callable[[datetime.datetime], Any]):
         """
         Create the scheduler to call the ``action`` on a schedule.
@@ -62,14 +70,11 @@ class IndefiniteScheduler:
         The interval over which the schedule runs is defined in configuration
         file.
 
-        :param action: The function to execute when the schedule is executed.
-         Takes the
+        :param action: The function to call when the schedule is executed.
         """
-        self._scheduler = sched.scheduler(time.time, time.sleep)
-        self._running = False
-        self._next_schedule_time: datetime.datetime | None = None
-        self._next_event: sched.Event | None = None
         self._interval = _get_interval_from_configuration()
+        self._running = False
+        self._scheduler = sched.scheduler(time.time, time.sleep)
         self.action = action
 
     def _action_wrapper(self) -> None:
@@ -121,10 +126,7 @@ class IndefiniteScheduler:
         """
         Schedule the first event.
         """
-        if self._running:
-            raise AssertionError(
-                "The `schedule_first` method was called while the scheduler is already running."
-            )
+        assert not self._running, "The scheduler is already running."
 
         self._running = True
         self._next_schedule_time = schedule_at
