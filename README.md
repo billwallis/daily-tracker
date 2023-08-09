@@ -1,8 +1,20 @@
-## Daily Tracker
+<div align="center">
 
-![Tests](https://github.com/Bilbottom/daily-tracker/actions/workflows/tests.yaml/badge.svg)
+[![Python 3.11](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/release/python-3110/)
+[![Tests](https://github.com/Bilbottom/daily-tracker/actions/workflows/application-unit-tests.yaml/badge.svg)](https://github.com/Bilbottom/daily-tracker/actions/workflows/application-unit-tests.yaml)
+[![GitHub last commit](https://img.shields.io/github/last-commit/Bilbottom/daily-tracker)](https://shields.io/)
+
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Sourcery](https://img.shields.io/badge/Sourcery-enabled-brightgreen)](https://sourcery.ai)
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
+
+</div>
+
+# Daily Tracker
+
+An application for keeping track of tasks throughout the day.
 
 ## About
 
