@@ -15,7 +15,7 @@ import daily_tracker.utils
 
 dotenv.load_dotenv(dotenv_path=r".env")
 JIRA_CREDENTIALS = {
-    "url": os.getenv("JIRA_URL"),
+    "domain": os.getenv("JIRA_DOMAIN"),
     "key": os.getenv("JIRA_KEY"),
     "secret": os.getenv("JIRA_SECRET"),
 }
