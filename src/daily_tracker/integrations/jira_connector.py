@@ -26,8 +26,8 @@ class JiraConnector:
     layers on top of this.
     """
 
-    def __init__(self, url: str, key: str, secret: str):
-        self._base_url = url
+    def __init__(self, domain: str, key: str, secret: str):
+        self._base_url = f"https://{domain}.atlassian.net/rest/api/3/"
         self._api_key = key
         self._api_secret = secret
 

@@ -285,9 +285,9 @@ class JiraHandler(Handler):
     Handle the connection to the linked Jira project.
     """
 
-    def __init__(self, url: str, key: str, secret: str):
+    def __init__(self, domain: str, key: str, secret: str):
         self.connector = daily_tracker.integrations.JiraConnector(
-            url=url,
+            domain=domain,
             key=key,
             secret=secret,
         )
@@ -364,10 +364,10 @@ class JiraHandler(Handler):
         total = 999
         while len(results) < total:
             response = get_batch_of_tickets(start_at=len(results))
-            total = response["total"]
+            total = response.get("total", 0)
             results += [
                 f"{issue['key']} {issue['fields']['summary']}"
-                for issue in response["issues"]
+                for issue in response.get("issues", [])
             ]
 
         return results
