@@ -1,10 +1,15 @@
-# See https://pre-commit.com for more information
-# See https://pre-commit.com/hooks.html for more hooks
 ---
+ci:
+  skip: [poetry-lock, sourcery, pylint, pytest, coverage-badge]
+
+default_install_hook_types: [pre-commit, post-commit]
+default_stages: [pre-commit]
+
 repos:
   - repo: meta
     hooks:
       - id: identity
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
@@ -14,9 +19,27 @@ repos:
       - id: trailing-whitespace
         name: Remove trailing whitespace
       - id: end-of-file-fixer
-        name: Check that file end with a newline character
+        name: Ensure files end with a newline character
+      - id: mixed-line-ending
+        name: Align mixed line ending
       - id: check-added-large-files
         name: Check for large files
+      - id: check-json
+        name: Check JSON files are valid and parseable
+      - id: check-yaml
+        name: Check YAML files are valid and parseable
+      - id: check-toml
+        name: Check TOML files are valid and parseable
+      - id: check-ast
+        name: Validate Python
+
+  - repo: https://github.com/python-poetry/poetry
+    rev: 1.6.0
+    hooks:
+      - id: poetry-check
+        name: Check that the Poetry configuration is valid
+      - id: poetry-lock
+        name: Check that the lock file is up-to-date
 
   # Formatting
   - repo: https://github.com/pre-commit/mirrors-prettier
@@ -25,12 +48,12 @@ repos:
       - id: prettier
         name: Make code pretty
 
-  - repo: https://github.com/hadialqattan/pycln
-    rev: v2.2.2
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.3.2
     hooks:
-      - id: pycln
-        name: Remove unused imports and variables
-        args: [--config=pyproject.toml]
+      - id: pyupgrade
+        args: [--py311-plus]
+        name: Align Python code to latest syntax
 
   - repo: https://github.com/psf/black
     rev: 23.7.0
@@ -43,21 +66,51 @@ repos:
     hooks:
       - id: isort
         name: Sort Python import statements
-        args: ["--profile", "black", "--filter-files"]
+        args: ["--filter-files"]
 
-  # Refactoring
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.10.1
+  - repo: https://github.com/hadialqattan/pycln
+    rev: v2.2.2
     hooks:
-      - id: pyupgrade
-        name: Upgrade Python syntax to the newest version
-        args: ["--py311-plus"]
+      - id: pycln
+        name: Remove unused imports and variables
+        args: [--config=pyproject.toml]
 
+  # Sourcery (refactoring)
   - repo: https://github.com/sourcery-ai/sourcery
     rev: v1.8.0
     hooks:
       - id: sourcery
         name: Check for refactoring opportunities
         args: [--diff=git diff HEAD, --no-summary]
-        files: db_query_profiler
+        files: drawings
         exclude: \.*/__init__\.py
+
+  # Final linting
+  - repo: local
+    hooks:
+      - id: pylint
+        name: Lint Python code with pylint
+        entry: pylint
+        language: system
+        types: [python]
+        args: ["-rn", "--rcfile=pyproject.toml"]
+        exclude: "^.*$" # Exclude everything for now
+
+  # Testing and coverage
+  - repo: local
+    hooks:
+      - id: pytest
+        name: Run unit tests
+        entry: pytest tests
+        language: system
+        pass_filenames: false
+        always_run: true
+        exclude: "^.*$" # Exclude everything for now
+      - id: coverage-badge
+        name: Generate coverage badge
+        entry: coverage-badge -o coverage.svg -f
+        language: system
+        pass_filenames: false
+        stages: [post-commit]
+        always_run: true
+        exclude: "^.*$" # Exclude everything for now
