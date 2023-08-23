@@ -1,34 +1,49 @@
 [build-system]
-requires = ["setuptools >= 42.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
-[project]
+[tool.poetry]
 name = "daily-tracker"
-description = "An application for keeping track of tasks throughout the day."
 version = "0.0.0"
-requires-python = ">=3.11"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.11",
-]
-dynamic = ["readme", "dependencies", "optional-dependencies"]
-
-[project.urls]
+description = "An application for keeping track of tasks throughout the day."
+authors = ["Bilbottom"]
+readme = "README.md"
 repository = "https://github.com/Bilbottom/daily-tracker"
+packages = [{include = "daily_tracker", from = "src"}]
 
-[project.scripts]
-daily-tracker = "daily_tracker.__main__:main"
+[tool.poetry.scripts]
+emirates-fixtures = "daily_tracker.__main__:main"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Pillow = ">=9.4.0"
+python-dotenv = ">=0.21.1"
+requests = ">=2.28.2"
+slack-sdk = ">=3.20.0"
+pyyaml = ">=6.0"
+
+pywin32 = [
+    {platform = "win32", version = "305"}
+]
+appscript = [
+    {platform = "darwin", version = "1.2.2"}
+]
 
 
-[tool.setuptools]
-platforms = ["win32"]
+[tool.poetry.group.dev]
+optional = true
 
+[tool.poetry.group.dev.dependencies]
+coverage-badge = "^1"
+pre-commit = "^3"
+pylint = "^2"
 
-[tool.setuptools.dynamic]
-readme = { file = "README.md" }
-dependencies = {file = ["requirements.txt"]}
-optional-dependencies = {dev = { file = ["requirements-dev.txt"] }}
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.0"
+pytest-cov = "^4.1.0"
 
 
 [tool.pytest.ini_options]
@@ -38,11 +53,18 @@ testpaths = [
 ]
 
 
+[tool.black]
+target_version = ["py311"]
+line-length = 80
+
+
 [tool.isort]
 profile = "black"
 line_length = 80
 
 
-[tool.black]
-target_version = ['py311']
-line-length = 80
+[tool.pylint.format]
+max-line-length = 80
+
+[tool.pylint.MASTER]
+ignore-paths = "^tests/.*$"
