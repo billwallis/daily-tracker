@@ -1,13 +1,14 @@
 <div align="center">
 
-[![Python 3.11](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/release/python-3110/)
-[![Tests](https://github.com/Bilbottom/daily-tracker/actions/workflows/unit-tests.yaml/badge.svg)](https://github.com/Bilbottom/daily-tracker/actions/workflows/unit-tests.yaml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/release/python-3110/)
+[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
+[![unit-tests](https://github.com/Bilbottom/daily-tracker/actions/workflows/unit-tests.yaml/badge.svg)](https://github.com/Bilbottom/daily-tracker/actions/workflows/unit-tests.yaml)
 [![GitHub last commit](https://img.shields.io/github/last-commit/Bilbottom/daily-tracker)](https://shields.io/)
 
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Bilbottom/daily-tracker/main.svg)](https://results.pre-commit.ci/latest/github/Bilbottom/daily-tracker/main)
 [![Sourcery](https://img.shields.io/badge/Sourcery-enabled-brightgreen)](https://sourcery.ai)
 
 </div>
@@ -18,7 +19,7 @@ An application for keeping track of tasks throughout the day.
 
 ## About
 
-An application for keeping track of tasks throughout the day.
+Not sure where all your time goes? I wasn't either, so this application generates a pop-up box every 15 minutes (configurable) for me to enter what I'm working on.
 
 ## Resources
 
