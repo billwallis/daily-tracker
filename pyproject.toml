@@ -12,7 +12,7 @@ repository = "https://github.com/Bilbottom/daily-tracker"
 packages = [{include = "daily_tracker", from = "src"}]
 
 [tool.poetry.scripts]
-emirates-fixtures = "daily_tracker.__main__:main"
+daily-tracker = "daily_tracker.__main__:main"
 
 [tool.poetry.dependencies]
 python = "^3.11"
