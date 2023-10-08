@@ -5,7 +5,7 @@ import abc
 import dataclasses
 import datetime
 
-from daily_tracker.core import Configuration, Entry, Input, Output, Task
+import core
 
 
 @dataclasses.dataclass
@@ -29,7 +29,7 @@ class Calendar(abc.ABC):
     :param configuration: The application configuration.
     """
 
-    def __init__(self, configuration: Configuration):
+    def __init__(self, configuration: core.Configuration):
         """
 
         :param configuration:
@@ -60,9 +60,9 @@ class Calendar(abc.ABC):
         supplied datetime.
         """
 
-    def on_event(self, at_datetime: datetime.datetime) -> list[Task]:
+    def on_event(self, at_datetime: datetime.datetime) -> list[core.Task]:
         """
-        Get the current meeting from Outlook, if one exists.
+        Get the current meeting from Outlook if one exists.
 
         This excludes meetings that are daily meetings and meetings whose
         categories are in the supplied list of exclusions.
@@ -83,14 +83,14 @@ class Calendar(abc.ABC):
         ]
 
         return [
-            Task(
+            core.Task(
                 task_name="Meetings",
                 details=events[0].subject if len(events) == 1 else [],
             )
         ]
 
 
-class NoCalendar(Calendar, Input, Output):
+class NoCalendar(Calendar, core.Input, core.Output):
     """
     A 'None' calendar.
     """
@@ -120,8 +120,8 @@ class NoCalendar(Calendar, Input, Output):
         """
         return []
 
-    def on_event(self, at_datetime: datetime.datetime) -> list[Task]:
+    def on_event(self, at_datetime: datetime.datetime) -> list[core.Task]:
         return []
 
-    def post_event(self, entry: Entry) -> None:
+    def post_event(self, entry: core.Entry) -> None:
         pass

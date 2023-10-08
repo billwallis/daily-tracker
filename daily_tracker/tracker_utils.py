@@ -3,7 +3,7 @@ Utilities to use throughout the modules.
 """
 import pathlib
 
-ROOT = pathlib.Path(__file__).parent  # resolve to `src/daily_tracker`
+ROOT = pathlib.Path(__file__).parent  # `daily_tracker/`
 
 
 def pascal_to_snake(text: str) -> str:

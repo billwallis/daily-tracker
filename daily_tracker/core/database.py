@@ -9,8 +9,8 @@ import sqlite3
 from collections.abc import Iterable
 from typing import Any
 
-import daily_tracker.utils
-from daily_tracker.core import Configuration, Entry, Input, Output, Task
+import core
+import tracker_utils
 
 DEBUG_MODE = False
 
@@ -53,7 +53,7 @@ class DatabaseConnector:
             ).fetchone()
         ):
             self.run_query_from_file(
-                daily_tracker.utils.ROOT / "core/database/create.sql"
+                tracker_utils.ROOT / "core/database/create.sql"
             )
 
     def truncate_table(self, table_name: str) -> None:
@@ -98,7 +98,7 @@ def to_csv(data: list[tuple[Any, ...]], path: pathlib.Path) -> None:
         csv.writer(out).writerows(data)
 
 
-class DatabaseHandler(Input, Output):
+class DatabaseHandler(core.Input, core.Output):
     """
     The database handler.
 
@@ -106,7 +106,9 @@ class DatabaseHandler(Input, Output):
     to implement the input and output actions.
     """
 
-    def __init__(self, database_filepath: str, configuration: Configuration):
+    def __init__(
+        self, database_filepath: str, configuration: core.Configuration
+    ):
         logging.debug(f"Loading database file at {database_filepath}...")
         self.connection = DatabaseConnector(database_filepath)
         self.configuration = configuration
@@ -158,7 +160,7 @@ class DatabaseHandler(Input, Output):
         #     index=False,
         # )
 
-    def on_event(self, date_time: datetime.datetime) -> list[Task]:
+    def on_event(self, date_time: datetime.datetime) -> list[core.Task]:
         """
         The actions to perform before the event.
         """
@@ -173,7 +175,7 @@ class DatabaseHandler(Input, Output):
             []
             + [
                 (
-                    Task(
+                    core.Task(
                         task_name=latest_task_and_detail[0],
                         details=[latest_task_and_detail[1]],
                         priority=0,
@@ -181,7 +183,9 @@ class DatabaseHandler(Input, Output):
                 )
             ]
             + [
-                Task(task_name=task, details=[], is_default=bool(default_flag))
+                core.Task(
+                    task_name=task, details=[], is_default=bool(default_flag)
+                )
                 for task, default_flag in recent_tasks_with_defaults
             ]
         )
@@ -241,13 +245,13 @@ class DatabaseHandler(Input, Output):
                OR indx = 0  /* Defaults */
             ORDER BY indx, task
         """
-        return dict(
-            pd.read_sql(
-                sql=latest_tasks,
-                con=self.connection.engine,
-                params={"date_modifier": f"-{show_last_n_weeks * 7} days"},
-            ).to_dict("split")["data"]
+        output = read_sql(
+            sql=latest_tasks,
+            con=self.connection,
+            params={"date_modifier": f"-{show_last_n_weeks * 7} days"},
         )
+
+        return dict(output)  # type: ignore
 
     def get_details_for_task(self, task: str) -> list:
         """
@@ -268,7 +272,7 @@ class DatabaseHandler(Input, Output):
         ).fetchall()
         return [detail[0] for detail in details]
 
-    def post_event(self, entry: Entry) -> None:
+    def post_event(self, entry: core.Entry) -> None:
         """
         The actions to perform after the event.
         """

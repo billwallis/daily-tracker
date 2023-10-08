@@ -1,10 +1,8 @@
 import datetime
 
+import core
 import pytest
-
-import daily_tracker
-import daily_tracker.core.scheduler
-import daily_tracker.utils
+import tracker_utils
 
 
 def test__utils__string_list_to_list():
@@ -14,7 +12,7 @@ def test__utils__string_list_to_list():
     string_ = "-1,0,1,a,bb,ccc,, ,\t"
     expected = ["-1", "0", "1", "a", "bb", "ccc", "", "", ""]
 
-    assert expected == daily_tracker.utils.string_list_to_list(string_)
+    assert expected == tracker_utils.string_list_to_list(string_)
 
 
 @pytest.mark.parametrize(
@@ -55,10 +53,7 @@ def test__core__scheduler__get_next_interval(
     """
     Datetimes are 'rounded up' to the nearest interval.
     """
-    assert (
-        expected_next_interval
-        == daily_tracker.core.scheduler.get_next_interval(
-            from_time=from_time,
-            interval_in_minutes=interval_in_minutes,
-        )
+    assert expected_next_interval == core.scheduler.get_next_interval(
+        from_time=from_time,
+        interval_in_minutes=interval_in_minutes,
     )

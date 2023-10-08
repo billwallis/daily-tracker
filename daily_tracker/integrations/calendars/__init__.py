@@ -1,17 +1,14 @@
 # sourcery skip: docstrings-for-packages, no-relative-imports
 import os
-from typing import Type
 
-from daily_tracker.integrations.calendars.calendars import Calendar, NoCalendar
+from integrations.calendars.calendars import Calendar, NoCalendar
 
 # from daily_tracker.integrations.calendars.gmail import GmailInput
 
 if os.name == "nt":
-    from daily_tracker.integrations.calendars.outlook_windows import (
-        OutlookInput,
-    )
+    from integrations.calendars.outlook_windows import OutlookInput
 elif os.name == "posix":
-    from daily_tracker.integrations.calendars.outlook_mac import OutlookInput
+    from integrations.calendars.outlook_mac import OutlookInput
 
 
 CALENDAR_LOOKUP = {

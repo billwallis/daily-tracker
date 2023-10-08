@@ -5,22 +5,25 @@ from __future__ import annotations
 
 import collections
 import pathlib
+import warnings
 from typing import Any
 
+import tracker_utils
 import yaml
 
-import daily_tracker.utils
-
 # TODO: Take the default values from the JSON schema validator file
-DEFAULT_CONFIG = daily_tracker.utils.ROOT / "resources" / "configuration.yaml"
+DEFAULT_CONFIG = tracker_utils.ROOT / "resources/configuration.yaml"
 
 
 def get_configuration(filepath: str = DEFAULT_CONFIG) -> Configuration:
     """
     Read the ``configuration.yaml`` into a Configuration object.
     """
-    with open(filepath) as f:
-        return Configuration(yaml.load(f.read(), yaml.Loader))
+    warnings.warn(
+        "This function is deprecated, use `Configuration.from_default()` instead.",
+        DeprecationWarning,
+    )
+    return Configuration.from_default(filepath)
 
 
 def _get_configuration(filepath: str = DEFAULT_CONFIG) -> Configuration:
@@ -56,6 +59,17 @@ class Configuration:
     def __init__(self, configuration: dict):
         self.configuration = configuration
         self.options = self.configuration["tracker"]["options"]
+
+    @classmethod
+    def from_default(cls, filepath: str = DEFAULT_CONFIG) -> Configuration:
+        """
+        Read the ``configuration.yaml`` into a Configuration object.
+
+        The ``filepath`` parameter is only included for backwards compatibility
+        and will be removed.
+        """
+        with open(filepath) as f:
+            return Configuration(yaml.load(f.read(), yaml.Loader))
 
     def _get_option_value(self, option: str, default: Any) -> Any:
         return self.options.get(option, default)

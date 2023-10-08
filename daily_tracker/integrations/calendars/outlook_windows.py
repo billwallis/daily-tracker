@@ -9,15 +9,11 @@ from __future__ import annotations
 import dataclasses
 import datetime
 
+import core
+import tracker_utils
 import win32com.client
+from integrations.calendars.calendars import Calendar, CalendarEvent
 from win32com.client import CDispatch
-
-import daily_tracker.utils
-from daily_tracker.core import Configuration, Input, Task
-from daily_tracker.integrations.calendars.calendars import (
-    Calendar,
-    CalendarEvent,
-)
 
 
 @dataclasses.dataclass
@@ -37,19 +33,19 @@ class OutlookEvent(CalendarEvent):
             subject=appointment.subject,
             start=appointment.start,
             end=appointment.end,
-            categories=daily_tracker.utils.string_list_to_list(
+            categories=tracker_utils.string_list_to_list(
                 appointment.categories
             ),
             all_day_event=appointment.all_day_event,
         )
 
 
-class OutlookInput(Input, Calendar):
+class OutlookInput(core.Input, Calendar):
     """
     Naive implementation of a connector to Outlook.
     """
 
-    def __init__(self, configuration: Configuration):
+    def __init__(self, configuration: core.Configuration):
         # sourcery skip: docstrings-for-functions
         super().__init__(configuration=configuration)
 
@@ -84,6 +80,7 @@ class OutlookInput(Input, Calendar):
     def get_appointment_at_datetime(
         self,
         at_datetime: datetime.datetime,
+        categories_to_exclude: list[str] = None,
     ) -> list[OutlookEvent]:
         """
         Return the events in the calendar that are scheduled to on or over the

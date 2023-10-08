@@ -18,9 +18,8 @@ import json
 import logging
 import re
 
+import core
 import requests
-
-from daily_tracker.core import Configuration, Entry, Input, Output, Task
 
 
 class JiraConnector:
@@ -258,7 +257,7 @@ class JiraConnector:
         )
 
 
-class Jira(Input, Output):
+class Jira(core.Input, core.Output):
     """
     The Jira handler.
 
@@ -271,7 +270,7 @@ class Jira(Input, Output):
         domain: str,
         key: str,
         secret: str,
-        configuration: Configuration,
+        configuration: core.Configuration,
         debug_mode: bool = False,
     ):
         self.connector = JiraConnector(
@@ -283,13 +282,13 @@ class Jira(Input, Output):
         self.configuration = configuration
         self.debug_mode = debug_mode
 
-    def on_event(self, date_time: datetime.datetime) -> list[Task]:
+    def on_event(self, date_time: datetime.datetime) -> list[core.Task]:
         """
         The actions to perform before the event.
         """
         if self.configuration.use_jira_sprint:
             return [
-                Task(task_name=ticket)
+                core.Task(task_name=ticket)
                 for ticket in self.get_tickets_in_sprint()
             ]
 
@@ -334,7 +333,7 @@ class Jira(Input, Output):
 
         return results
 
-    def post_event(self, entry: Entry) -> None:
+    def post_event(self, entry: core.Entry) -> None:
         """
         The actions to perform after the event.
         """

@@ -9,7 +9,11 @@ description = "An application for keeping track of tasks throughout the day."
 authors = ["Bilbottom"]
 readme = "README.md"
 repository = "https://github.com/Bilbottom/daily-tracker"
-packages = [{include = "daily_tracker", from = "src"}]
+packages = [
+    {include = "daily_tracker"},
+    {include = "core", from = "daily_tracker"},
+    {include = "integrations", from = "daily_tracker"},
+]
 
 [tool.poetry.scripts]
 daily-tracker = "daily_tracker.__main__:main"
