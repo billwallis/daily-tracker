@@ -5,6 +5,7 @@ deployed.
 import pathlib
 
 import daily_tracker.core
+import daily_tracker.core.database
 import daily_tracker.utils
 
 
@@ -12,7 +13,7 @@ def create_env() -> None:
     """
     Create the .env file.
 
-    This should be depreciated and the values should be saved in the config file
+    This should be deprecated and the values should be saved in the config file
     instead.
     """
     filepath = ".env"
@@ -30,9 +31,9 @@ def main() -> None:
     database.
     """
     create_env()
-    db_handler = daily_tracker.core.DatabaseHandler(
+    db_handler = daily_tracker.core.database.DatabaseHandler(
         database_filepath=daily_tracker.utils.ROOT / "tracker.db",
-        configuration=daily_tracker.core.Configuration(),
+        configuration=daily_tracker.core.configuration.get_configuration(),
     )
     db_handler.import_history(filepath=daily_tracker.utils.ROOT / "tracker.csv")
 

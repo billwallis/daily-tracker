@@ -1,6 +1,7 @@
 from .apis import Input, Output
 from .configuration import Configuration
 from .data import Entry, Task
+from .scheduler import IndefiniteScheduler
 
 __all__ = [
     "Entry",
@@ -8,4 +9,5 @@ __all__ = [
     "Configuration",
     "Output",
     "Task",
+    "IndefiniteScheduler",
 ]

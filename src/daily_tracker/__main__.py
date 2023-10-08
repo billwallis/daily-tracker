@@ -4,7 +4,6 @@ Connect the various subpackages throughout the project to couple up the objects.
 import datetime
 import logging
 import logging.config
-import pathlib
 
 import yaml
 
@@ -12,22 +11,10 @@ import daily_tracker.core.configuration
 import daily_tracker.core.database
 import daily_tracker.core.form
 import daily_tracker.core.scheduler
+import daily_tracker.create
 import daily_tracker.utils
 
 APPLICATION_CREATED = True
-
-
-def create_env() -> None:
-    """
-    Create the .env file.
-    """
-    filepath = ".env"
-    if pathlib.Path(filepath).exists():
-        return None
-
-    with open(filepath, "w+") as f:
-        keys = ["JIRA_URL", "JIRA_KEY", "JIRA_SECRET", "SLACK_URL"]
-        f.write("\n".join([f"{key}=" for key in keys]))
 
 
 def create_form(at_datetime: datetime.datetime) -> None:
@@ -53,7 +40,7 @@ def main() -> None:
         )
         scheduler.schedule_first()
     else:
-        # create_env()
+        # daily_tracker.create.create_env()
         db_handler = daily_tracker.core.database.DatabaseHandler(
             daily_tracker.utils.ROOT / "tracker.db",
             daily_tracker.core.configuration.get_configuration(),
