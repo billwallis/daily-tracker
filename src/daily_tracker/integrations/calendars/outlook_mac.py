@@ -24,13 +24,15 @@ from __future__ import annotations
 
 import dataclasses
 import datetime
-from typing import List
 
 import appscript
 from appscript.reference import Reference
 
 from daily_tracker.core import Configuration, Input
-from daily_tracker.integrations.calendars.calendars import Calendar, CalendarEvent
+from daily_tracker.integrations.calendars.calendars import (
+    Calendar,
+    CalendarEvent,
+)
 
 
 @dataclasses.dataclass
@@ -60,6 +62,7 @@ class OutlookInput(Input, Calendar):
     """
     Naive implementation of a connector to Outlook on a Mac.
     """
+
     def __init__(self, configuration: Configuration):
         super().__init__(configuration=configuration)
 
@@ -70,25 +73,33 @@ class OutlookInput(Input, Calendar):
         self,
         start_datetime: datetime.datetime,
         end_datetime: datetime.datetime,
-    ) -> List[OutlookEvent]:
+    ) -> list[OutlookEvent]:
         """
         Return the events in the calendar between the start datetime (inclusive)
         and end datetime (exclusive).
         """
         restricted_calendar = self.calendar.calendar_events[
-            (appscript.its.start_time >= start_datetime).AND(appscript.its.end_time < end_datetime)
+            (appscript.its.start_time >= start_datetime).AND(
+                appscript.its.end_time < end_datetime
+            )
         ].get()
-        return [OutlookEvent.from_appointment(app) for app in restricted_calendar]
+        return [
+            OutlookEvent.from_appointment(app) for app in restricted_calendar
+        ]
 
     def get_appointment_at_datetime(
         self,
         at_datetime: datetime.datetime,
-    ) -> List[OutlookEvent]:
+    ) -> list[OutlookEvent]:
         """
         Return the events in the calendar that are scheduled to on or over the
         supplied datetime.
         """
         restricted_calendar = self.calendar.calendar_events[
-            (appscript.its.start_time <= at_datetime).AND(appscript.its.end_time > at_datetime)
+            (appscript.its.start_time <= at_datetime).AND(
+                appscript.its.end_time > at_datetime
+            )
         ].get()
-        return [OutlookEvent.from_appointment(app) for app in restricted_calendar]
+        return [
+            OutlookEvent.from_appointment(app) for app in restricted_calendar
+        ]

@@ -7,10 +7,8 @@ coupled to it.
 import abc
 import csv
 import datetime
-import json
 import logging
 import pathlib
-import re
 from typing import Any, Protocol
 
 import daily_tracker.core.configuration

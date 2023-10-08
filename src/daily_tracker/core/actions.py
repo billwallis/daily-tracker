@@ -12,7 +12,6 @@ import daily_tracker.core.handlers
 import daily_tracker.integrations
 import daily_tracker.integrations.calendars
 import daily_tracker.utils
-
 from daily_tracker.core.data import Entry
 
 dotenv.load_dotenv(dotenv_path=r".env")

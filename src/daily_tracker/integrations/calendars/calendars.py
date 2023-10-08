@@ -4,9 +4,8 @@ Calendar types available to use for linking.
 import abc
 import dataclasses
 import datetime
-from typing import List
 
-from daily_tracker.core import Configuration, Task, Input, Output, Entry
+from daily_tracker.core import Configuration, Entry, Input, Output, Task
 
 
 @dataclasses.dataclass
@@ -14,10 +13,11 @@ class CalendarEvent:
     """
     A calendar event, typically referred to as a _meeting_ or an _appointment_.
     """
+
     subject: str
     start: datetime.datetime
     end: datetime.datetime
-    categories: List[str]
+    categories: list[str]
     all_day_event: bool
 
 
@@ -28,6 +28,7 @@ class Calendar(abc.ABC):
 
     :param configuration: The application configuration.
     """
+
     def __init__(self, configuration: Configuration):
         """
 
@@ -40,7 +41,7 @@ class Calendar(abc.ABC):
         self,
         start_datetime: datetime.datetime,
         end_datetime: datetime.datetime,
-    ) -> List[CalendarEvent]:
+    ) -> list[CalendarEvent]:
         """
         Return the events in the calendar between the start datetime (inclusive)
         and end datetime exclusive.
@@ -50,7 +51,9 @@ class Calendar(abc.ABC):
     def get_appointment_at_datetime(  # TODO: Rename this to `get_appointments_at_datetime`
         self,
         at_datetime: datetime.datetime,
-        categories_to_exclude: list[str] = None,  # TODO: Figure out where this should live
+        categories_to_exclude: list[
+            str
+        ] = None,  # TODO: Figure out where this should live
     ) -> list[CalendarEvent]:
         """
         Return the events in the calendar that are scheduled to on or over the
@@ -67,21 +70,31 @@ class Calendar(abc.ABC):
         if not self.configuration.use_calendar_appointments:
             return []
 
-        categories_to_exclude = self.configuration.appointment_category_exclusions or []
+        categories_to_exclude = (
+            self.configuration.appointment_category_exclusions or []
+        )
         events = [
             event
-            for event in self.get_appointment_at_datetime(at_datetime=at_datetime)
+            for event in self.get_appointment_at_datetime(
+                at_datetime=at_datetime
+            )
             if not event.all_day_event
-               and all(i not in event.categories for i in categories_to_exclude)
+            and all(i not in event.categories for i in categories_to_exclude)
         ]
 
-        return [Task(task_name="Meetings", details=events[0].subject if len(events) == 1 else [])]
+        return [
+            Task(
+                task_name="Meetings",
+                details=events[0].subject if len(events) == 1 else [],
+            )
+        ]
 
 
 class NoCalendar(Calendar, Input, Output):
     """
     A 'None' calendar.
     """
+
     def __bool__(self):
         return False
 

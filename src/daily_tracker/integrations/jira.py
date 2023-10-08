@@ -17,7 +17,6 @@ import datetime
 import json
 import logging
 import re
-from typing import List
 
 import requests
 
@@ -266,6 +265,7 @@ class Jira(Input, Output):
     This bridges the input and output objects with the REST API connector object
     to implement the input and output actions.
     """
+
     def __init__(
         self,
         domain: str,
@@ -283,7 +283,7 @@ class Jira(Input, Output):
         self.configuration = configuration
         self.debug_mode = debug_mode
 
-    def on_event(self, date_time: datetime.datetime) -> List[Task]:
+    def on_event(self, date_time: datetime.datetime) -> list[Task]:
         """
         The actions to perform before the event.
         """
@@ -295,13 +295,14 @@ class Jira(Input, Output):
 
         return []
 
-    def get_tickets_in_sprint(self, project_key: str = None) -> List[str]:
+    def get_tickets_in_sprint(self, project_key: str = None) -> list[str]:
         """
         Get the list of tickets in the active sprint for the current user.
         """
         fields = ["summary", "duedate", "assignee"]
         jql = " AND ".join(
-            item for item in [
+            item
+            for item in [
                 f"project = {project_key}" if project_key else None,
                 "sprint IN openSprints()",
                 "assignee = currentUser()",
@@ -313,18 +314,23 @@ class Jira(Input, Output):
             """
             Inner function to loop over until all tickets have been retrieved.
             """
-            return json.loads(self.connector.search_for_issues_using_jql(
-                jql=jql,
-                fields=fields,
-                start_at=start_at,
-            ).text)
+            return json.loads(
+                self.connector.search_for_issues_using_jql(
+                    jql=jql,
+                    fields=fields,
+                    start_at=start_at,
+                ).text
+            )
 
         results = []
         total = 999
         while len(results) < total:
             response = get_batch_of_tickets(start_at=len(results))
             total = response["total"]
-            results += [f"{issue['key']} {issue['fields']['summary']}" for issue in response["issues"]]
+            results += [
+                f"{issue['key']} {issue['fields']['summary']}"
+                for issue in response["issues"]
+            ]
 
         return results
 
@@ -341,7 +347,7 @@ class Jira(Input, Output):
                 task=entry.task_name,
                 detail=entry.detail,
                 at_datetime=entry.date_time,
-                interval=entry.interval
+                interval=entry.interval,
             )
 
     def post_log_to_jira(
@@ -349,7 +355,7 @@ class Jira(Input, Output):
         task: str,
         detail: str,
         at_datetime: datetime.datetime,
-        interval: int
+        interval: int,
     ) -> None:
         """
         Post the task, detail, and time to the corresponding ticket's worklog.

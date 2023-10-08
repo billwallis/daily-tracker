@@ -1,7 +1,4 @@
-from .handlers import (
-    DatabaseHandler,
-    Form,
-)
+from .handlers import DatabaseHandler, Form
 
 __all__ = [
     "DatabaseHandler",

@@ -51,6 +51,7 @@ class Slack(Output):
     This bridges the input and output objects with the REST API connector object
     to implement the output actions.
     """
+
     def __init__(self, url: str, configuration: Configuration = None):
         self.connector = SlackConnector(url)
         self.configuration = configuration
@@ -61,10 +62,7 @@ class Slack(Output):
         """
         logging.debug("Doing Slack actions...")
         if self.configuration.post_to_slack:
-            self.post_to_channel(
-                task=entry.task_name,
-                detail=entry.detail
-            )
+            self.post_to_channel(task=entry.task_name, detail=entry.detail)
             # Set status?
 
     def post_to_channel(self, task: str, detail: str) -> None:
