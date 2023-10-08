@@ -8,8 +8,9 @@ import pathlib
 
 import yaml
 
+import daily_tracker.core.configuration
+import daily_tracker.core.database
 import daily_tracker.core.form
-import daily_tracker.core.handlers
 import daily_tracker.core.scheduler
 import daily_tracker.utils
 
@@ -53,8 +54,9 @@ def main() -> None:
         scheduler.schedule_first()
     else:
         # create_env()
-        db_handler = daily_tracker.core.handlers.DatabaseHandler(
-            daily_tracker.utils.ROOT / "tracker.db"
+        db_handler = daily_tracker.core.database.DatabaseHandler(
+            daily_tracker.utils.ROOT / "tracker.db",
+            daily_tracker.core.configuration.get_configuration(),
         )
         # db_handler.import_history(daily_tracker.utils.ROOT / "tracker.csv")
 

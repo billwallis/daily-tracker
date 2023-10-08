@@ -1,5 +1,5 @@
-from .database import DatabaseConnector
+from .database import DatabaseHandler
 
 __all__ = [
-    "DatabaseConnector",
+    "DatabaseHandler",
 ]

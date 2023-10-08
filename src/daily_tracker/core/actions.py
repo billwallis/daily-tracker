@@ -3,12 +3,12 @@ The actions for the pop-up box.
 """
 import datetime
 import os.path
+from typing import Protocol
 
 import dotenv
 
 import daily_tracker.core.configuration
 import daily_tracker.core.database
-import daily_tracker.core.handlers
 import daily_tracker.integrations
 import daily_tracker.integrations.calendars
 import daily_tracker.utils
@@ -25,12 +25,24 @@ SLACK_CREDENTIALS = {
 }
 
 
+class Form(Protocol):  # Just for backwards compatibility, will be removed
+    """
+    The handlers need properties from the form to be able to pass the details
+    around for the various methods.
+    """
+
+    task: str
+    detail: str
+    at_datetime: datetime.datetime
+    interval: int
+
+
 class ActionHandler:
     """
     Handler for the actions that are triggered on the pop-up box.
     """
 
-    def __init__(self, form: daily_tracker.core.handlers.Form):
+    def __init__(self, form: Form | Entry):
         """
         Initialise the main handler and the various handlers to other systems.
         """
@@ -39,8 +51,9 @@ class ActionHandler:
         )
         self.form = form
 
-        self.database_handler = daily_tracker.core.handlers.DatabaseHandler(
-            daily_tracker.utils.ROOT / "tracker.db"
+        self.database_handler = daily_tracker.core.database.DatabaseHandler(
+            daily_tracker.utils.ROOT / "tracker.db",
+            configuration=self.configuration,
         )
         self.calendar_handler = daily_tracker.integrations.get_linked_calendar(
             self.configuration.linked_calendar
@@ -95,7 +108,9 @@ class ActionHandler:
             not self.configuration.use_calendar_appointments
             or current_meeting is None
         ):
-            return self.database_handler.get_last_task_and_detail() or ("", "")
+            return self.database_handler.get_last_task_and_detail(
+                datetime.datetime.now()
+            ) or ("", "")
         return self.configuration.appointment_exceptions.get(
             current_meeting,
             ("Meetings", current_meeting),
