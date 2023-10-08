@@ -9,7 +9,7 @@ import time
 from collections.abc import Callable
 from typing import Any
 
-import daily_tracker.core.configuration
+import core
 
 
 def _get_interval_from_configuration() -> int:
@@ -19,7 +19,7 @@ def _get_interval_from_configuration() -> int:
     It's important to re-call this so that updates to the configuration file
     while the scheduler is running can be reflected in the scheduled events.
     """
-    return daily_tracker.core.configuration.get_configuration().interval
+    return core.Configuration.from_default().interval
 
 
 def get_next_interval(

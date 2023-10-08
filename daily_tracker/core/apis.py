@@ -2,7 +2,7 @@
 """
 The API classes that all integration classes should inherit from.
 
-This categorises all objects as ``Input`` and ``Output`` objects:
+This module categorises all objects as ``Input`` and ``Output`` objects:
 
 - The ``Input`` objects have an ``on_event`` method which is called before the
   task input is requested from the user.
@@ -65,8 +65,8 @@ import logging
 from collections.abc import Generator
 from typing import ClassVar
 
-import daily_tracker.utils
-from daily_tracker.core.data import Entry, Task
+import core
+import tracker_utils
 
 
 class API(abc.ABC):
@@ -84,7 +84,7 @@ class API(abc.ABC):
         ``APIS`` property.
         """
         if cls.__name__ not in ["Input", "Output"]:
-            key = daily_tracker.utils.pascal_to_snake(cls.__name__)
+            key = tracker_utils.pascal_to_snake(cls.__name__)
             logging.debug(f"Adding class {cls} to {cls}.APIS with key '{key}'")
             cls.APIS[key] = cls
 
@@ -98,7 +98,7 @@ class IInput(abc.ABC):
     """
 
     @abc.abstractmethod
-    def on_event(self, date_time: datetime.datetime) -> list[Task]:
+    def on_event(self, date_time: datetime.datetime) -> list[core.Task]:
         """
         The actions to perform at the start of the "pop-up" event at the
         scheduled time.
@@ -114,7 +114,7 @@ class Input(API, IInput):
 
     APIS: ClassVar[dict[str, Input]] = {}
 
-    def on_event(self, date_time: datetime.datetime) -> list[Task]:
+    def on_event(self, date_time: datetime.datetime) -> list[core.Task]:
         """
         The actions to perform at the start of the "pop-up" event at the
         scheduled time.
@@ -131,7 +131,7 @@ class IOutput(abc.ABC):
     """
 
     @abc.abstractmethod
-    def post_event(self, entry: Entry) -> None:
+    def post_event(self, entry: core.Entry) -> None:
         """
         The actions to perform after the "pop-up" event.
         """
@@ -146,7 +146,7 @@ class Output(API, IOutput):
 
     APIS: ClassVar[dict[str, Output]] = {}
 
-    def post_event(self, entry: Entry) -> None:
+    def post_event(self, entry: core.Entry) -> None:
         """
         The actions to perform after the "pop-up" event.
         """
@@ -155,7 +155,9 @@ class Output(API, IOutput):
         )
 
 
-def on_event(date_time: datetime.datetime) -> Generator[list[Task], None, None]:
+def on_event(
+    date_time: datetime.datetime,
+) -> Generator[list[core.Task], None, None]:
     """
     Execute the actions at the start of the "pop-up" event.
 
@@ -172,7 +174,7 @@ def on_event(date_time: datetime.datetime) -> Generator[list[Task], None, None]:
         yield class_.on_event(date_time=date_time)
 
 
-def post_event(entry: Entry) -> None:
+def post_event(entry: core.Entry) -> None:
     """
     Execute the actions after the "pop-up" event.
     """

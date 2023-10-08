@@ -11,13 +11,12 @@ import tkinter as tk
 import tkinter.ttk
 from typing import Any
 
+import core
 import PIL.Image
 import PIL.ImageTk
+import tracker_utils
 
-import daily_tracker.core.actions
-import daily_tracker.utils
-
-ICON = daily_tracker.utils.ROOT / "resources" / "clock-icon.png"
+ICON = tracker_utils.ROOT / "resources/clock-icon.png"
 STYLE = {
     "font": ("Tahoma", 8),
 }
@@ -35,14 +34,12 @@ class TrackerForm:
     The pop-up box for the tracker.
     """
 
-    def __init__(self, at_datetime: datetime.datetime):
+    def __init__(self, at_datetime: datetime.datetime, action_handler):
         """
         Create the form handler.
         """
         self.at_datetime = at_datetime
-        self.action_handler = daily_tracker.core.actions.ActionHandler(
-            form=self
-        )  # noqa
+        self.action_handler = action_handler
         self.interval = self.action_handler.configuration.interval
         self._width = 350
         self._height = 150
@@ -51,7 +48,7 @@ class TrackerForm:
         self.detail_text_box: TextBox | None = None
         # self._root.mainloop()
         # Add properties like `is_meeting` and `is_jira_ticket`?
-        self.generate_form()
+        # self.generate_form()
 
     @property
     def task(self) -> str:

@@ -26,13 +26,9 @@ import dataclasses
 import datetime
 
 import appscript
+import core
 from appscript.reference import Reference
-
-from daily_tracker.core import Configuration, Input
-from daily_tracker.integrations.calendars.calendars import (
-    Calendar,
-    CalendarEvent,
-)
+from integrations.calendars.calendars import Calendar, CalendarEvent
 
 
 @dataclasses.dataclass
@@ -58,12 +54,12 @@ class OutlookEvent(CalendarEvent):
         )
 
 
-class OutlookInput(Input, Calendar):
+class OutlookInput(core.Input, Calendar):
     """
     Naive implementation of a connector to Outlook on a Mac.
     """
 
-    def __init__(self, configuration: Configuration):
+    def __init__(self, configuration: core.Configuration):
         super().__init__(configuration=configuration)
 
         # TODO: Set the calendar ID dynamically rather than hard-coding it
@@ -90,6 +86,7 @@ class OutlookInput(Input, Calendar):
     def get_appointment_at_datetime(
         self,
         at_datetime: datetime.datetime,
+        categories_to_exclude: list[str] = None,
     ) -> list[OutlookEvent]:
         """
         Return the events in the calendar that are scheduled to on or over the

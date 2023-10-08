@@ -4,9 +4,8 @@ deployed.
 """
 import pathlib
 
-import daily_tracker.core
-import daily_tracker.core.database
-import daily_tracker.utils
+import core
+import tracker_utils
 
 
 def create_env() -> None:
@@ -31,11 +30,11 @@ def main() -> None:
     database.
     """
     create_env()
-    db_handler = daily_tracker.core.database.DatabaseHandler(
-        database_filepath=daily_tracker.utils.ROOT / "tracker.db",
-        configuration=daily_tracker.core.configuration.get_configuration(),
+    db_handler = core.DatabaseHandler(
+        database_filepath=tracker_utils.ROOT / "tracker.db",
+        configuration=core.configuration.get_configuration(),
     )
-    db_handler.import_history(filepath=daily_tracker.utils.ROOT / "tracker.csv")
+    db_handler.import_history(filepath=tracker_utils.ROOT / "tracker.csv")
 
 
 if __name__ == "__main__":

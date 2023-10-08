@@ -10,9 +10,8 @@ post to and configuring the "Incoming Webhooks" app.
 import json
 import logging
 
+import core
 import requests
-
-from daily_tracker.core import Configuration, Entry, Output
 
 
 class SlackConnector:
@@ -44,7 +43,7 @@ class SlackConnector:
             )
 
 
-class Slack(Output):
+class Slack(core.Output):
     """
     The Slack handler.
 
@@ -52,11 +51,11 @@ class Slack(Output):
     to implement the output actions.
     """
 
-    def __init__(self, url: str, configuration: Configuration = None):
+    def __init__(self, url: str, configuration: core.Configuration = None):
         self.connector = SlackConnector(url)
         self.configuration = configuration
 
-    def post_event(self, entry: Entry) -> None:
+    def post_event(self, entry: core.Entry) -> None:
         """
         The actions to perform after the event.
         """

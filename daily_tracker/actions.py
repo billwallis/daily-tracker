@@ -5,14 +5,10 @@ import datetime
 import os.path
 from typing import Protocol
 
+import core
 import dotenv
-
-import daily_tracker.core.configuration
-import daily_tracker.core.database
-import daily_tracker.integrations
-import daily_tracker.integrations.calendars
-import daily_tracker.utils
-from daily_tracker.core.data import Entry
+import integrations
+import tracker_utils
 
 dotenv.load_dotenv(dotenv_path=r".env")
 JIRA_CREDENTIALS = {
@@ -42,34 +38,35 @@ class ActionHandler:
     Handler for the actions that are triggered on the pop-up box.
     """
 
-    def __init__(self, form: Form | Entry):
+    def __init__(self, at_datetime: datetime.datetime):
         """
         Initialise the main handler and the various handlers to other systems.
         """
-        self.configuration = (
-            daily_tracker.core.configuration.get_configuration()
-        )
-        self.form = form
-
-        self.database_handler = daily_tracker.core.database.DatabaseHandler(
-            daily_tracker.utils.ROOT / "tracker.db",
+        self.configuration = core.Configuration.from_default()
+        self.database_handler = core.DatabaseHandler(
+            tracker_utils.ROOT / "tracker.db",
             configuration=self.configuration,
         )
-        self.calendar_handler = daily_tracker.integrations.get_linked_calendar(
+        self.calendar_handler = integrations.get_linked_calendar(
             self.configuration.linked_calendar
         )(self.configuration)
-        self.jira_handler = daily_tracker.integrations.Jira(
+        self.jira_handler = integrations.Jira(
             **JIRA_CREDENTIALS,
             configuration=self.configuration,
         )
-        self.slack_handler = daily_tracker.integrations.Slack(
+        self.slack_handler = integrations.Slack(
             **SLACK_CREDENTIALS,
             configuration=self.configuration,
         )
+        self.form = core.TrackerForm(
+            at_datetime=at_datetime, action_handler=self
+        )
+
+        self.form.generate_form()
 
     def ok_actions(self) -> None:
         """
-        The actions that need to happen according to the configuration.
+        The actions to perform after the "pop-up" event.
         """
         for handler in [
             self.database_handler,  # This needs to be done first
@@ -81,7 +78,7 @@ class ActionHandler:
                 # For backwards compatibility
                 handler.ok_actions(self.configuration, self.form)
             else:
-                entry = Entry(
+                entry = core.Entry(
                     date_time=self.form.at_datetime,
                     task_name=self.form.task,
                     detail=self.form.detail,
@@ -111,10 +108,7 @@ class ActionHandler:
             return self.database_handler.get_last_task_and_detail(
                 datetime.datetime.now()
             ) or ("", "")
-        return self.configuration.appointment_exceptions.get(
-            current_meeting,
-            ("Meetings", current_meeting),
-        )
+        return "", ""
 
     def get_dropdown_options(self, use_jira_sprint: bool) -> dict:
         """
