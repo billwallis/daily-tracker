@@ -2,51 +2,57 @@
 Connect to and read events from an Outlook calendar.
 
 This requires Outlook to be installed as a desktop application on the device
-running this code.
+running this code and is powered by the win32com library.
 """
+from __future__ import annotations
+
 import dataclasses
 import datetime
 
 import win32com.client
+from win32com.client import CDispatch
 
 import daily_tracker.utils
+from daily_tracker.core import Configuration, Input, Task
+from daily_tracker.integrations.calendars.calendars import (
+    Calendar,
+    CalendarEvent,
+)
 
 
 @dataclasses.dataclass
-class OutlookEvent:
+class OutlookEvent(CalendarEvent):
     """
-    Events in Outlook, typically referred to as Meetings or Appointments.
-
-    Note that categories are not available for IMAP accounts, see:
-        * https://learn.microsoft.com/en-us/outlook/troubleshoot/user-interface/cannot-assign-color-categories-for-imap-accounts
+    An Outlook event corresponding to Windows.
     """
 
-    _appointment: win32com.client.CDispatch = dataclasses.field(repr=False)
-    subject: str = dataclasses.field(default=None)
-    start: datetime.datetime = dataclasses.field(default=None)
-    end: datetime.datetime = dataclasses.field(default=None)
-    body: str = dataclasses.field(default=None)
-    categories: list[str] = dataclasses.field(default=list)
+    @classmethod
+    def from_appointment(cls, appointment: CDispatch) -> OutlookEvent:
+        """
+        Generate an OutlookEvent from a Windows Outlook appointment.
 
-    def __post_init__(self):
+        :param appointment: The win32com appointment to generate the event from.
         """
-        Pull out the appointment details into fields.
-        """
-        self.subject = self._appointment.subject
-        self.start = self._appointment.start
-        self.end = self._appointment.end
-        self.body = self._appointment.body
-        self.categories = daily_tracker.utils.string_list_to_list(
-            self._appointment.categories
+        return OutlookEvent(
+            subject=appointment.subject,
+            start=appointment.start,
+            end=appointment.end,
+            categories=daily_tracker.utils.string_list_to_list(
+                appointment.categories
+            ),
+            all_day_event=appointment.all_day_event,
         )
 
 
-class OutlookConnector:
+class OutlookInput(Input, Calendar):
     """
     Naive implementation of a connector to Outlook.
     """
 
-    def __init__(self):
+    def __init__(self, configuration: Configuration):
+        # sourcery skip: docstrings-for-functions
+        super().__init__(configuration=configuration)
+
         outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace(
             "MAPI"
         )
@@ -71,9 +77,11 @@ class OutlookConnector:
                 ]
             )
         )
-        return [OutlookEvent(app) for app in restricted_calendar]
+        return [
+            OutlookEvent.from_appointment(app) for app in restricted_calendar
+        ]
 
-    def get_appointments_at_datetime(
+    def get_appointment_at_datetime(
         self,
         at_datetime: datetime.datetime,
     ) -> list[OutlookEvent]:
@@ -90,4 +98,6 @@ class OutlookConnector:
                 ]
             )
         )
-        return [OutlookEvent(app) for app in restricted_calendar]
+        return [
+            OutlookEvent.from_appointment(app) for app in restricted_calendar
+        ]

@@ -1,7 +1,8 @@
-from .jira_connector import JiraConnector
-from .slack_connector import SlackConnector
+from daily_tracker.integrations.calendars import get_linked_calendar
+from daily_tracker.integrations.jira import Jira
+from daily_tracker.integrations.slack import Slack
 
 __all__ = [
-    "JiraConnector",
-    "SlackConnector",
+    "Jira",
+    "Slack",
 ]

@@ -8,8 +8,11 @@ You can generate a webhook URL by navigating to the channel you want to
 post to and configuring the "Incoming Webhooks" app.
 """
 import json
+import logging
 
 import requests
+
+from daily_tracker.core import Configuration, Entry, Output
 
 
 class SlackConnector:
@@ -39,6 +42,36 @@ class SlackConnector:
             raise RuntimeError(
                 f"{response.status_code}: Failed to post message to Slack\n\n{response.text}"
             )
+
+
+class Slack(Output):
+    """
+    The Slack handler.
+
+    This bridges the input and output objects with the REST API connector object
+    to implement the output actions.
+    """
+
+    def __init__(self, url: str, configuration: Configuration = None):
+        self.connector = SlackConnector(url)
+        self.configuration = configuration
+
+    def post_event(self, entry: Entry) -> None:
+        """
+        The actions to perform after the event.
+        """
+        logging.debug("Doing Slack actions...")
+        if self.configuration.post_to_slack:
+            self.post_to_channel(task=entry.task_name, detail=entry.detail)
+            # Set status?
+
+    def post_to_channel(self, task: str, detail: str) -> None:
+        """
+        Post the task details to a channel.
+
+        The message accepts Markdown, so the task will be put in bold.
+        """
+        self.connector.post_message(f"*{task}*: {detail}")
 
 
 if __name__ == "__main__":

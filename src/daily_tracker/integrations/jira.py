@@ -13,9 +13,14 @@ TODO: This should be updated to pick up the API implementation from the Jira
     * https://jira.atlassian.com/browse/JRASERVER-68539
 """
 import base64
+import datetime
 import json
+import logging
+import re
 
 import requests
+
+from daily_tracker.core import Configuration, Entry, Input, Output, Task
 
 
 class JiraConnector:
@@ -250,4 +255,118 @@ class JiraConnector:
             url=self._base_url + endpoint,
             headers=self.request_headers,
             data=payload,
+        )
+
+
+class Jira(Input, Output):
+    """
+    The Jira handler.
+
+    This bridges the input and output objects with the REST API connector object
+    to implement the input and output actions.
+    """
+
+    def __init__(
+        self,
+        domain: str,
+        key: str,
+        secret: str,
+        configuration: Configuration,
+        debug_mode: bool = False,
+    ):
+        self.connector = JiraConnector(
+            domain=domain,
+            key=key,
+            secret=secret,
+        )
+        self.project_key_pattern = re.compile(r"^[A-Z]\w{1,9}-\d+")
+        self.configuration = configuration
+        self.debug_mode = debug_mode
+
+    def on_event(self, date_time: datetime.datetime) -> list[Task]:
+        """
+        The actions to perform before the event.
+        """
+        if self.configuration.use_jira_sprint:
+            return [
+                Task(task_name=ticket)
+                for ticket in self.get_tickets_in_sprint()
+            ]
+
+        return []
+
+    def get_tickets_in_sprint(self, project_key: str = None) -> list[str]:
+        """
+        Get the list of tickets in the active sprint for the current user.
+        """
+        fields = ["summary", "duedate", "assignee"]
+        jql = " AND ".join(
+            item
+            for item in [
+                f"project = {project_key}" if project_key else None,
+                "sprint IN openSprints()",
+                "assignee = currentUser()",
+            ]
+            if item is not None
+        )
+
+        def get_batch_of_tickets(start_at: int) -> dict:
+            """
+            Inner function to loop over until all tickets have been retrieved.
+            """
+            return json.loads(
+                self.connector.search_for_issues_using_jql(
+                    jql=jql,
+                    fields=fields,
+                    start_at=start_at,
+                ).text
+            )
+
+        results = []
+        total = 999
+        while len(results) < total:
+            response = get_batch_of_tickets(start_at=len(results))
+            total = response["total"]
+            results += [
+                f"{issue['key']} {issue['fields']['summary']}"
+                for issue in response["issues"]
+            ]
+
+        return results
+
+    def post_event(self, entry: Entry) -> None:
+        """
+        The actions to perform after the event.
+        """
+        logging.debug("Doing Jira actions...")
+        if self.debug_mode:
+            return
+
+        if self.configuration.post_to_jira:
+            self.post_log_to_jira(
+                task=entry.task_name,
+                detail=entry.detail,
+                at_datetime=entry.date_time,
+                interval=entry.interval,
+            )
+
+    def post_log_to_jira(
+        self,
+        task: str,
+        detail: str,
+        at_datetime: datetime.datetime,
+        interval: int,
+    ) -> None:
+        """
+        Post the task, detail, and time to the corresponding ticket's worklog.
+        """
+        issue_key = re.search(self.project_key_pattern, task)
+        if issue_key is None:
+            return None
+
+        self.connector.add_worklog(
+            issue_key=issue_key[0],
+            detail=detail,
+            at_datetime=f"{at_datetime.isoformat()}.000+0000",
+            interval=interval,
         )
