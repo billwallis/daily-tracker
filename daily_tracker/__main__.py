@@ -5,7 +5,7 @@ import datetime
 import logging
 import logging.config
 
-import actions
+import _actions
 import yaml
 
 import core
@@ -19,7 +19,7 @@ def create_form(at_datetime: datetime.datetime) -> None:
     """
     Launch the tracker.
     """
-    actions.ActionHandler(at_datetime)
+    _actions.ActionHandler(at_datetime)
 
 
 def main() -> None:

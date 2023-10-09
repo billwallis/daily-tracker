@@ -10,8 +10,6 @@ __all__ = [
     # Abstract integration APIs
     "Input",
     "Output",
-    "on_event",
-    "post_event",
     # Tracker configuration/options
     "Configuration",
     # Data classes

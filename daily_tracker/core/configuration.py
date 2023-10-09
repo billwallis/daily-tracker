@@ -78,7 +78,7 @@ class Configuration:
 
     @property
     def appointment_category_exclusions(self) -> list[str]:
-        return self._get_option_value("appointment-category-exclusions", None)
+        return self._get_option_value("appointment-category-exclusions", [])
 
     @property
     def linked_calendar(self) -> str:

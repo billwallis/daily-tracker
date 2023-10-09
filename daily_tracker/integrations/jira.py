@@ -18,8 +18,9 @@ import json
 import logging
 import re
 
-import core
 import requests
+
+import core
 
 
 class JiraConnector:

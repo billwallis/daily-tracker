@@ -45,10 +45,10 @@ class DatabaseConnector:
         if not (
             self.connection.execute(
                 """
-                SELECT name
-                FROM sqlite_master
-                WHERE type = 'table'
-                  AND name = 'tracker'
+                SELECT NAME
+                FROM SQLITE_MASTER
+                WHERE TYPE = 'table'
+                  AND NAME = 'tracker'
                 """
             ).fetchone()
         ):
@@ -62,11 +62,11 @@ class DatabaseConnector:
         """
         if self.connection.execute(
             """
-            SELECT name
-            FROM sqlite_master
-            WHERE type = 'table'
-              AND name = :table_name
-            """,
+                SELECT NAME
+                FROM SQLITE_MASTER
+                WHERE TYPE = 'table'
+                  AND NAME = :table_name
+                """,
             {"table_name": table_name},
         ).fetchone():
             self.connection.execute(
@@ -107,7 +107,9 @@ class DatabaseHandler(core.Input, core.Output):
     """
 
     def __init__(
-        self, database_filepath: str, configuration: core.Configuration
+        self,
+        database_filepath: str,
+        configuration: core.Configuration,
     ):
         logging.debug(f"Loading database file at {database_filepath}...")
         self.connection = DatabaseConnector(database_filepath)
@@ -174,24 +176,25 @@ class DatabaseHandler(core.Input, core.Output):
         return (
             []
             + [
-                (
-                    core.Task(
-                        task_name=latest_task_and_detail[0],
-                        details=[latest_task_and_detail[1]],
-                        priority=0,
-                    )
+                core.Task(
+                    task_name=latest_task_and_detail[0],
+                    details=[latest_task_and_detail[1]],
+                    priority=0,
                 )
             ]
             + [
                 core.Task(
-                    task_name=task, details=[], is_default=bool(default_flag)
+                    task_name=task,
+                    details=[],
+                    is_default=bool(default_flag),
                 )
                 for task, default_flag in recent_tasks_with_defaults
             ]
         )
 
     def get_last_task_and_detail(
-        self, date_time: datetime.datetime
+        self,
+        date_time: datetime.datetime,
     ) -> tuple[str, str]:
         """
         Return the most recent task and its detail.
@@ -199,10 +202,10 @@ class DatabaseHandler(core.Input, core.Output):
         with self.connection.connection as conn:
             return conn.execute(
                 """
-                SELECT task, detail
-                FROM tracker
-                WHERE date_time <= :date_time
-                ORDER BY date_time DESC
+                SELECT TASK, DETAIL
+                FROM TRACKER
+                WHERE DATE_TIME <= :date_time
+                ORDER BY DATE_TIME DESC
                 LIMIT 1
                 """,
                 {"date_time": date_time.strftime("%Y-%m-%d %H:%M:%S")},
@@ -217,11 +220,11 @@ class DatabaseHandler(core.Input, core.Output):
         the task's latest detail.
         """
         latest_tasks = """
-            SELECT task, detail
-            FROM task_detail_with_defaults
-            WHERE last_date_time >= DATETIME('now', :date_modifier)
-               OR indx = 0  /* Defaults */
-            ORDER BY indx, task
+            SELECT TASK, DETAIL
+            FROM TASK_DETAIL_WITH_DEFAULTS
+            WHERE LAST_DATE_TIME >= DATETIME('now', :date_modifier)
+               OR INDX = 0  /* Defaults */
+            ORDER BY INDX, TASK
         """
         output = read_sql(
             sql=latest_tasks,
@@ -232,18 +235,19 @@ class DatabaseHandler(core.Input, core.Output):
         return dict(output)  # type: ignore
 
     def get_recent_tasks_with_defaults(
-        self, show_last_n_weeks: int
+        self,
+        show_last_n_weeks: int,
     ) -> dict[str, str]:
         """
         Return the drop-down list of recent tasks with a flag to indicate
         default tasks.
         """
         latest_tasks = """
-            SELECT task, (indx = 0) AS default_flag
-            FROM task_detail_with_defaults
-            WHERE last_date_time >= DATETIME('now', :date_modifier)
-               OR indx = 0  /* Defaults */
-            ORDER BY indx, task
+            SELECT TASK, (INDX = 0) AS DEFAULT_FLAG
+            FROM TASK_DETAIL_WITH_DEFAULTS
+            WHERE LAST_DATE_TIME >= DATETIME('now', :date_modifier)
+               OR INDX = 0  /* Defaults */
+            ORDER BY INDX, TASK
         """
         output = read_sql(
             sql=latest_tasks,
@@ -261,11 +265,11 @@ class DatabaseHandler(core.Input, core.Output):
         """
         details = self.connection.execute(
             """
-            SELECT detail
-            FROM tracker
-            WHERE task = :task
-            GROUP BY detail
-            ORDER BY MAX(date_time) DESC
+            SELECT DETAIL
+            FROM TRACKER
+            WHERE TASK = :task
+            GROUP BY DETAIL
+            ORDER BY MAX(DATE_TIME) DESC
             LIMIT 10
             """,
             {"task": task},
@@ -304,7 +308,7 @@ class DatabaseHandler(core.Input, core.Output):
         with self.connection.connection as conn:
             conn.execute(
                 """
-                INSERT INTO tracker(date_time, task, detail, interval)
+                INSERT INTO TRACKER(DATE_TIME, TASK, DETAIL, INTERVAL)
                     VALUES (:at_datetime, :task, :detail, :interval)
                 """,
                 {
@@ -324,13 +328,13 @@ class DatabaseHandler(core.Input, core.Output):
         """
         tracker_history = """
             SELECT
-                date_time,
-                task,
-                detail,
-                interval
-            FROM tracker
-            WHERE date_time >= DATE('now', :date_modifier)
-            ORDER BY date_time
+                DATE_TIME,
+                TASK,
+                DETAIL,
+                INTERVAL
+            FROM TRACKER
+            WHERE DATE_TIME >= DATE('now', :date_modifier)
+            ORDER BY DATE_TIME
         """
         result = read_sql(
             sql=tracker_history,

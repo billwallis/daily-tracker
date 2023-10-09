@@ -1,6 +1,5 @@
 """
-The tracker generates a pop-up box to record current work which updates local
-files, as well as optionally integrates with other third-party tools.
+The scheduler, which is responsible for scheduling the events.
 """
 import datetime
 import logging
@@ -10,6 +9,8 @@ from collections.abc import Callable
 from typing import Any
 
 import core
+
+Action = Callable[[datetime.datetime], Any]
 
 
 def _get_interval_from_configuration() -> int:
@@ -61,14 +62,14 @@ class IndefiniteScheduler:
     _next_event: sched.Event | None
     _running: bool
     _scheduler: sched.scheduler
-    action: Callable[[datetime.datetime], Any]
+    action: Action
 
-    def __init__(self, action: Callable[[datetime.datetime], Any]):
+    def __init__(self, action: Action):
         """
         Create the scheduler to call the ``action`` on a schedule.
 
-        The interval over which the schedule runs is defined in configuration
-        file.
+        The interval over which the schedule runs is defined in the
+        configuration file.
 
         :param action: The function to call when the schedule is executed.
         """

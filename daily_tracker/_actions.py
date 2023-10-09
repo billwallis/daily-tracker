@@ -3,10 +3,10 @@ The actions for the pop-up box.
 """
 import datetime
 import os.path
-from typing import Protocol
+
+import dotenv
 
 import core
-import dotenv
 import integrations
 import tracker_utils
 
@@ -19,18 +19,6 @@ JIRA_CREDENTIALS = {
 SLACK_CREDENTIALS = {
     "url": os.getenv("SLACK_WEBHOOK_URL"),
 }
-
-
-class Form(Protocol):  # Just for backwards compatibility, will be removed
-    """
-    The handlers need properties from the form to be able to pass the details
-    around for the various methods.
-    """
-
-    task: str
-    detail: str
-    at_datetime: datetime.datetime
-    interval: int
 
 
 class ActionHandler:

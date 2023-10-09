@@ -1,9 +1,11 @@
-# sourcery skip: docstrings-for-packages, no-relative-imports
+"""
+Various calendar integrations.
+"""
 import os
 
 from integrations.calendars.calendars import Calendar, NoCalendar
 
-# from daily_tracker.integrations.calendars.gmail import GmailInput
+# from integrations.calendars.gmail import GmailInput
 
 if os.name == "nt":
     from integrations.calendars.outlook_windows import OutlookInput
