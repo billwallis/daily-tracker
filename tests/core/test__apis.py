@@ -166,3 +166,32 @@ def test__output__post_events():
     """
     entry = "some-entry"
     apis.Output.post_events(entry=entry)  # type: ignore
+
+
+def test__task():
+    """
+    Test the ``Task`` class.
+    """
+    task = apis.Task(task_name="some-task")
+
+    assert task.task_name == "some-task"
+    assert task.details == []
+    assert task.priority == 1
+    assert task.is_default is False
+
+
+def test__entry():
+    """
+    Test the ``Entry`` class.
+    """
+    task = apis.Entry(
+        date_time=datetime.datetime(2020, 1, 1),
+        task_name="some-task",
+        detail="some-detail",
+        interval=1,
+    )
+
+    assert task.date_time == datetime.datetime(2020, 1, 1)
+    assert task.task_name == "some-task"
+    assert task.detail == "some-detail"
+    assert task.interval == 1
