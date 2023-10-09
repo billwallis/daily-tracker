@@ -26,8 +26,9 @@ import dataclasses
 import datetime
 
 import appscript
-import core
 from appscript.reference import Reference
+
+import core
 from integrations.calendars.calendars import Calendar, CalendarEvent
 
 

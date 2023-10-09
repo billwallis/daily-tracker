@@ -9,11 +9,12 @@ from __future__ import annotations
 import dataclasses
 import datetime
 
+import win32com.client
+from win32com.client import CDispatch
+
 import core
 import tracker_utils
-import win32com.client
 from integrations.calendars.calendars import Calendar, CalendarEvent
-from win32com.client import CDispatch
 
 
 @dataclasses.dataclass
