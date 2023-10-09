@@ -6,10 +6,11 @@ import logging
 import logging.config
 
 import actions
+import yaml
+
 import core
 import core.create
 import tracker_utils
-import yaml
 
 APPLICATION_CREATED = True
 
@@ -42,7 +43,7 @@ def main() -> None:
         # core.create.create_env()
         db_handler = core.DatabaseHandler(
             tracker_utils.ROOT / "tracker.db",
-            core.configuration.get_configuration(),
+            core.Configuration.from_default(),
         )
         # db_handler.import_history(tracker_utils.ROOT / "tracker.csv")
 

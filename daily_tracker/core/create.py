@@ -32,7 +32,7 @@ def main() -> None:
     create_env()
     db_handler = core.DatabaseHandler(
         database_filepath=tracker_utils.ROOT / "tracker.db",
-        configuration=core.configuration.get_configuration(),
+        configuration=core.Configuration.from_default(),
     )
     db_handler.import_history(filepath=tracker_utils.ROOT / "tracker.csv")
 

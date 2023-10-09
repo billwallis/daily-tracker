@@ -52,9 +52,7 @@ pytest-cov = "^4.1.0"
 
 [tool.pytest.ini_options]
 addopts = "--cov=daily_tracker --cov-report term-missing"
-testpaths = [
-    "tests",
-]
+testpaths = ["tests"]
 
 
 [tool.black]
@@ -65,6 +63,7 @@ line-length = 80
 [tool.isort]
 profile = "black"
 line_length = 80
+known_local_folder = "daily_tracker,core,integrations,tracker_utils"
 
 
 [tool.pylint.format]
