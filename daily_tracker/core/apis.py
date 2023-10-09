@@ -4,10 +4,10 @@ The API classes that all integration classes should inherit from.
 
 This module categorises all objects as ``Input`` and ``Output`` objects:
 
-- The ``Input`` objects have an ``on_event`` method which is called before the
-  task input is requested from the user.
-- The ``Output`` objects have a ``post_event`` method which is called after the
-  task input has been received from the user.
+- The ``Input`` objects have an ``on_event`` method which is called
+  before the task input is requested from the user.
+- The ``Output`` objects have a ``post_event`` method which is called
+  after the task input has been received from the user.
 
 The class hierarchy here is::
 
@@ -23,10 +23,10 @@ The class hierarchy here is::
         +-| Input |-+-| Output |-+
           +-------+   +--------+
 
-The backend will then only interact with the ``Input`` and ``Output`` type
-classes through the corresponding ``APIS`` class property::
+The backend will then only interact with the ``Input`` and ``Output``
+type classes through the corresponding ``apis`` class property::
 
-    >>> type(Input.APIS), type(Output.APIS)
+    >>> type(Input.apis), type(Output.apis)
     (<class 'dict'>, <class 'dict'>)
 
 
@@ -61,8 +61,8 @@ from __future__ import annotations
 
 import abc
 import datetime
+import itertools
 import logging
-from collections.abc import Generator
 from typing import ClassVar
 
 import core
@@ -72,29 +72,34 @@ import tracker_utils
 class API(abc.ABC):
     """
     Implementation to automatically bind the integration objects to the
-    ``Input`` and ``Output`` objects' ``APIS`` class property.
+    ``Input`` and ``Output`` objects' ``apis`` class property.
     """
 
-    APIS: ClassVar
+    apis: ClassVar[dict[str, API]]
 
-    def __init_subclass__(cls, **kwargs) -> None:
+    @classmethod
+    def __new__(cls, *args, **kwargs):
         """
         During the initialisation of the subclass, use some metaprogramming to
         automatically bind the subclass to the ``Input`` and ``Output`` classes
-        ``APIS`` property.
+        ``apis`` property.
         """
-        if cls.__name__ not in ["Input", "Output"]:
-            key = tracker_utils.pascal_to_snake(cls.__name__)
-            logging.debug(f"Adding class {cls} to {cls}.APIS with key '{key}'")
-            cls.APIS[key] = cls
+        instance = super().__new__(cls)
+        key = tracker_utils.pascal_to_snake(cls.__name__)
 
-        return super().__init_subclass__(**kwargs)
+        for base in cls.__bases__:
+            if issubclass(base, API):
+                logging.debug(
+                    f"Adding class {instance} to `{base}.apis` with key '{key}'"
+                )
+                base.apis[key] = instance
+        return instance
 
 
 class IInput(abc.ABC):
     """
-    Abstract base class for objects whose methods need to be actioned when the
-    "pop-up" event starts.
+    Abstract base class for objects whose methods need to be actioned when
+    the "pop-up" event starts.
     """
 
     @abc.abstractmethod
@@ -103,25 +108,6 @@ class IInput(abc.ABC):
         The actions to perform at the start of the "pop-up" event at the
         scheduled time.
         """
-        pass
-
-
-class Input(API, IInput):
-    """
-    Abstract base class for objects whose methods need to be actioned when the
-    "pop-up" event starts.
-    """
-
-    APIS: ClassVar[dict[str, Input]] = {}
-
-    def on_event(self, date_time: datetime.datetime) -> list[core.Task]:
-        """
-        The actions to perform at the start of the "pop-up" event at the
-        scheduled time.
-        """
-        raise NotImplementedError(
-            f"{self}.{self.on_event.__name__} has not been defined"
-        )
 
 
 class IOutput(abc.ABC):
@@ -135,49 +121,52 @@ class IOutput(abc.ABC):
         """
         The actions to perform after the "pop-up" event.
         """
-        pass
 
 
-class Output(API, IOutput):
+class Input(API, IInput, abc.ABC):
+    """
+    Abstract base class for objects whose methods need to be actioned when the
+    "pop-up" event starts.
+    """
+
+    apis: ClassVar[dict[str, Input]] = {}
+
+    @classmethod
+    def on_events(
+        cls,
+        date_time: datetime.datetime,
+    ) -> list[core.Task]:
+        """
+        Execute the actions at the start of the "pop-up" event.
+
+        For the "pop-up" event, we need:
+
+        1.  The default task and detail to show first
+        2.  A list of alternative tasks that are available in the drop-down
+        3.  A list of the latest details for each of the tasks from 2
+
+        The UI call is only made after this -- and only if the UI is enabled as
+        there could be other interfaces.
+        """
+        tasks = [
+            object_.on_event(date_time=date_time)
+            for name, object_ in cls.apis.items()
+        ]
+        return list(itertools.chain.from_iterable(tasks))
+
+
+class Output(API, IOutput, abc.ABC):
     """
     Abstract base class for objects whose methods need to be resolved after the
     "pop-up" event ends.
     """
 
-    APIS: ClassVar[dict[str, Output]] = {}
+    apis: ClassVar[dict[str, Output]] = {}
 
-    def post_event(self, entry: core.Entry) -> None:
+    @classmethod
+    def post_events(cls, entry: core.Entry) -> None:
         """
-        The actions to perform after the "pop-up" event.
+        Execute the actions after the "pop-up" event.
         """
-        raise NotImplementedError(
-            f"{self}.{self.post_event.__name__} has not been defined"
-        )
-
-
-def on_event(
-    date_time: datetime.datetime,
-) -> Generator[list[core.Task], None, None]:
-    """
-    Execute the actions at the start of the "pop-up" event.
-
-    For the "pop-up" event, we need:
-
-    1.  The default task and detail to show first
-    2.  A list of alternative tasks that are available in the drop-down
-    3.  A list of the latest details for each of the tasks from 2
-
-    The UI call is not included in this.
-    """
-    for name, class_ in Input.APIS.items():
-        print(name, type(class_))
-        yield class_.on_event(date_time=date_time)
-
-
-def post_event(entry: core.Entry) -> None:
-    """
-    Execute the actions after the "pop-up" event.
-    """
-    for name, class_ in Output.APIS.items():
-        print(name, type(class_))
-        class_.post_event(entry=entry)
+        for name, object_ in Output.apis.items():
+            object_.post_event(entry=entry)
