@@ -10,8 +10,9 @@ post to and configuring the "Incoming Webhooks" app.
 import json
 import logging
 
-import core
 import requests
+
+import core
 
 
 class SlackConnector:

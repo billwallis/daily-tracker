@@ -11,9 +11,9 @@ import tkinter as tk
 import tkinter.ttk
 from typing import Any
 
-import core
 import PIL.Image
 import PIL.ImageTk
+
 import tracker_utils
 
 ICON = tracker_utils.ROOT / "resources/clock-icon.png"

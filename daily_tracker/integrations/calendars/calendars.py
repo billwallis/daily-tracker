@@ -30,10 +30,6 @@ class Calendar(abc.ABC):
     """
 
     def __init__(self, configuration: core.Configuration):
-        """
-
-        :param configuration:
-        """
         self.configuration = configuration
 
     @abc.abstractmethod
@@ -70,16 +66,16 @@ class Calendar(abc.ABC):
         if not self.configuration.use_calendar_appointments:
             return []
 
-        categories_to_exclude = (
-            self.configuration.appointment_category_exclusions or []
-        )
         events = [
             event
             for event in self.get_appointment_at_datetime(
                 at_datetime=at_datetime
             )
             if not event.all_day_event
-            and all(i not in event.categories for i in categories_to_exclude)
+            and all(
+                i not in event.categories
+                for i in self.configuration.appointment_category_exclusions
+            )
         ]
 
         return [

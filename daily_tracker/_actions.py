@@ -3,10 +3,12 @@ The actions for the pop-up box.
 """
 import datetime
 import os.path
-from typing import Protocol
+
+import dotenv
 
 import core
-import dotenv
+import core.database
+import core.form
 import integrations
 import tracker_utils
 
@@ -21,18 +23,6 @@ SLACK_CREDENTIALS = {
 }
 
 
-class Form(Protocol):  # Just for backwards compatibility, will be removed
-    """
-    The handlers need properties from the form to be able to pass the details
-    around for the various methods.
-    """
-
-    task: str
-    detail: str
-    at_datetime: datetime.datetime
-    interval: int
-
-
 class ActionHandler:
     """
     Handler for the actions that are triggered on the pop-up box.
@@ -43,7 +33,7 @@ class ActionHandler:
         Initialise the main handler and the various handlers to other systems.
         """
         self.configuration = core.Configuration.from_default()
-        self.database_handler = core.DatabaseHandler(
+        self.database_handler = core.database.DatabaseHandler(
             tracker_utils.ROOT / "tracker.db",
             configuration=self.configuration,
         )
@@ -58,8 +48,9 @@ class ActionHandler:
             **SLACK_CREDENTIALS,
             configuration=self.configuration,
         )
-        self.form = core.TrackerForm(
-            at_datetime=at_datetime, action_handler=self
+        self.form = core.form.TrackerForm(
+            at_datetime=at_datetime,
+            action_handler=self,
         )
 
         self.form.generate_form()
