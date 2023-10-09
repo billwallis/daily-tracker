@@ -2,6 +2,8 @@
 Connect to and read from a Jira project using its REST API:
     * https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/
 
+This only supports the Cloud version of Jira, not the Server version.
+
 Note that:
     * The KEY should be your email address for your Atlassian account
     * The SECRET should be a token that you generate for your Atlassian account
@@ -52,13 +54,6 @@ class JiraConnector:
         )
 
     @property
-    def auth_bearer(self) -> str:
-        """
-        Use bearer authentication (a personal access token).
-        """
-        return f"Bearer {self._api_secret}"
-
-    @property
     def request_headers(self) -> dict:
         """
         Expose the default headers in a dictionary.
@@ -67,7 +62,6 @@ class JiraConnector:
             "Content-Type": "application/json",
             "Accept": "application/json",
             "Authorization": self.auth_basic,
-            # "Authorization": self.auth_bearer,
         }
 
     def get_projects_paginated(
@@ -199,17 +193,16 @@ class JiraConnector:
                 "started": at_datetime,
             }
         )
-        # payload = json.dumps({
-        #     "comment": detail,
-        #     "started": at_datetime,
-        #     "timeSpentSeconds": interval * 60,
-        # })
-        return requests.request(
-            method="POST",
-            url=self._base_url + endpoint,
-            headers=self.request_headers,
-            data=payload,
-        )
+
+        try:
+            return requests.request(
+                method="POST",
+                url=self._base_url + endpoint,
+                headers=self.request_headers,
+                data=payload,
+            )
+        except Exception:  # noqa
+            pass
 
     def create_issue(
         self,
@@ -314,13 +307,19 @@ class Jira(core.Input, core.Output):
             """
             Inner function to loop over until all tickets have been retrieved.
             """
-            return json.loads(
-                self.connector.search_for_issues_using_jql(
-                    jql=jql,
-                    fields=fields,
-                    start_at=start_at,
-                ).text
-            )
+            try:
+                return json.loads(
+                    self.connector.search_for_issues_using_jql(
+                        jql=jql,
+                        fields=fields,
+                        start_at=start_at,
+                    ).text
+                )
+            except (
+                requests.exceptions.JSONDecodeError,  # Usually because Jira is down
+                requests.exceptions.ProxyError,  # Sometimes pops up behind a proxy
+            ):
+                return {"total": 1_000, "issues": []}
 
         results = []
         total = 999
