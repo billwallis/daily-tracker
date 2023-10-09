@@ -7,6 +7,8 @@ import os.path
 import dotenv
 
 import core
+import core.database
+import core.form
 import integrations
 import tracker_utils
 
@@ -31,7 +33,7 @@ class ActionHandler:
         Initialise the main handler and the various handlers to other systems.
         """
         self.configuration = core.Configuration.from_default()
-        self.database_handler = core.DatabaseHandler(
+        self.database_handler = core.database.DatabaseHandler(
             tracker_utils.ROOT / "tracker.db",
             configuration=self.configuration,
         )
@@ -46,8 +48,9 @@ class ActionHandler:
             **SLACK_CREDENTIALS,
             configuration=self.configuration,
         )
-        self.form = core.TrackerForm(
-            at_datetime=at_datetime, action_handler=self
+        self.form = core.form.TrackerForm(
+            at_datetime=at_datetime,
+            action_handler=self,
         )
 
         self.form.generate_form()
