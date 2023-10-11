@@ -129,10 +129,92 @@ CREATE VIEW tasks_from_yesterday AS
         detail,
         interval
     FROM tracker
-    WHERE date_time >= IIF(
-        STRFTIME('%w', DATE('now')) = '1', /* Monday */
-        DATE('now', '-3 day'),
-        DATE('now', '-1 day')
+    WHERE DATE(date_time) = (
+        SELECT DATE(MAX(date_time))
+        FROM tracker
+        WHERE date_time < CURRENT_DATE
     )
     ORDER BY date_time DESC
+;
+
+
+DROP VIEW IF EXISTS tasks_from_yesterday_rollup;
+CREATE VIEW tasks_from_yesterday_rollup AS
+    SELECT
+        task,
+        detail,
+        SUM(interval) AS minutes,
+        PRINTF('%.*c', SUM(interval) / 15, '*') AS chart
+    FROM tasks_from_yesterday
+    WHERE task != 'Lunch Break'
+    GROUP BY task, detail
+    ORDER BY task, detail
+;
+
+
+-- DROP VIEW IF EXISTS weekly_report;
+-- CREATE VIEW weekly_report AS
+    WITH
+    dates AS (
+        SELECT
+            /* The first Monday at least 6 months ago */
+            DATE(DATE(CURRENT_TIMESTAMP, '-6 months'), 'weekday 0', '-6 days') AS from_date
+    ),
+    axis AS (
+            SELECT from_date AS week_starting
+            FROM dates
+        UNION ALL
+            SELECT DATE(week_starting, '+7 days')
+            FROM axis
+            WHERE week_starting < DATE(CURRENT_DATE, '-7 days')
+    ),
+
+    records AS (
+        SELECT
+            DATE(date_time, 'weekday 0', '-6 days') AS week_starting,
+            SUM(interval) AS total_interval
+        FROM main.tracker
+        WHERE date_time > (SELECT from_date FROM dates)
+          AND task != 'Lunch Break'
+        GROUP BY DATE(date_time, 'weekday 0', '-6 days')
+    ),
+
+    weekly_aggregates AS (
+        SELECT
+            week_starting,
+            COALESCE(records.total_interval, 0) AS total_interval,
+            37 * 2 * 60 AS fortnightly_commitment,  /* 37 hours per week, 2 week sprints */
+            ''
+                || (COALESCE(records.total_interval, 0) / 60)
+                || ' hours, '
+                || (COALESCE(records.total_interval, 0) % 60)
+                ||' minutes'
+            AS TIME_WORKING
+        FROM axis
+            LEFT JOIN records USING (week_starting)
+    ),
+    weekly_report AS (
+        SELECT
+            week_starting,
+            total_interval,
+            time_working,
+            fortnightly_commitment,
+            SUM(total_interval) OVER(
+                ORDER BY week_starting ROWS BETWEEN 1 PRECEDING AND CURRENT ROW
+            ) AS fortnightly_total,
+            ROUND(100.0 * SUM(total_interval) OVER(
+                ORDER BY week_starting ROWS BETWEEN 1 PRECEDING AND CURRENT ROW
+            ) / fortnightly_commitment, 2) AS proportion_of_commitment
+        FROM weekly_aggregates
+    )
+
+    SELECT
+        week_starting,
+        total_interval,
+        time_working,
+        proportion_of_commitment,
+        fortnightly_commitment,
+        fortnightly_total
+    FROM weekly_report
+    ORDER BY week_starting DESC
 ;
