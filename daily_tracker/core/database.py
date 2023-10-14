@@ -6,7 +6,7 @@ import datetime
 import logging
 import pathlib
 import sqlite3
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from typing import Any
 
 import core
@@ -25,7 +25,11 @@ class DatabaseConnector:
         self.connection = sqlite3.connect(self.filepath, timeout=15)
         self._create_backend()
 
-    def execute(self, sql: str, parameters: Iterable = None) -> sqlite3.Cursor:
+    def execute(
+        self,
+        sql: str,
+        parameters: Mapping[str, Any] = None,
+    ) -> sqlite3.Cursor:
         """
         Shortcut to the execute method on the SQLite connection object.
         """

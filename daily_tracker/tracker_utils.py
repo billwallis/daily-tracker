@@ -4,6 +4,7 @@ Utilities to use throughout the modules.
 import pathlib
 
 ROOT = pathlib.Path(__file__).parent  # `daily_tracker/`
+DB = ROOT / "tracker.db"  # `daily_tracker/tracker.db`
 
 
 def pascal_to_snake(text: str) -> str:
