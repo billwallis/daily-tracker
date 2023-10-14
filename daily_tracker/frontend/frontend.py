@@ -191,7 +191,7 @@ def update_row(date_time: str, changes: dict[str, str]) -> None:
     # We have to do a smidge of dynamic SQL here -- can we find a way to
     # use Metabase's [[ ]] syntax?
 
-    conditions = ", ".join(f"{column} = :{column}" for column in changes.keys())
+    conditions = ", ".join(f"{column} = :{column}" for column in changes)
     sql = f"""
         update tracker
         set {conditions}
