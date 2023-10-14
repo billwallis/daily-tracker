@@ -14,7 +14,7 @@ def test__get_recent_tasks():
     The most recent tasks are returned.
     """
     database_handler = database.DatabaseHandler(
-        database_filepath=tracker_utils.ROOT / "tracker.db",
+        database_filepath=tracker_utils.DB,
         configuration=configuration.Configuration.from_default(),
     )
 

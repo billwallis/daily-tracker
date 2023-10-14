@@ -34,7 +34,7 @@ class ActionHandler:
         """
         self.configuration = core.Configuration.from_default()
         self.database_handler = core.database.DatabaseHandler(
-            tracker_utils.ROOT / "tracker.db",
+            tracker_utils.DB,
             configuration=self.configuration,
         )
         self.calendar_handler = integrations.get_linked_calendar(
