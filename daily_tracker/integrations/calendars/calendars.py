@@ -85,6 +85,12 @@ class Calendar(abc.ABC):
             )
         ]
 
+    def post_event(self, entry: core.Entry) -> None:
+        """
+        Temporarily here to allow for backwards compatibility.
+        """
+        pass
+
 
 class NoCalendar(Calendar, core.Input, core.Output):
     """

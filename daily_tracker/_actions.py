@@ -87,19 +87,27 @@ class ActionHandler:
         This takes the meeting details from the linked calendar (if one has been
         linked), or just uses the latest task.
         """
-        current_meeting = self.calendar_handler.get_appointment_at_datetime(
-            at_datetime=at_datetime,
-            categories_to_exclude=self.configuration.appointment_category_exclusions,
-        )
+        if self.configuration.use_calendar_appointments:
+            current_meetings = [
+                meeting
+                for meeting in self.calendar_handler.get_appointment_at_datetime(
+                    at_datetime=at_datetime,
+                    categories_to_exclude=self.configuration.appointment_category_exclusions,
+                )
+                if not meeting.all_day_event
+            ]
+        else:
+            current_meetings = []
 
-        if (
-            not self.configuration.use_calendar_appointments
-            or current_meeting is None
-        ):
+        if len(current_meetings) != 1:
+            # If there are two events, we don't know which one to use so
+            # default to the last task from the database instead
             return self.database_handler.get_last_task_and_detail(
                 datetime.datetime.now()
             ) or ("", "")
-        return "", ""
+
+        assert len(current_meetings) == 1
+        return "Meeting", current_meetings[0].subject
 
     def get_dropdown_options(self, use_jira_sprint: bool) -> dict[str, str]:
         """

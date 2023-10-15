@@ -51,13 +51,13 @@ class OutlookEvent(CalendarEvent):
             start=appointment.start_time.get(),
             end=appointment.end_time.get(),
             categories=[cat.name.get() for cat in appointment.category.get()],
-            all_day_event=appointment.start_time.get().hour != 0,
+            all_day_event=appointment.start_time.get().hour == 0,
         )
 
 
-class OutlookInput(core.Input, Calendar):
+class OutlookInput(Calendar, core.Input):
     """
-    Naive implementation of a connector to Outlook on a Mac.
+    Naive implementation of a connector to Outlook on macOS.
     """
 
     def __init__(self, configuration: core.Configuration):

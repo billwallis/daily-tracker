@@ -153,7 +153,7 @@ class JiraConnector:
         self,
         issue_key: str,
         detail: str,
-        at_datetime: str,
+        at_datetime: datetime.datetime,
         interval: int,
     ) -> requests.Response:
         """
@@ -190,7 +190,8 @@ class JiraConnector:
                         }
                     ],
                 },
-                "started": at_datetime,
+                # TODO: Make this timezone-aware
+                "started": f"{at_datetime.strftime('%Y-%m-%dT%H:%M:%S')}.000+0000",
             }
         )
 
@@ -201,8 +202,8 @@ class JiraConnector:
                 headers=self.request_headers,
                 data=payload,
             )
-        except Exception:  # noqa
-            pass
+        except Exception as e:  # noqa
+            logging.debug(f"Could not add worklog: {e}")
 
     def create_issue(
         self,
@@ -359,13 +360,21 @@ class Jira(core.Input, core.Output):
         """
         Post the task, detail, and time to the corresponding ticket's worklog.
         """
+        logging.debug("Posting log to Jira...")
         issue_key = re.search(self.project_key_pattern, task)
         if issue_key is None:
+            logging.debug(
+                f"Could not find {self.project_key_pattern} in {task}"
+            )
             return None
 
-        self.connector.add_worklog(
+        logging.debug(f"Posting work log to {issue_key[0]}")
+        response = self.connector.add_worklog(
             issue_key=issue_key[0],
             detail=detail,
-            at_datetime=f"{at_datetime.isoformat()}.000+0000",
+            at_datetime=at_datetime,
             interval=interval,
         )
+        if response.status_code != 201:
+            logging.debug(f"Response code: {response.status_code}")
+            logging.debug(f"Could not post work log: {response.text}")

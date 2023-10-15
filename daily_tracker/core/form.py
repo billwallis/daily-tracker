@@ -42,11 +42,12 @@ class TrackerForm:
     _root: ttkthemes.ThemedTk
     project_text_box: TextBox
     detail_text_box: TextBox
-    defaults: tuple[
-        str, str
-    ]  # Shouldn't this just be the first of the options?
+
+    # Shouldn't this just be the first of the options?
+    defaults: tuple[str, str]
+
     options: dict[str, str]
-    # project_details: dict[str, list[str]]
+    # project_details: dict[str, list[str]]  # See `task_details` below
 
     def __init__(self, at_datetime: datetime.datetime, action_handler):
         """
