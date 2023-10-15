@@ -76,8 +76,8 @@
 
             "jira-type": {
               "type": "string",
-              "description": "The Jira platform to connect to.\n\nValues of `none`, `cloud`, or `server` only.",
-              "enum": ["none", "cloud", "server"]
+              "description": "The Jira platform to connect to.\n\nOnly Cloud is supported, and this is to emphasise this.",
+              "enum": ["cloud"]
             },
             "use-jira-sprint": {
               "type": "boolean",
