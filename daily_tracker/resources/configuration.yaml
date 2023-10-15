@@ -14,7 +14,7 @@ tracker:
     appointment-category-exclusions: [Planned Work, Non-Working]
 
     # jira
-    jira-type: cloud
+    jira-type: none
     use-jira-sprint: false
     post-to-jira: false
 
