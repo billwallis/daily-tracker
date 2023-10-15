@@ -6,7 +6,7 @@ import datetime
 import logging
 import pathlib
 import sqlite3
-from collections.abc import Iterable, Mapping
+from collections.abc import Mapping
 from typing import Any
 
 import core
@@ -49,15 +49,15 @@ class DatabaseConnector:
         if not (
             self.connection.execute(
                 """
-                SELECT NAME
-                FROM SQLITE_MASTER
-                WHERE TYPE = 'table'
-                  AND NAME = 'tracker'
+                select name
+                from sqlite_master
+                where type = 'table'
+                  and name = 'tracker'
                 """
             ).fetchone()
         ):
             self.run_query_from_file(
-                tracker_utils.ROOT / "core/database/create.sql"
+                tracker_utils.ROOT / "core/scripts/create.sql"
             )
 
     def truncate_table(self, table_name: str) -> None:
@@ -66,10 +66,10 @@ class DatabaseConnector:
         """
         if self.connection.execute(
             """
-                SELECT NAME
-                FROM SQLITE_MASTER
-                WHERE TYPE = 'table'
-                  AND NAME = :table_name
+                select name
+                from sqlite_master
+                where type = 'table'
+                  and name = :table_name
                 """,
             {"table_name": table_name},
         ).fetchone():
@@ -206,11 +206,11 @@ class DatabaseHandler(core.Input, core.Output):
         with self.connection.connection as conn:
             return conn.execute(
                 """
-                SELECT TASK, DETAIL
-                FROM TRACKER
-                WHERE DATE_TIME <= :date_time
-                ORDER BY DATE_TIME DESC
-                LIMIT 1
+                select task, detail
+                from tracker
+                where date_time <= :date_time
+                order by date_time desc
+                limit 1
                 """,
                 {"date_time": date_time.strftime("%Y-%m-%d %H:%M:%S")},
             ).fetchone()
@@ -223,12 +223,19 @@ class DatabaseHandler(core.Input, core.Output):
         dataframe into a dictionary whose keys are the tasks and the values are
         the task's latest detail.
         """
+        # latest_tasks = """
+        #     select task, detail
+        #     from v_latest_tasks
+        #     where last_date_time >= datetime('now', :date_modifier)
+        #        or indx = 0  /* Defaults */
+        #     order by indx, task
+        # """
         latest_tasks = """
-            SELECT TASK, DETAIL
-            FROM TASK_DETAIL_WITH_DEFAULTS
-            WHERE LAST_DATE_TIME >= DATETIME('now', :date_modifier)
-               OR INDX = 0  /* Defaults */
-            ORDER BY INDX, TASK
+            select task, detail
+            from task_detail_with_defaults
+            where last_date_time >= datetime('now', :date_modifier)
+               or indx = 0  /* Defaults */
+            order by indx, task
         """
         output = read_sql(
             sql=latest_tasks,
@@ -247,11 +254,11 @@ class DatabaseHandler(core.Input, core.Output):
         default tasks.
         """
         latest_tasks = """
-            SELECT TASK, (INDX = 0) AS DEFAULT_FLAG
-            FROM TASK_DETAIL_WITH_DEFAULTS
-            WHERE LAST_DATE_TIME >= DATETIME('now', :date_modifier)
-               OR INDX = 0  /* Defaults */
-            ORDER BY INDX, TASK
+            select task, (indx = 0) as default_flag
+            from task_detail_with_defaults
+            where last_date_time >= datetime('now', :date_modifier)
+               or indx = 0  /* Defaults */
+            order by indx, task
         """
         output = read_sql(
             sql=latest_tasks,
@@ -269,12 +276,12 @@ class DatabaseHandler(core.Input, core.Output):
         """
         details = self.connection.execute(
             """
-            SELECT DETAIL
-            FROM TRACKER
-            WHERE TASK = :task
-            GROUP BY DETAIL
-            ORDER BY MAX(DATE_TIME) DESC
-            LIMIT 10
+            select detail
+            from tracker
+            where task = :task
+            group by detail
+            order by max(date_time) desc
+            limit 10
             """,
             {"task": task},
         ).fetchall()
@@ -312,8 +319,8 @@ class DatabaseHandler(core.Input, core.Output):
         with self.connection.connection as conn:
             conn.execute(
                 """
-                INSERT INTO TRACKER(DATE_TIME, TASK, DETAIL, INTERVAL)
-                    VALUES (:at_datetime, :task, :detail, :interval)
+                insert into tracker(date_time, task, detail, interval)
+                    values (:at_datetime, :task, :detail, :interval)
                 """,
                 {
                     "at_datetime": at_datetime.strftime("%Y-%m-%d %H:%M:%S"),
@@ -331,14 +338,14 @@ class DatabaseHandler(core.Input, core.Output):
         the number of days to limit this to with the `previous_days` parameter.
         """
         tracker_history = """
-            SELECT
-                DATE_TIME,
-                TASK,
-                DETAIL,
-                INTERVAL
-            FROM TRACKER
-            WHERE DATE_TIME >= DATE('now', :date_modifier)
-            ORDER BY DATE_TIME
+            select
+                date_time,
+                task,
+                detail,
+                interval
+            from tracker
+            where date_time >= date('now', :date_modifier)
+            order by date_time
         """
         result = read_sql(
             sql=tracker_history,
@@ -348,6 +355,8 @@ class DatabaseHandler(core.Input, core.Output):
         headers = [("date_time", "task", "detail", "interval")]
         to_csv(
             data=headers + result,
-            path=pathlib.Path(filepath)
-            / f"daily-tracker-{datetime.datetime.now().strftime('%Y-%m-%d')}.csv",
+            path=(
+                pathlib.Path(filepath)
+                / f"daily-tracker-{datetime.datetime.now().strftime('%Y-%m-%d')}.csv"
+            ),
         )

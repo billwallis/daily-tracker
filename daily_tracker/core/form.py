@@ -4,22 +4,22 @@ The form for the pop-up box.
 https://youtu.be/5qOnzF7RsNA
 https://github.com/codefirstio/tkinter-data-entry
 """
+from __future__ import annotations
+
 import datetime
 import logging
 import textwrap
-import tkinter as tk
-import tkinter.ttk
-from typing import Any
+import tkinter
+import tkinter.ttk as ttk
 
+import _actions
 import PIL.Image
 import PIL.ImageTk
+import ttkthemes
 
 import tracker_utils
 
 ICON = tracker_utils.ROOT / "resources/clock-icon.png"
-STYLE = {
-    "font": ("Tahoma", 8),
-}
 
 
 def load_icon(filepath: str) -> PIL.ImageTk.PhotoImage | PIL.Image.Image:
@@ -34,6 +34,21 @@ class TrackerForm:
     The pop-up box for the tracker.
     """
 
+    at_datetime: datetime.datetime
+    action_handler: _actions.ActionHandler
+    interval: int
+    _width: int
+    _height: int
+    _root: ttkthemes.ThemedTk
+    project_text_box: TextBox
+    detail_text_box: TextBox
+
+    # Shouldn't this just be the first of the options?
+    defaults: tuple[str, str]
+
+    options: dict[str, str]
+    # project_details: dict[str, list[str]]  # See `task_details` below
+
     def __init__(self, at_datetime: datetime.datetime, action_handler):
         """
         Create the form handler.
@@ -43,12 +58,12 @@ class TrackerForm:
         self.interval = self.action_handler.configuration.interval
         self._width = 350
         self._height = 150
-        self._root: tk.Tk | None = None
-        self.project_text_box: TextBox | None = None
-        self.detail_text_box: TextBox | None = None
-        # self._root.mainloop()
-        # Add properties like `is_meeting` and `is_jira_ticket`?
-        # self.generate_form()
+        self.defaults = self.action_handler.get_default_task_and_detail(
+            at_datetime=self.at_datetime,
+        )
+        self.options = self.action_handler.get_dropdown_options(
+            use_jira_sprint=self.action_handler.configuration.use_jira_sprint,
+        )
 
     @property
     def task(self) -> str:
@@ -65,11 +80,30 @@ class TrackerForm:
         return self.detail_text_box.text_box.get()
 
     @property
+    def task_details(self) -> list[str]:
+        """
+        Return the current task's details.
+
+        TODO: This should be given as an argument -- we don't want to have to
+              talk to the database here (I think).
+        """
+        # fmt: off
+        return self.action_handler.database_handler.get_details_for_task(self.task)
+        # fmt: on
+
+    @property
     def date_time(self) -> str:
         """
         Return the pop-up datetime in the hh:mm format.
         """
         return self.at_datetime.strftime("%H:%M")
+
+    @property
+    def title(self) -> str:
+        """
+        Return the title to use for the pop-up.
+        """
+        return f"Interval Tracker at {self.date_time} ({self.interval})"
 
     def close_form(self) -> None:
         """
@@ -104,13 +138,11 @@ class TrackerForm:
         When the value of the Project box changes, update the Detail box with
         the latest value from the Project.
         """
-        details = self.action_handler.database_handler.get_details_for_task(
-            self.task
-        )
+        details = self.task_details
         self.detail_text_box.text_box["values"] = details
         self.detail_text_box.text_box.set(details[0] if details else "")
 
-    def ok_shortcut(self, event: tk.Event) -> None:
+    def ok_shortcut(self, event: tkinter.Event) -> None:
         """
         Enable keyboard shortcut CTRL + ENTER to the OK button.
 
@@ -123,72 +155,56 @@ class TrackerForm:
         """
         Generate the tracker pop-up form.
         """
-        self._root = tk.Tk()
+        self._root = ttkthemes.ThemedTk(theme="arc")
         self._root.geometry(f"{self._width}x{self._height}")
-        self._root.eval("tk::PlaceWindow . center")  # Middle of screen
-        self._root.title(
-            f"Interval Tracker at {self.date_time} ({self.interval})"
-        )
+        self._root.eval("tk::PlaceWindow . center")  # noqa
+        self._root.title(self.title)
         self._root.wm_iconphoto(False, load_icon(ICON))
 
-        text_box_frame_outer = tk.Frame(
-            self._root,
-            background="white",
-        )
-        text_box_frame_outer.pack(
-            in_=self._root,
-            fill="both",
-            expand=tk.YES,
-        )
+        form_frame = ttk.Frame(self._root)
+        form_frame.pack(expand=tkinter.YES, fill=tkinter.BOTH)
 
-        text_box_frame = tk.LabelFrame(
-            self._root,
+        text_box_frame = ttk.LabelFrame(
+            form_frame,
             text="Current Task Details",
-            borderwidth=2,
-            background="white",
-            font=STYLE["font"],
         )
         text_box_frame.pack(
-            # in_=self._root,
-            in_=text_box_frame_outer,
-            fill="both",
-            expand=tk.YES,
-            side=tk.TOP,
+            side=tkinter.TOP,
+            fill=tkinter.BOTH,
+            expand=tkinter.YES,
             padx=10,
             pady=10,
         )
 
-        button_frame = tk.Frame(
-            self._root,
-            borderwidth=15,
-        )
+        button_frame = ttk.Frame(form_frame)
         button_frame.pack(
-            in_=self._root,
-            side=tk.BOTTOM,
-            fill=tk.BOTH,
-            expand=True,
+            side=tkinter.BOTTOM,
+            fill=tkinter.BOTH,
+            expand=tkinter.TRUE,
+            padx=10,
+            pady=(0, 10),
         )
 
-        defaults = self.action_handler.get_default_task_and_detail(
-            self.at_datetime
-        )
-        options = self.action_handler.get_dropdown_options(
-            use_jira_sprint=self.action_handler.configuration.use_jira_sprint
-        )
+        self.set_text_boxes(text_box_frame)
+        self.set_buttons(button_frame)
 
+        self._root.mainloop()
+
+    def set_text_boxes(self, text_box_frame: ttk.LabelFrame) -> None:
+        """
+        Set the text boxes for the form.
+        """
         self.project_text_box = TextBox(
             parent=text_box_frame,
             label_text="Project",
-            default=defaults[0],
-            values=list(options),
+            default=self.defaults[0],
+            values=list(self.options),
         )
         self.detail_text_box = TextBox(
             parent=text_box_frame,
             label_text="Detail",
-            default=defaults[1],
-            values=self.action_handler.database_handler.get_details_for_task(
-                defaults[0]
-            ),
+            default=self.defaults[1],
+            values=self.task_details,
         )
 
         self.project_text_box.text_box.bind("<KeyPress>", self.ok_shortcut)
@@ -197,40 +213,27 @@ class TrackerForm:
         # self.project_text_box.text_box.bind("<Key>", self.on_project_change)
         self.project_text_box.variable.trace("w", self.on_project_change)
 
-        okay_button = tk.Button(
-            self._root,
-            height=2,
-            width=20,
-            borderwidth=3,
+    def set_buttons(self, button_frame: ttk.Frame) -> None:
+        """
+        Set the buttons for the form.
+        """
+        okay_button = ttk.Button(
+            button_frame,
             text="OK",
             command=self.action_wrapper,
-            font=STYLE["font"],
         )
-        okay_button.pack(
-            in_=button_frame,
-            side=tk.LEFT,
-        )
-        # Could only get this to work by sticking the call inside a lambda
-        okay_button.bind("<Return>", lambda _: self.action_wrapper())
+        okay_button.pack(side=tkinter.LEFT, expand=tkinter.TRUE, padx=10)
 
-        cancel_button = tk.Button(
-            self._root,
-            height=2,
-            width=20,
-            borderwidth=3,
+        cancel_button = ttk.Button(
+            button_frame,
             text="Cancel",
             command=self.close_form,
-            font=STYLE["font"],
         )
-        cancel_button.pack(
-            in_=button_frame,
-            side=tk.RIGHT,
-        )
-        # cancel_button.bind("<Return>", self.close_form)
-        # Could only get this to work by sticking the call inside a lambda
-        cancel_button.bind("<Return>", lambda _: self.close_form())
+        cancel_button.pack(side=tkinter.RIGHT, expand=tkinter.TRUE, padx=10)
 
-        self._root.mainloop()
+        # Could only get these to work by sticking the call inside a lambda
+        okay_button.bind("<Return>", lambda _: self.action_wrapper())
+        cancel_button.bind("<Return>", lambda _: self.close_form())
 
 
 class TextBox:
@@ -238,12 +241,19 @@ class TextBox:
     A text box with a label for the main form.
     """
 
+    parent: ttk.LabelFrame
+    label_text: str
+    values: list[str]
+    frame: ttk.Frame
+    variable: tkinter.StringVar
+    text_box: ttk.Combobox
+
     def __init__(
         self,
-        parent: tk.Misc,
+        parent: ttk.LabelFrame,
         label_text: str,
-        default: Any,
-        values: list[Any],
+        default: str,
+        values: list[str],
     ):
         """
         Set the text box properties and create the widget.
@@ -253,43 +263,33 @@ class TextBox:
         self.values = values
         self.frame = self._build(default)
 
-        self.variable: str
-        self.text_box: tk.ttk.Combobox
-
-    def _build(self, default: Any) -> tk.Frame:
+    def _build(self, default: str) -> ttk.Frame:
         """
         Build the text box and return it.
         """
-        frame = tk.Frame(self.parent, background="white")
-        inner = tk.Frame(self.parent, background="white")
-        label = tk.Label(
-            master=inner,
-            height=1,
-            width=8,
-            borderwidth=2,
+        frame = ttk.Frame(self.parent)
+        frame.pack(ipady=4)
+
+        label = ttk.Label(
+            frame,
             text=self.label_text,
-            justify="right",
-            background="white",
-            relief="flat",
-            font=STYLE["font"],
+            width=8,
+            anchor=tkinter.E,
         )
 
-        text_box_value = tk.StringVar(inner)
+        text_box_value = tkinter.StringVar(frame)
         text_box_value.set(default)
-        text_box = tk.ttk.Combobox(
-            master=inner,
+        text_box = ttk.Combobox(
+            frame,
             textvariable=text_box_value,
             width=40,
-            font=STYLE["font"],
             values=self.values,
         )
-        # text_box.set(default)
+
         self.variable = text_box_value
         self.text_box = text_box
 
-        label.pack(in_=inner, side=tk.LEFT)
-        text_box.pack(in_=inner, side=tk.RIGHT)
-        inner.pack(in_=frame, pady=4)
-        frame.pack(in_=self.parent)
+        label.pack(side=tkinter.LEFT, padx=2)
+        text_box.pack(side=tkinter.RIGHT, padx=2)
 
         return frame

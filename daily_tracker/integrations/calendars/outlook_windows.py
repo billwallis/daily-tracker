@@ -41,9 +41,9 @@ class OutlookEvent(CalendarEvent):
         )
 
 
-class OutlookInput(core.Input, Calendar):
+class OutlookInput(Calendar, core.Input):
     """
-    Naive implementation of a connector to Outlook.
+    Naive implementation of a connector to Outlook on Windows.
     """
 
     def __init__(self, configuration: core.Configuration):

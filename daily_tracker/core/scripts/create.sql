@@ -1,6 +1,6 @@
 
 /*
-    + main.tracker +
+    + tracker +
     The core table in this application that holds all historic data.
 */
 DROP TABLE IF EXISTS tracker;
@@ -16,7 +16,7 @@ CREATE INDEX tracker_task
 
 
 /*
-    + main.task_last_detail +
+    + task_last_detail +
     The latest detail per task. Used for automatically filling the detail text
     box for each task. Updates on inserts and updates of the main.tracker table.
 */
@@ -56,9 +56,9 @@ END
 
 
 /*
-    + main.default_tasks +
-    The default tasks used to populate the task input box drop-down. This should
-    be configurable outside of this module.
+    + default_tasks +
+    The default tasks used to populate the task input box drop-down. This
+    should be configurable outside of this module.
 */
 DROP TABLE IF EXISTS default_tasks;
 CREATE TABLE default_tasks(
@@ -85,8 +85,8 @@ FROM default_tasks
 
 
 /*
-    + main.tracker_latest_task +
-    The latest detail per task over the last 14 days.
+    + task_detail_with_defaults +
+    The latest detail per task.
 */
 DROP VIEW IF EXISTS task_detail_with_defaults;
 CREATE VIEW task_detail_with_defaults AS
@@ -116,105 +116,30 @@ CREATE VIEW task_detail_with_defaults AS
 ;
 
 
-/*
-    + main.tasks_from_yesterday +
-    The tasks and their detail from "yesterday", with yesterday defined as today
-    minus 1 working day so that Monday shows the details from a previous Friday.
-*/
-DROP VIEW IF EXISTS tasks_from_yesterday;
-CREATE VIEW tasks_from_yesterday AS
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+/* Dirty hack -- the triggers are breaking in the sqlite3 API */
+DROP VIEW v_latest_tasks;
+CREATE VIEW v_latest_tasks AS
     SELECT
-        date_time,
+        CASE WHEN task IN (SELECT task FROM default_tasks) THEN 0 ELSE 1 END AS indx,
+        MAX(date_time) AS last_date_time,
         task,
-        detail,
-        interval
+        detail
     FROM tracker
-    WHERE DATE(date_time) = (
-        SELECT DATE(MAX(date_time))
-        FROM tracker
-        WHERE date_time < CURRENT_DATE
-    )
-    ORDER BY date_time DESC
+    GROUP BY task
 ;
 
 
-DROP VIEW IF EXISTS tasks_from_yesterday_rollup;
-CREATE VIEW tasks_from_yesterday_rollup AS
-    SELECT
-        task,
-        detail,
-        SUM(interval) AS minutes,
-        PRINTF('%.*c', SUM(interval) / 15, '*') AS chart
-    FROM tasks_from_yesterday
-    WHERE task != 'Lunch Break'
-    GROUP BY task, detail
-    ORDER BY task, detail
+/* Example usage */
+SELECT *
+FROM v_latest_tasks
+WHERE last_date_time >= DATETIME('now', :date_modifier)
+  OR indx = 0  /* Defaults */
+ORDER BY indx, task
 ;
 
 
--- DROP VIEW IF EXISTS weekly_report;
--- CREATE VIEW weekly_report AS
-    WITH
-    dates AS (
-        SELECT
-            /* The first Monday at least 6 months ago */
-            DATE(DATE(CURRENT_TIMESTAMP, '-6 months'), 'weekday 0', '-6 days') AS from_date
-    ),
-    axis AS (
-            SELECT from_date AS week_starting
-            FROM dates
-        UNION ALL
-            SELECT DATE(week_starting, '+7 days')
-            FROM axis
-            WHERE week_starting < DATE(CURRENT_DATE, '-7 days')
-    ),
-
-    records AS (
-        SELECT
-            DATE(date_time, 'weekday 0', '-6 days') AS week_starting,
-            SUM(interval) AS total_interval
-        FROM main.tracker
-        WHERE date_time > (SELECT from_date FROM dates)
-          AND task != 'Lunch Break'
-        GROUP BY DATE(date_time, 'weekday 0', '-6 days')
-    ),
-
-    weekly_aggregates AS (
-        SELECT
-            week_starting,
-            COALESCE(records.total_interval, 0) AS total_interval,
-            37 * 2 * 60 AS fortnightly_commitment,  /* 37 hours per week, 2 week sprints */
-            ''
-                || (COALESCE(records.total_interval, 0) / 60)
-                || ' hours, '
-                || (COALESCE(records.total_interval, 0) % 60)
-                ||' minutes'
-            AS TIME_WORKING
-        FROM axis
-            LEFT JOIN records USING (week_starting)
-    ),
-    weekly_report AS (
-        SELECT
-            week_starting,
-            total_interval,
-            time_working,
-            fortnightly_commitment,
-            SUM(total_interval) OVER(
-                ORDER BY week_starting ROWS BETWEEN 1 PRECEDING AND CURRENT ROW
-            ) AS fortnightly_total,
-            ROUND(100.0 * SUM(total_interval) OVER(
-                ORDER BY week_starting ROWS BETWEEN 1 PRECEDING AND CURRENT ROW
-            ) / fortnightly_commitment, 2) AS proportion_of_commitment
-        FROM weekly_aggregates
-    )
-
-    SELECT
-        week_starting,
-        total_interval,
-        time_working,
-        proportion_of_commitment,
-        fortnightly_commitment,
-        fortnightly_total
-    FROM weekly_report
-    ORDER BY week_starting DESC
-;
+/* Command to validate the objects in the database */
+PRAGMA quick_check;
