@@ -101,7 +101,7 @@ class ActionHandler:
             ) or ("", "")
         return "", ""
 
-    def get_dropdown_options(self, use_jira_sprint: bool) -> dict:
+    def get_dropdown_options(self, use_jira_sprint: bool) -> dict[str, str]:
         """
         Return the latest tasks and their most recent detail as a dictionary.
 

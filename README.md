@@ -46,3 +46,15 @@ This project uses a mix of [Conventional Commits](https://www.conventionalcommit
 - `refactor`: A code change that neither fixes a bug nor adds a feature
 - `style`: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
 - `test`: Adding missing tests or correcting existing tests
+
+## Dependencies
+
+On macOS, you may need to install the Tcl/Tk framework:
+
+```bash
+brew install tcl-tk
+```
+
+More details available at:
+
+- https://tkdocs.com/tutorial/install.html#install-macos

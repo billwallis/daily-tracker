@@ -33,6 +33,7 @@ appscript = [
     {platform = "darwin", version = "1.2.2"}
 ]
 streamlit = "^1.27.2"
+ttkthemes = "^3.2.2"
 
 
 [tool.poetry.group.dev]

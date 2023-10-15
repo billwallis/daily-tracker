@@ -6,7 +6,7 @@ import datetime
 import logging
 import pathlib
 import sqlite3
-from collections.abc import Iterable, Mapping
+from collections.abc import Mapping
 from typing import Any
 
 import core
@@ -57,7 +57,7 @@ class DatabaseConnector:
             ).fetchone()
         ):
             self.run_query_from_file(
-                tracker_utils.ROOT / "core/database/create.sql"
+                tracker_utils.ROOT / "core/scripts/create.sql"
             )
 
     def truncate_table(self, table_name: str) -> None:

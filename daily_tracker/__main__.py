@@ -10,6 +10,8 @@ import yaml
 
 import core
 import core.create
+import core.database
+import core.scheduler
 import tracker_utils
 
 APPLICATION_CREATED = True
@@ -32,16 +34,16 @@ def main() -> None:
     logging.info("Starting tracker...")
     logging.debug(f"Setting root directory to {tracker_utils.ROOT}")
 
-    # Just for testing
-    create_form(datetime.datetime.now())
-    quit()
+    ### Just for testing
+    # create_form(datetime.datetime.now())
+    # quit()
 
     if APPLICATION_CREATED:
         scheduler = core.scheduler.IndefiniteScheduler(create_form)
         scheduler.schedule_first()
     else:
         # core.create.create_env()
-        db_handler = core.DatabaseHandler(
+        db_handler = core.database.DatabaseHandler(
             tracker_utils.ROOT / "tracker.db",
             core.Configuration.from_default(),
         )
