@@ -112,7 +112,7 @@ class ActionHandler:
             ) or ("", "")
 
         assert len(current_meetings) == 1
-        return "Meeting", current_meetings[0].subject
+        return "Meetings", current_meetings[0].subject
 
     def get_dropdown_options(self, use_jira_sprint: bool) -> dict[str, str]:
         """
