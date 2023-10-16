@@ -17,7 +17,7 @@ class CalendarEvent:
     subject: str
     start: datetime.datetime
     end: datetime.datetime
-    categories: list[str]
+    categories: set[str]
     all_day_event: bool
 
 
@@ -25,8 +25,6 @@ class Calendar(abc.ABC):
     """
     Abstraction of the various calendar types that can be synced with the daily
     tracker.
-
-    :param configuration: The application configuration.
     """
 
     def __init__(self, configuration: core.Configuration):
@@ -47,9 +45,6 @@ class Calendar(abc.ABC):
     def get_appointment_at_datetime(  # TODO: Rename this to `get_appointments_at_datetime`
         self,
         at_datetime: datetime.datetime,
-        categories_to_exclude: list[
-            str
-        ] = None,  # TODO: Figure out where this should live
     ) -> list[CalendarEvent]:
         """
         Return the events in the calendar that are scheduled to on or over the

@@ -86,15 +86,20 @@ class ActionHandler:
 
         This takes the meeting details from the linked calendar (if one has been
         linked), or just uses the latest task.
+
+        TODO: Replace with the ``on_event`` methods from the input classes.
         """
         if self.configuration.use_calendar_appointments:
             current_meetings = [
                 meeting
                 for meeting in self.calendar_handler.get_appointment_at_datetime(
                     at_datetime=at_datetime,
-                    categories_to_exclude=self.configuration.appointment_category_exclusions,
                 )
                 if not meeting.all_day_event
+                and all(
+                    i not in meeting.categories
+                    for i in self.configuration.appointment_category_exclusions
+                )
             ]
         else:
             current_meetings = []
