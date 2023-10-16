@@ -69,7 +69,7 @@ repos:
         args: ["--filter-files"]
 
   - repo: https://github.com/hadialqattan/pycln
-    rev: v2.2.2
+    rev: v2.3.0
     hooks:
       - id: pycln
         name: Remove unused imports and variables
