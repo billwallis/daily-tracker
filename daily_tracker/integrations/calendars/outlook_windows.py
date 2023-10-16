@@ -34,8 +34,8 @@ class OutlookEvent(CalendarEvent):
             subject=appointment.subject,
             start=appointment.start,
             end=appointment.end,
-            categories=tracker_utils.string_list_to_list(
-                appointment.categories
+            categories=set(
+                tracker_utils.string_list_to_list(appointment.categories)
             ),
             all_day_event=appointment.all_day_event,
         )
@@ -81,7 +81,6 @@ class OutlookInput(Calendar, core.Input):
     def get_appointment_at_datetime(
         self,
         at_datetime: datetime.datetime,
-        categories_to_exclude: list[str] = None,
     ) -> list[OutlookEvent]:
         """
         Return the events in the calendar that are scheduled to on or over the
