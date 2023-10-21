@@ -324,13 +324,15 @@ class Jira(core.Input, core.Output):
 
         results = []
         total = 999
-        while len(results) < total:
+        retries = 0
+        while len(results) < total and retries < 5:
             response = get_batch_of_tickets(start_at=len(results))
             total = response["total"]
             results += [
                 f"{issue['key']} {issue['fields']['summary']}"
                 for issue in response["issues"]
             ]
+            retries += 1
 
         return results
 
@@ -375,6 +377,8 @@ class Jira(core.Input, core.Output):
             at_datetime=at_datetime,
             interval=interval,
         )
-        if response.status_code != 201:
+        if response is None:
+            logging.debug("Could not post work log, see above")
+        elif response.status_code != 201:
             logging.debug(f"Response code: {response.status_code}")
             logging.debug(f"Could not post work log: {response.text}")
