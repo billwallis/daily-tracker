@@ -4,6 +4,7 @@ Connect to and read events from an Outlook calendar.
 This requires Outlook to be installed as a desktop application on the device
 running this code and is powered by the win32com library.
 """
+
 from __future__ import annotations
 
 import dataclasses

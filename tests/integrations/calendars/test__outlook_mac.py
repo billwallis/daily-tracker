@@ -4,6 +4,7 @@ Tests for the ``daily_tracker/integrations/calendars/outlook_mac.py`` module.
 This is currently just a dumping ground for some of the code that was used
 during development.
 """
+
 # import datetime
 #
 # import appscript

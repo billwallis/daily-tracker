@@ -7,6 +7,7 @@ but it's very limited and may be removed in a future version of Slack.
 You can generate a webhook URL by navigating to the channel you want to
 post to and configuring the "Incoming Webhooks" app.
 """
+
 import json
 import logging
 

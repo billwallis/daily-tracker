@@ -1,6 +1,7 @@
 """
 Maintain the backend SQLite database.
 """
+
 import csv
 import datetime
 import logging

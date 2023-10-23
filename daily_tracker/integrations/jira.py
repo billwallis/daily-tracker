@@ -14,6 +14,7 @@ TODO: This should be updated to pick up the API implementation from the Jira
  swagger documentation, though it's unclear what the best source is for it. See:
     * https://jira.atlassian.com/browse/JRASERVER-68539
 """
+
 import base64
 import datetime
 import json
