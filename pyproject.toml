@@ -32,7 +32,7 @@ pywin32 = [
 appscript = [
     {platform = "darwin", version = "1.2.2"}
 ]
-streamlit = "^1.27.2"
+streamlit = "^1.30.0"
 ttkthemes = "^3.2.2"
 
 
