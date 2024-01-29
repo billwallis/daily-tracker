@@ -1,6 +1,7 @@
 """
 Various calendar integrations.
 """
+
 import os
 
 from integrations.calendars.calendars import Calendar, NoCalendar

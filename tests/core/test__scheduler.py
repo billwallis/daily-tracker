@@ -1,6 +1,7 @@
 """
 Unit tests for the ``daily_tracker.core.scheduler`` module.
 """
+
 import datetime
 
 import pytest
