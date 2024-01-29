@@ -20,6 +20,7 @@ available at:
 
 - https://sourceforge.net/projects/appscript/files/
 """
+
 from __future__ import annotations
 
 import dataclasses

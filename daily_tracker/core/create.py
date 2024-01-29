@@ -2,6 +2,7 @@
 Create the backend and configuration files the first time the application is
 deployed.
 """
+
 import pathlib
 
 import core

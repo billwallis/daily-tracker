@@ -1,6 +1,7 @@
 """
 Unit tests for the ``daily_tracker.core.apis`` module.
 """
+
 from __future__ import annotations
 
 import abc

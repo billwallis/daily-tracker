@@ -1,6 +1,7 @@
 """
 Unit tests for the ``daily_tracker.tracker_utils`` module.
 """
+
 import daily_tracker.tracker_utils as tracker_utils
 
 

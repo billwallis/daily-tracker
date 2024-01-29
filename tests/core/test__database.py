@@ -1,6 +1,7 @@
 """
 Unit tests for the ``daily_tracker.core.database`` module.
 """
+
 import pytest
 
 import daily_tracker.core.configuration as configuration

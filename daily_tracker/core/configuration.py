@@ -1,6 +1,7 @@
 """
 The configuration options of the tracker.
 """
+
 from __future__ import annotations
 
 import collections

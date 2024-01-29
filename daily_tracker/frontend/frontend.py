@@ -5,6 +5,7 @@ This is currently more of a POC, but will be improved over time.
 
 TODO: Callbacks should be tied to the backend
 """
+
 import datetime
 import functools
 from collections.abc import Callable

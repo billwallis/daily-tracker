@@ -1,6 +1,7 @@
 """
 Calendar types available to use for linking.
 """
+
 import abc
 import dataclasses
 import datetime
