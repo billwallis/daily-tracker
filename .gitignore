@@ -7,11 +7,9 @@
 *.db
 *.sqlite
 
-# IDE Files
+# IDE and system iles
 /.idea
 /.vscode
-
-# System Files
 .DS_Store
 
 # Byte-compiled / optimized / DLL files

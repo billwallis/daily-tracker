@@ -22,38 +22,39 @@ daily-tracker = "daily_tracker.__main__:main"
 python = "^3.11"
 Pillow = ">=9.4.0"
 python-dotenv = ">=0.21.1"
+pyyaml = ">=6.0"
 requests = ">=2.28.2"
 slack-sdk = ">=3.20.0"
-pyyaml = ">=6.0"
-
+streamlit = "^1.30.0"
+ttkthemes = "^3.2.2"
 pywin32 = [
-    {platform = "win32", version = "305"}
+    {platform = "win32", version = "306"}
 ]
 appscript = [
     {platform = "darwin", version = "1.2.2"}
 ]
-streamlit = "^1.30.0"
-ttkthemes = "^3.2.2"
 
-
-[tool.poetry.group.dev]
-optional = true
+[tool.poetry.group]
+dev.optional = true
+test.optional = true
+ide.optional = true
 
 [tool.poetry.group.dev.dependencies]
-coverage-badge = "^1"
-pre-commit = "^3"
-pylint = "^2"
-
-[tool.poetry.group.test]
-optional = true
+coverage-badge = "^1.1.0"
+pre-commit = "^3.6.2"
+pylint = "3.1.0"
 
 [tool.poetry.group.test.dependencies]
-pytest = "^7.4.0"
+pytest = "^8.0.2"
 pytest-cov = "^4.1.0"
+
+# Packages just for IDE integration
+[tool.poetry.group.ide.dependencies]
+black = "*"
 
 
 [tool.pytest.ini_options]
-addopts = "--cov=daily_tracker --cov-report term-missing"
+addopts = "--cov=daily_tracker --cov-fail-under=10"
 testpaths = ["tests"]
 
 

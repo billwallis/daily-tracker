@@ -1,8 +1,8 @@
 <div align="center">
 
-[![Python 3.11+](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
+[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
 [![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
-[![unit-tests](https://github.com/Bilbottom/daily-tracker/actions/workflows/unit-tests.yaml/badge.svg)](https://github.com/Bilbottom/daily-tracker/actions/workflows/unit-tests.yaml)
+[![tests](https://github.com/Bilbottom/daily-tracker/actions/workflows/tests.yaml/badge.svg)](https://github.com/Bilbottom/daily-tracker/actions/workflows/tests.yaml)
 [![coverage](coverage.svg)](https://github.com/dbrgn/coverage-badge)
 [![GitHub last commit](https://img.shields.io/github/last-commit/Bilbottom/daily-tracker)](https://shields.io/)
 
