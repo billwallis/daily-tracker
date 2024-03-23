@@ -177,8 +177,8 @@ class Task:
     """
     A task/project.
 
-    This has corresponding details, a priority, and a flag to indicate whether
-    it's a default task or not.
+    This has corresponding details, a priority, and a flag to indicate
+    whether it's a default task or not.
     """
 
     task_name: str

@@ -1,5 +1,10 @@
 """
 The configuration options of the tracker.
+
+TODO: This is mastered in the ``configuration.yaml`` file, so do we need
+    this class? Or should we just use ``yaml2pyclass``?
+
+    https://github.com/a-nau/yaml2pyclass
 """
 
 from __future__ import annotations

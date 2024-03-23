@@ -46,6 +46,16 @@ This pop-up box has the following features:
 - Integrates with [Slack <img alt="Slack" height="12px" src="https://slack.com/favicon.ico"/>](https://slack.com/)
   - Posts a message to channel when the form is submitted
 
+```mermaid
+flowchart LR
+    DatabaseInput[Database] -->|Recent entries| Form
+    JiraInput[Jira] -->|Current sprint| Form
+    OutlookInput[Outlook] -->|Calendar| Form
+    Form -->|Save entries| DatabaseOutput[Database]
+    Form -->|Add worklog| JiraOutput[Jira]
+    Form -->|Post message| SlackOutput[Slack]
+```
+
 ## 🔧 Resources and dependencies
 
 The clock icon is from [icons8.com](https://icons8.com/):
