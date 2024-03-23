@@ -1,17 +1,18 @@
-name: Unit Tests
-run-name: Unit tests triggered by ${{ github.actor }}
+---
+name: Tests
+run-name: Tests 🧪
 
-on: [pull_request, workflow_dispatch]
+on: ["pull_request", "workflow_dispatch"]
 
 jobs:
-  unit-tests-and-formatting:
+  tests:
     runs-on: windows-latest
     steps:
       - name: 🛎️ Check out repository
         uses: actions/checkout@v3
 
       - name: 📦 Set up Poetry
-        run: pipx install poetry==1.5.1
+        run: pipx install poetry==1.7.0
 
       - name: 🐍 Set up Python 3.11
         uses: actions/setup-python@v4
