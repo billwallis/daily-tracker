@@ -20,8 +20,8 @@ class Configuration:
     """
     The configuration of the tracker.
 
-    Extremely simple implementation -- will expand this in the future to be more
-    dynamic. Or just leave as a simple dict?
+    Extremely simple implementation -- will expand this in the future to be
+    more dynamic. Or just leave as a simple dict?
 
     The docstrings should be taken from the ``description`` property.
     """

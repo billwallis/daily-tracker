@@ -1,22 +1,23 @@
 """
 Connect to and read events from an Outlook calendar.
 
-This requires Outlook to be installed as a desktop application on the device
-running this code, and for it to be toggled to the old version of Outlook ("old"
-as at 2023-01-10).
+This requires Outlook to be installed as a desktop application on the
+device running this code, and for it to be toggled to the old version of
+Outlook ("old" as at 2023-01-10).
 
-This is powered by the appscript library which is super helpful, but there are
-some features missing in Outlook on masOS that are available in Outlook on
-Windows. For example, there is no "all-day" flag in the macOS version, and
-recurring events only show the initial event but not the subsequent ones.
+This is powered by the appscript library which is super helpful, but
+there are some features missing in Outlook on macOS that are available
+in Outlook on Windows. For example, there is no "all-day" flag in the
+macOS version, and recurring events only show the initial event but not
+the subsequent ones.
 
 The use of appscript has been adapted from:
 
 - https://stackoverflow.com/a/62089384/8213085
 
 
-Additional appscript usage has been determined from using the ASTranslate tool,
-available at:
+Additional appscript usage has been determined from using the
+ASTranslate tool, available at:
 
 - https://sourceforge.net/projects/appscript/files/
 """

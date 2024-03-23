@@ -49,8 +49,8 @@ class Slack(core.Output):
     """
     The Slack handler.
 
-    This bridges the input and output objects with the REST API connector object
-    to implement the output actions.
+    This bridges the input and output objects with the REST API connector
+    object to implement the output actions.
     """
 
     def __init__(self, url: str, configuration: core.Configuration = None):

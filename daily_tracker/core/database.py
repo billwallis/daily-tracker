@@ -18,7 +18,7 @@ DEBUG_MODE = False
 
 class DatabaseConnector:
     """
-    Connects to a SQLite database.
+    Connects to an SQLite database.
     """
 
     def __init__(self, filepath: str):
@@ -107,8 +107,8 @@ class DatabaseHandler(core.Input, core.Output):
     """
     The database handler.
 
-    This bridges the input and output objects with the database connector object
-    to implement the input and output actions.
+    This bridges the input and output objects with the database connector
+    object to implement the input and output actions.
     """
 
     def __init__(

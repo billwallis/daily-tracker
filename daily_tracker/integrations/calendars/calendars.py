@@ -12,7 +12,7 @@ import core
 @dataclasses.dataclass
 class CalendarEvent:
     """
-    A calendar event, typically referred to as a _meeting_ or an _appointment_.
+    A calendar event, typically referred to as a meeting or an appointment.
     """
 
     subject: str
@@ -24,8 +24,8 @@ class CalendarEvent:
 
 class Calendar(abc.ABC):
     """
-    Abstraction of the various calendar types that can be synced with the daily
-    tracker.
+    Abstraction of the various calendar types that can be synced with the
+    daily tracker.
     """
 
     def __init__(self, configuration: core.Configuration):
@@ -38,8 +38,8 @@ class Calendar(abc.ABC):
         end_datetime: datetime.datetime,
     ) -> list[CalendarEvent]:
         """
-        Return the events in the calendar between the start datetime (inclusive)
-        and end datetime exclusive.
+        Return the events in the calendar between the start datetime
+        (inclusive) and end datetime exclusive.
         """
 
     @abc.abstractmethod
@@ -48,8 +48,8 @@ class Calendar(abc.ABC):
         at_datetime: datetime.datetime,
     ) -> list[CalendarEvent]:
         """
-        Return the events in the calendar that are scheduled to on or over the
-        supplied datetime.
+        Return the events in the calendar that are scheduled to on or over
+        the supplied datetime.
         """
 
     def on_event(self, at_datetime: datetime.datetime) -> list[core.Task]:

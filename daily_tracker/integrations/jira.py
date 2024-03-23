@@ -30,8 +30,8 @@ class JiraConnector:
     """
     Naive implementation of a connector to Jira via its REST API.
 
-    This just exposes the Jira endpoints in a Pythonic way, but doesn't add any
-    layers on top of this.
+    This just exposes the Jira endpoints in a Pythonic way, but doesn't add
+    any layers on top of this.
     """
 
     def __init__(self, domain: str, key: str, secret: str):
@@ -257,8 +257,8 @@ class Jira(core.Input, core.Output):
     """
     The Jira handler.
 
-    This bridges the input and output objects with the REST API connector object
-    to implement the input and output actions.
+    This bridges the input and output objects with the REST API connector
+    object to implement the input and output actions.
     """
 
     def __init__(
