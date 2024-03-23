@@ -33,29 +33,28 @@ type classes through the corresponding ``apis`` class property::
 .. mermaid::
 
     classDiagram
+        ABC --> IInput
+        ABC --> API
+        ABC --> IOutput
 
-    ABC --> IInput
-    ABC --> API
-    ABC --> IOutput
+        IInput : on_event()
+        API : APIS
+        IOutput : post_event()
 
-    IInput : on_event()
-    API : APIS
-    IOutput : post_event()
+        IInput --> Input
+        IInput --> Output
 
-    IInput --> Input
-    IInput --> Output
+        API --> Input
+        API --> Output
 
-    API --> Input
-    API --> Output
+        IOutput --> Input
+        IOutput --> Output
 
-    IOutput --> Input
-    IOutput --> Output
+        Input : APIS
+        Input : on_event()
 
-    Input : APIS
-    Input : on_event()
-
-    Output : APIS
-    Output : post_event()
+        Output : APIS
+        Output : post_event()
 """
 from __future__ import annotations
 

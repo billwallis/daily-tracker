@@ -1,6 +1,6 @@
 """
-Create the backend and configuration files the first time the application is
-deployed.
+Create the backend and configuration files the first time the
+application is deployed.
 """
 
 import pathlib
@@ -14,8 +14,8 @@ def create_env() -> None:
     """
     Create the .env file.
 
-    This should be deprecated and the values should be saved in the config file
-    instead.
+    This should be deprecated and the values should be saved in the config
+    file instead.
     """
     filepath = ".env"
     if pathlib.Path(filepath).exists():

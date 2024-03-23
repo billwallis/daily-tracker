@@ -57,7 +57,7 @@ repos:
         name: Align Python code to latest syntax
 
   - repo: https://github.com/psf/black
-    rev: 24.2.0
+    rev: 24.3.0
     hooks:
       - id: black
         name: Check Python formatting
@@ -76,9 +76,9 @@ repos:
         name: Remove unused imports and variables
         args: ["--config=pyproject.toml"]
 
-  # Sourcery (refactoring)
+  # Sourcery
   - repo: https://github.com/sourcery-ai/sourcery
-    rev: v1.15.1b41
+    rev: v1.16.0
     hooks:
       - id: sourcery
         name: Check for refactoring opportunities
@@ -93,7 +93,7 @@ repos:
         name: Lint Python code with pylint
         entry: pylint
         language: system
-        types: [python]
+        types: ["python"]
         args: ["-rn", "--rcfile=pyproject.toml"]
         exclude: "^.*$" # Exclude everything for now
 
@@ -102,7 +102,7 @@ repos:
     hooks:
       - id: pytest
         name: Run unit tests
-        entry: pytest tests
+        entry: pytest tests --quiet
         language: system
         pass_filenames: false
         always_run: true

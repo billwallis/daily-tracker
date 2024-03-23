@@ -22,9 +22,9 @@ def pascal_to_snake(text: str) -> str:
         >>> pascal_to_snake(text="HTTP")
         'h_t_t_p'
 
-    :param text: The pascal-case string to convert into a snake-case string. A
-     pascal-case string has a capital letter at the start of each word with no
-     separator between words, such as "PascalCase".
+    :param text: The pascal-case string to convert into a snake-case string.
+        A pascal-case string has a capital letter at the start of each word
+         with no separator between words, such as "PascalCase".
 
     :return: The snake-case version of the input string.
     """

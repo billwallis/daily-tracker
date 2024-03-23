@@ -1,5 +1,6 @@
 """
-Connect the various subpackages throughout the project to couple up the objects.
+Connect the various subpackages throughout the project to couple up the
+objects.
 """
 
 import datetime

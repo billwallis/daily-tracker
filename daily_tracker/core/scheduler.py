@@ -2,6 +2,8 @@
 The scheduler, which is responsible for scheduling the events.
 """
 
+from __future__ import annotations
+
 import datetime
 import logging
 import sched
@@ -34,11 +36,11 @@ def get_next_interval(
     Schedules will be defined assuming that the schedule starts on the hour.
     This means that interval values that divide 60 will function the best.
 
-    :param from_time: The datetime from which the scheduled datetime should be
-        calculated. The scheduled datetime will be greater than or equal to this
-        value.
-    :param interval_in_minutes: The interval, in minutes, between the scheduled
-        events.
+    :param from_time: The datetime from which the scheduled datetime should
+        be calculated. The scheduled datetime will be greater than or equal
+        to this value.
+    :param interval_in_minutes: The interval, in minutes, between the
+        scheduled events.
 
     :return: The next scheduled datetime.
     """
@@ -54,8 +56,8 @@ def get_next_interval(
 
 class IndefiniteScheduler:
     """
-    A processor that schedules the pop-up boxes and passes the data around to
-    various applications indefinitely.
+    A processor that schedules the pop-up boxes and passes the data around
+    to various applications indefinitely.
     """
 
     _interval: int

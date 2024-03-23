@@ -25,7 +25,8 @@ ICON = tracker_utils.ROOT / "resources/clock-icon.png"
 
 def load_icon(filepath: str) -> PIL.ImageTk.PhotoImage | PIL.Image.Image:
     """
-    Load an image to the ICO format so that it can be used as application icons.
+    Load an image to the ICO format so that it can be used as application
+    icons.
     """
     return PIL.ImageTk.PhotoImage(PIL.Image.open(filepath))
 
