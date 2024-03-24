@@ -20,7 +20,9 @@ import ttkthemes
 
 import tracker_utils
 
-ICON = tracker_utils.ROOT / "resources/clock-icon.png"
+logger = logging.getLogger("core")
+
+ICON = tracker_utils.SRC / "resources/clock-icon.png"
 
 
 def load_icon(filepath: str) -> PIL.ImageTk.PhotoImage | PIL.Image.Image:
@@ -121,7 +123,7 @@ class TrackerForm:
         Wrap the action so that we can schedule the next event when it's called.
         """
         self.action_handler.ok_actions()
-        logging.info(
+        logger.info(
             textwrap.dedent(
                 f"""
                 {30 * '-'}

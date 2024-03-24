@@ -25,6 +25,8 @@ import requests
 
 import core
 
+logger = logging.getLogger("integrations")
+
 
 class JiraConnector:
     """
@@ -204,7 +206,7 @@ class JiraConnector:
                 data=payload,
             )
         except Exception as e:  # noqa
-            logging.debug(f"Could not add worklog: {e}")
+            logger.debug(f"Could not add worklog: {e}")
 
     def create_issue(
         self,
@@ -341,7 +343,7 @@ class Jira(core.Input, core.Output):
         """
         The actions to perform after the event.
         """
-        logging.debug("Doing Jira actions...")
+        logger.debug("Doing Jira actions...")
         if self.debug_mode:
             return
 
@@ -363,15 +365,13 @@ class Jira(core.Input, core.Output):
         """
         Post the task, detail, and time to the corresponding ticket's worklog.
         """
-        logging.debug("Posting log to Jira...")
+        logger.debug("Posting log to Jira...")
         issue_key = re.search(self.project_key_pattern, task)
         if issue_key is None:
-            logging.debug(
-                f"Could not find {self.project_key_pattern} in {task}"
-            )
+            logger.debug(f"Could not find {self.project_key_pattern} in {task}")
             return None
 
-        logging.debug(f"Posting work log to {issue_key[0]}")
+        logger.debug(f"Posting work log to {issue_key[0]}")
         response = self.connector.add_worklog(
             issue_key=issue_key[0],
             detail=detail,
@@ -379,7 +379,7 @@ class Jira(core.Input, core.Output):
             interval=interval,
         )
         if response is None:
-            logging.debug("Could not post work log, see above")
+            logger.debug("Could not post work log, see above")
         elif response.status_code != 201:
-            logging.debug(f"Response code: {response.status_code}")
-            logging.debug(f"Could not post work log: {response.text}")
+            logger.debug(f"Response code: {response.status_code}")
+            logger.debug(f"Could not post work log: {response.text}")

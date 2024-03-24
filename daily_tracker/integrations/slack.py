@@ -15,6 +15,8 @@ import requests
 
 import core
 
+logger = logging.getLogger("integrations")
+
 
 class SlackConnector:
     """
@@ -61,7 +63,7 @@ class Slack(core.Output):
         """
         The actions to perform after the event.
         """
-        logging.debug("Doing Slack actions...")
+        logger.debug("Doing Slack actions...")
         if self.configuration.post_to_slack:
             self.post_to_channel(task=entry.task_name, detail=entry.detail)
             # Set status?

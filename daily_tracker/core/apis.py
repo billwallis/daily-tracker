@@ -68,6 +68,8 @@ from typing import ClassVar
 import core
 import tracker_utils
 
+logger = logging.getLogger("core")
+
 
 class API(abc.ABC):
     """
@@ -89,7 +91,7 @@ class API(abc.ABC):
 
         for base in cls.__bases__:
             if issubclass(base, API):
-                logging.debug(
+                logger.debug(
                     f"Adding class {instance} to `{base}.apis` with key '{key}'"
                 )
                 base.apis[key] = instance

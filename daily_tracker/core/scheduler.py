@@ -13,6 +13,8 @@ from typing import Any
 
 import core
 
+logger = logging.getLogger("core")
+
 Action = Callable[[datetime.datetime], Any]
 
 
@@ -114,7 +116,7 @@ class IndefiniteScheduler:
             interval_in_minutes=self._interval,
         )
         self._schedule()
-        logging.debug(f"Next event scheduled for {self._next_schedule_time}")
+        logger.debug(f"Next event scheduled for {self._next_schedule_time}")
 
     def _cancel_next(self) -> None:
         """

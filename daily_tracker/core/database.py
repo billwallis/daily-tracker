@@ -13,6 +13,8 @@ from typing import Any
 import core
 import tracker_utils
 
+logger = logging.getLogger("core")
+
 DEBUG_MODE = False
 
 
@@ -58,7 +60,7 @@ class DatabaseConnector:
             ).fetchone()
         ):
             self.run_query_from_file(
-                tracker_utils.ROOT / "core/scripts/create.sql"
+                tracker_utils.SRC / "core/scripts/create.sql"
             )
 
     def truncate_table(self, table_name: str) -> None:
@@ -116,7 +118,7 @@ class DatabaseHandler(core.Input, core.Output):
         database_filepath: str,
         configuration: core.Configuration,
     ):
-        logging.debug(f"Loading database file at {database_filepath}...")
+        logger.debug(f"Loading database file at {database_filepath}...")
         self.connection = DatabaseConnector(database_filepath)
         self.configuration = configuration
 
@@ -292,7 +294,7 @@ class DatabaseHandler(core.Input, core.Output):
         """
         The actions to perform after the event.
         """
-        logging.debug("Doing database actions...")
+        logger.debug("Doing database actions...")
         if DEBUG_MODE:
             return
 

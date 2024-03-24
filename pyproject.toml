@@ -16,7 +16,7 @@ packages = [
 ]
 
 [tool.poetry.scripts]
-daily-tracker = "daily_tracker.__main__:main"
+daily-tracker = "daily_tracker.main:main"
 
 [tool.poetry.dependencies]
 python = "^3.11"

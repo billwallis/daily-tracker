@@ -18,7 +18,7 @@ import yaml
 import tracker_utils
 
 # TODO: Take the default values from the JSON schema validator file
-DEFAULT_CONFIG = tracker_utils.ROOT / "resources/configuration.yaml"
+DEFAULT_CONFIG = tracker_utils.SRC / "resources/configuration.yaml"
 
 
 class Configuration:

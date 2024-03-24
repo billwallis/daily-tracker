@@ -13,7 +13,7 @@ import core.form
 import integrations
 import tracker_utils
 
-dotenv.load_dotenv(dotenv_path=tracker_utils.ROOT.parent / ".env")
+dotenv.load_dotenv(dotenv_path=tracker_utils.SRC.parent / ".env")
 JIRA_CREDENTIALS = {
     "domain": os.getenv("JIRA_DOMAIN"),
     "key": os.getenv("JIRA_KEY"),
