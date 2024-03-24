@@ -10,12 +10,21 @@ post to and configuring the "Incoming Webhooks" app.
 
 import json
 import logging
+import os
 
+import dotenv
 import requests
 
 import core
+import utils
 
+# TODO: Can we correctly move this to the main file? (Simply moving it didn't work)
+dotenv.load_dotenv(dotenv_path=utils.SRC.parent / ".env")
 logger = logging.getLogger("integrations")
+
+SLACK_CREDENTIALS = {
+    "webhook_url": os.getenv("SLACK_WEBHOOK_URL"),
+}
 
 
 class SlackConnector:
@@ -55,8 +64,8 @@ class Slack(core.Output):
     object to implement the output actions.
     """
 
-    def __init__(self, url: str, configuration: core.Configuration = None):
-        self.connector = SlackConnector(url)
+    def __init__(self, configuration: core.Configuration = None):
+        self.connector = SlackConnector(**SLACK_CREDENTIALS)
         self.configuration = configuration
 
     def post_event(self, entry: core.Entry) -> None:
@@ -76,6 +85,9 @@ class Slack(core.Output):
         """
         self.connector.post_message(f"*{task}*: {detail}")
 
+
+# Force into the Input/Output classes. This is naughty, but we'll fix it later
+Slack(core.configuration.Configuration.from_default())
 
 if __name__ == "__main__":
     import os

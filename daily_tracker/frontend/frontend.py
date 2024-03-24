@@ -13,10 +13,10 @@ from collections.abc import Callable
 import pandas
 import streamlit
 
-import daily_tracker.tracker_utils as tracker_utils
+import daily_tracker.utils as utils
 from core.database import DatabaseConnector
 
-CONN = DatabaseConnector(tracker_utils.DB)
+CONN = DatabaseConnector(utils.DB)
 
 
 def handle_exceptions(refresh: bool = False) -> Callable:

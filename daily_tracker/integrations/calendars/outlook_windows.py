@@ -14,7 +14,7 @@ import win32com.client
 from win32com.client import CDispatch
 
 import core
-import tracker_utils
+import utils
 from integrations.calendars.calendars import Calendar, CalendarEvent
 
 
@@ -35,9 +35,7 @@ class OutlookEvent(CalendarEvent):
             subject=appointment.subject,
             start=appointment.start,
             end=appointment.end,
-            categories=set(
-                tracker_utils.string_list_to_list(appointment.categories)
-            ),
+            categories=set(utils.string_list_to_list(appointment.categories)),
             all_day_event=appointment.all_day_event,
         )
 

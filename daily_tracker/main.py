@@ -8,13 +8,16 @@ import logging
 import logging.config
 
 import _actions
+import dotenv
 import yaml
 
 import core
 import core.create
 import core.database
 import core.scheduler
-import tracker_utils
+import utils
+
+dotenv.load_dotenv(dotenv_path=utils.ROOT / ".env")
 
 APPLICATION_CREATED = True
 
@@ -30,12 +33,14 @@ def main(debug_mode: bool = False) -> None:
     """
     Entry point into this project.
     """
-    (tracker_utils.ROOT / "logs").mkdir(exist_ok=True)
-    with open(tracker_utils.SRC / "logger.yaml") as f:
+    (utils.ROOT / "logs").mkdir(exist_ok=True)
+    with open(utils.SRC / "logger.yaml") as f:
         logging.config.dictConfig(yaml.safe_load(f.read()))
 
-    logging.info("Starting tracker...")
-    logging.debug(f"Setting root directory to {tracker_utils.SRC}")
+    _in_debug_mode = " in debug mode" if debug_mode else ""
+    logging.info(f"Starting tracker{_in_debug_mode}...")
+    logging.debug(f"Setting root directory to {utils.ROOT}")
+    logging.debug(f"Setting source directory to {utils.SRC}")
 
     if debug_mode:
         create_form(datetime.datetime.now())
@@ -46,8 +51,8 @@ def main(debug_mode: bool = False) -> None:
         scheduler.schedule_first()
     else:
         # core.create.create_env()
-        db_handler = core.database.DatabaseHandler(
-            tracker_utils.SRC / "tracker.db",
+        db_handler = core.database.Database(
+            utils.SRC / "tracker.db",
             core.Configuration.from_default(),
         )
-        # db_handler.import_history(tracker_utils.ROOT / "tracker.csv")
+        # db_handler.import_history(utils.ROOT / "tracker.csv")

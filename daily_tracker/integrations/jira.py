@@ -19,13 +19,24 @@ import base64
 import datetime
 import json
 import logging
+import os
 import re
 
+import dotenv
 import requests
 
 import core
+import utils
 
+# TODO: Can we correctly move this to the main file? (Simply moving it didn't work)
+dotenv.load_dotenv(dotenv_path=utils.SRC.parent / ".env")
 logger = logging.getLogger("integrations")
+
+JIRA_CREDENTIALS = {
+    "domain": os.getenv("JIRA_DOMAIN"),
+    "key": os.getenv("JIRA_KEY"),
+    "secret": os.getenv("JIRA_SECRET"),
+}
 
 
 class JiraConnector:
@@ -265,17 +276,10 @@ class Jira(core.Input, core.Output):
 
     def __init__(
         self,
-        domain: str,
-        key: str,
-        secret: str,
         configuration: core.Configuration,
         debug_mode: bool = False,
     ):
-        self.connector = JiraConnector(
-            domain=domain,
-            key=key,
-            secret=secret,
-        )
+        self.connector = JiraConnector(**JIRA_CREDENTIALS)
         self.project_key_pattern = re.compile(r"^[A-Z]\w{1,9}-\d+")
         self.configuration = configuration
         self.debug_mode = debug_mode
@@ -383,3 +387,7 @@ class Jira(core.Input, core.Output):
         elif response.status_code != 201:
             logger.debug(f"Response code: {response.status_code}")
             logger.debug(f"Could not post work log: {response.text}")
+
+
+# Force into the Input/Output classes. This is naughty, but we'll fix it later
+Jira(core.configuration.Configuration.from_default())

@@ -3,25 +3,11 @@ The actions for the pop-up box.
 """
 
 import datetime
-import os.path
-
-import dotenv
 
 import core
 import core.database
 import core.form
 import integrations
-import tracker_utils
-
-dotenv.load_dotenv(dotenv_path=tracker_utils.SRC.parent / ".env")
-JIRA_CREDENTIALS = {
-    "domain": os.getenv("JIRA_DOMAIN"),
-    "key": os.getenv("JIRA_KEY"),
-    "secret": os.getenv("JIRA_SECRET"),
-}
-SLACK_CREDENTIALS = {
-    "url": os.getenv("SLACK_WEBHOOK_URL"),
-}
 
 
 class ActionHandler:
@@ -34,38 +20,30 @@ class ActionHandler:
         Initialise the main handler and the various handlers to other systems.
         """
         self.configuration = core.Configuration.from_default()
-        self.database_handler = core.database.DatabaseHandler(
-            tracker_utils.DB,
-            configuration=self.configuration,
-        )
-        self.calendar_handler = integrations.get_linked_calendar(
-            self.configuration.linked_calendar
-        )(self.configuration)
-        self.jira_handler = integrations.Jira(
-            **JIRA_CREDENTIALS,
-            configuration=self.configuration,
-        )
-        self.slack_handler = integrations.Slack(
-            **SLACK_CREDENTIALS,
-            configuration=self.configuration,
-        )
+        # These only work because we cheat and instantiate the Input/Output
+        # subclasses in their corresponding modules
+        self.inputs = core.Input.apis
+        self.outputs = core.Output.apis
+
+        # Form
         self.form = core.form.TrackerForm(
             at_datetime=at_datetime,
             action_handler=self,
         )
-
         self.form.generate_form()
 
     def ok_actions(self) -> None:
         """
         The actions to perform after the "pop-up" event.
         """
-        for handler in [
-            self.database_handler,  # This needs to be done first
-            self.calendar_handler,
-            self.slack_handler,
-            self.jira_handler,
-        ]:
+        # Dirty approach to get the database stuff done first
+        outputs_ = [self.outputs["database"]] + [
+            handler
+            for name, handler in self.outputs.items()
+            if name != "database"
+        ]
+
+        for handler in outputs_:
             if hasattr(handler, "ok_actions"):
                 # For backwards compatibility
                 handler.ok_actions(self.configuration, self.form)
@@ -90,10 +68,11 @@ class ActionHandler:
 
         TODO: Replace with the ``on_event`` methods from the input classes.
         """
-        if self.configuration.use_calendar_appointments:
+        calendar_handler: integrations.Calendar = self.inputs.get("calendar")  # type: ignore
+        if calendar_handler and self.configuration.use_calendar_appointments:
             current_meetings = [
                 meeting
-                for meeting in self.calendar_handler.get_appointment_at_datetime(
+                for meeting in calendar_handler.get_appointment_at_datetime(
                     at_datetime=at_datetime,
                 )
                 if not meeting.all_day_event
@@ -105,11 +84,12 @@ class ActionHandler:
         else:
             current_meetings = []
 
+        database_handler: core.database.Database = self.outputs["database"]  # type: ignore
         if len(current_meetings) != 1:
             # If there are two events, we don't know which one to use so
             # default to the last task from the database instead
-            return self.database_handler.get_last_task_and_detail(
-                datetime.datetime.now()
+            return database_handler.get_last_task_and_detail(
+                date_time=at_datetime
             ) or ("", "")
 
         assert len(current_meetings) == 1
@@ -122,14 +102,16 @@ class ActionHandler:
         This is always the most recent tasks, and optionally the tickets in the
         active sprint if a Jira connection has been configured.
         """
-        recent_tasks = self.database_handler.get_recent_tasks(
+        database_handler: core.database.Database = self.outputs["database"]  # type: ignore
+        jira_handler: integrations.Jira = self.inputs.get("jira")  # type: ignore
+
+        recent_tasks = database_handler.get_recent_tasks(
             self.configuration.show_last_n_weeks
         )
-
-        if use_jira_sprint:
+        if jira_handler and use_jira_sprint:
             recent_tickets = [
                 ticket
-                for ticket in self.jira_handler.get_tickets_in_sprint()
+                for ticket in jira_handler.get_tickets_in_sprint()
                 if ticket not in recent_tasks.keys()
             ]
         else:

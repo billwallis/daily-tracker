@@ -66,7 +66,7 @@ line-length = 80
 [tool.isort]
 profile = "black"
 line_length = 80
-known_local_folder = "daily_tracker,core,integrations,tracker_utils"
+known_local_folder = "daily_tracker,core,integrations,utils"
 
 
 [tool.pylint.format]

@@ -7,7 +7,7 @@ import pathlib
 
 import core
 import core.database
-import tracker_utils
+import utils
 
 
 def create_env() -> None:
@@ -32,11 +32,11 @@ def main() -> None:
     database.
     """
     create_env()
-    db_handler = core.database.DatabaseHandler(
-        database_filepath=tracker_utils.DB,
+    db_handler = core.database.Database(
+        database_filepath=utils.DB,
         configuration=core.Configuration.from_default(),
     )
-    db_handler.import_history(filepath=tracker_utils.SRC / "tracker.csv")
+    db_handler.import_history(filepath=utils.SRC / "tracker.csv")
 
 
 if __name__ == "__main__":

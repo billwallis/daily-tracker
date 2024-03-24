@@ -11,7 +11,7 @@ from collections.abc import Mapping
 from typing import Any
 
 import core
-import tracker_utils
+import utils
 
 logger = logging.getLogger("core")
 
@@ -59,9 +59,7 @@ class DatabaseConnector:
                 """
             ).fetchone()
         ):
-            self.run_query_from_file(
-                tracker_utils.SRC / "core/scripts/create.sql"
-            )
+            self.run_query_from_file(utils.SRC / "core/scripts/create.sql")
 
     def truncate_table(self, table_name: str) -> None:
         """
@@ -105,7 +103,7 @@ def to_csv(data: list[tuple[Any, ...]], path: pathlib.Path) -> None:
         csv.writer(out).writerows(data)
 
 
-class DatabaseHandler(core.Input, core.Output):
+class Database(core.Input, core.Output):
     """
     The database handler.
 
@@ -135,7 +133,7 @@ class DatabaseHandler(core.Input, core.Output):
         Import the existing CSV file into the SQLite database.
         """
         raise NotImplementedError(
-            "`DatabaseHandler.import_history` has not been implemented."
+            "'Database.import_history' has not been implemented."
         )
         # column_names = [
         #     "date_time",
@@ -363,3 +361,7 @@ class DatabaseHandler(core.Input, core.Output):
                 / f"daily-tracker-{datetime.datetime.now().strftime('%Y-%m-%d')}.csv"
             ),
         )
+
+
+# Force into the Input/Output classes. This is naughty, but we'll fix it later
+Database(utils.DB, core.configuration.Configuration.from_default())

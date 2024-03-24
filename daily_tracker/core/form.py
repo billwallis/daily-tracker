@@ -18,11 +18,12 @@ import PIL.Image
 import PIL.ImageTk
 import ttkthemes
 
-import tracker_utils
+import core.database
+import utils
 
 logger = logging.getLogger("core")
 
-ICON = tracker_utils.SRC / "resources/clock-icon.png"
+ICON = utils.SRC / "resources/clock-icon.png"
 
 
 def load_icon(filepath: str) -> PIL.ImageTk.PhotoImage | PIL.Image.Image:
@@ -92,7 +93,8 @@ class TrackerForm:
               talk to the database here (I think).
         """
         # fmt: off
-        return self.action_handler.database_handler.get_details_for_task(self.task)
+        database_handler: core.database.Database = self.action_handler.inputs["database"]
+        return database_handler.get_details_for_task(self.task)
         # fmt: on
 
     @property

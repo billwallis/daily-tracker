@@ -15,10 +15,10 @@ from typing import Any
 
 import yaml
 
-import tracker_utils
+import utils
 
 # TODO: Take the default values from the JSON schema validator file
-DEFAULT_CONFIG = tracker_utils.SRC / "resources/configuration.yaml"
+DEFAULT_CONFIG = utils.SRC / "resources/configuration.yaml"
 
 
 class Configuration:
