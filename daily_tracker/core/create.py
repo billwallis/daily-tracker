@@ -36,7 +36,7 @@ def main() -> None:
         database_filepath=tracker_utils.DB,
         configuration=core.Configuration.from_default(),
     )
-    db_handler.import_history(filepath=tracker_utils.ROOT / "tracker.csv")
+    db_handler.import_history(filepath=tracker_utils.SRC / "tracker.csv")
 
 
 if __name__ == "__main__":
