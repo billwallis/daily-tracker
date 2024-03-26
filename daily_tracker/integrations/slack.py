@@ -51,9 +51,7 @@ class SlackConnector:
         }
         response = requests.post(url=self.webhook_url, data=json.dumps(payload))
         if response.status_code != 200:
-            raise RuntimeError(
-                f"{response.status_code}: Failed to post message to Slack\n\n{response.text}"
-            )
+            raise RuntimeError(f"{response.status_code}: Failed to post message to Slack\n\n{response.text}")
 
 
 class Slack(core.Output):
@@ -92,9 +90,5 @@ Slack(core.configuration.Configuration.from_default())
 if __name__ == "__main__":
     import os
 
-    if slack_connector := SlackConnector(
-        webhook_url=os.getenv("SLACK_WEBHOOK_URL")
-    ):
-        slack_connector.post_message(
-            "This is a *test* success message with a link: <https://www.google.com|Google>"
-        )
+    if slack_connector := SlackConnector(webhook_url=os.getenv("SLACK_WEBHOOK_URL")):
+        slack_connector.post_message("This is a *test* success message with a link: <https://www.google.com|Google>")

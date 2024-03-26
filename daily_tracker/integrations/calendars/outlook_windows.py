@@ -10,8 +10,8 @@ from __future__ import annotations
 import dataclasses
 import datetime
 
-import win32com.client
-from win32com.client import CDispatch
+import win32com.client  # noqa
+from win32com.client import CDispatch  # noqa
 
 import core
 import utils
@@ -49,9 +49,7 @@ class OutlookInput(Calendar, core.Input):
         # sourcery skip: docstrings-for-functions
         super().__init__(configuration=configuration)
 
-        outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace(
-            "MAPI"
-        )
+        outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
         self.calendar = outlook.getDefaultFolder(9).Items
         self.calendar.IncludeRecurrences = True
         self.calendar.Sort("[Start]")
@@ -73,11 +71,9 @@ class OutlookInput(Calendar, core.Input):
                 ]
             )
         )
-        return [
-            OutlookEvent.from_appointment(app) for app in restricted_calendar
-        ]
+        return [OutlookEvent.from_appointment(app) for app in restricted_calendar]
 
-    def get_appointment_at_datetime(
+    def get_appointments_at_datetime(
         self,
         at_datetime: datetime.datetime,
     ) -> list[OutlookEvent]:
@@ -94,6 +90,4 @@ class OutlookInput(Calendar, core.Input):
                 ]
             )
         )
-        return [
-            OutlookEvent.from_appointment(app) for app in restricted_calendar
-        ]
+        return [OutlookEvent.from_appointment(app) for app in restricted_calendar]

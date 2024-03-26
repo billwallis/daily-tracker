@@ -60,12 +60,7 @@ class JiraConnector:
         See more at the Atlassian documentation:
             https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/#supply-basic-auth-headers
         """
-        return (
-            "Basic "
-            + base64.b64encode(
-                f"{self._api_key}:{self._api_secret}".encode()
-            ).decode()
-        )
+        return "Basic " + base64.b64encode(f"{self._api_key}:{self._api_secret}".encode()).decode()
 
     @property
     def request_headers(self) -> dict:
@@ -289,10 +284,7 @@ class Jira(core.Input, core.Output):
         The actions to perform before the event.
         """
         if self.configuration.use_jira_sprint:
-            return [
-                core.Task(task_name=ticket)
-                for ticket in self.get_tickets_in_sprint()
-            ]
+            return [core.Task(task_name=ticket) for ticket in self.get_tickets_in_sprint()]
 
         return []
 
@@ -335,10 +327,7 @@ class Jira(core.Input, core.Output):
         while len(results) < total and retries < 5:
             response = get_batch_of_tickets(start_at=len(results))
             total = response["total"]
-            results += [
-                f"{issue['key']} {issue['fields']['summary']}"
-                for issue in response["issues"]
-            ]
+            results += [f"{issue['key']} {issue['fields']['summary']}" for issue in response["issues"]]
             retries += 1
 
         return results

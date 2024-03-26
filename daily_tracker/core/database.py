@@ -132,9 +132,7 @@ class Database(core.Input, core.Output):
         """
         Import the existing CSV file into the SQLite database.
         """
-        raise NotImplementedError(
-            "'Database.import_history' has not been implemented."
-        )
+        raise NotImplementedError("'Database.import_history' has not been implemented.")
         # column_names = [
         #     "date_time",
         #     "task",
@@ -171,9 +169,7 @@ class Database(core.Input, core.Output):
         """
         The actions to perform before the event.
         """
-        latest_task_and_detail = self.get_last_task_and_detail(
-            date_time=date_time
-        )
+        latest_task_and_detail = self.get_last_task_and_detail(date_time=date_time)
         recent_tasks_with_defaults = self.get_recent_tasks_with_defaults(
             show_last_n_weeks=self.configuration.show_last_n_weeks
         ).items()
@@ -356,10 +352,7 @@ class Database(core.Input, core.Output):
         headers = [("date_time", "task", "detail", "interval")]
         to_csv(
             data=headers + result,
-            path=(
-                pathlib.Path(filepath)
-                / f"daily-tracker-{datetime.datetime.now().strftime('%Y-%m-%d')}.csv"
-            ),
+            path=(pathlib.Path(filepath) / f"daily-tracker-{datetime.datetime.now().strftime('%Y-%m-%d')}.csv"),
         )
 
 
