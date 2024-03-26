@@ -19,13 +19,24 @@ import base64
 import datetime
 import json
 import logging
+import os
 import re
 
+import dotenv
 import requests
 
 import core
+import utils
 
+# TODO: Can we correctly move this to the main file? (Simply moving it didn't work)
+dotenv.load_dotenv(dotenv_path=utils.SRC.parent / ".env")
 logger = logging.getLogger("integrations")
+
+JIRA_CREDENTIALS = {
+    "domain": os.getenv("JIRA_DOMAIN"),
+    "key": os.getenv("JIRA_KEY"),
+    "secret": os.getenv("JIRA_SECRET"),
+}
 
 
 class JiraConnector:
@@ -49,12 +60,7 @@ class JiraConnector:
         See more at the Atlassian documentation:
             https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/#supply-basic-auth-headers
         """
-        return (
-            "Basic "
-            + base64.b64encode(
-                f"{self._api_key}:{self._api_secret}".encode()
-            ).decode()
-        )
+        return "Basic " + base64.b64encode(f"{self._api_key}:{self._api_secret}".encode()).decode()
 
     @property
     def request_headers(self) -> dict:
@@ -265,17 +271,10 @@ class Jira(core.Input, core.Output):
 
     def __init__(
         self,
-        domain: str,
-        key: str,
-        secret: str,
         configuration: core.Configuration,
         debug_mode: bool = False,
     ):
-        self.connector = JiraConnector(
-            domain=domain,
-            key=key,
-            secret=secret,
-        )
+        self.connector = JiraConnector(**JIRA_CREDENTIALS)
         self.project_key_pattern = re.compile(r"^[A-Z]\w{1,9}-\d+")
         self.configuration = configuration
         self.debug_mode = debug_mode
@@ -285,10 +284,7 @@ class Jira(core.Input, core.Output):
         The actions to perform before the event.
         """
         if self.configuration.use_jira_sprint:
-            return [
-                core.Task(task_name=ticket)
-                for ticket in self.get_tickets_in_sprint()
-            ]
+            return [core.Task(task_name=ticket) for ticket in self.get_tickets_in_sprint()]
 
         return []
 
@@ -331,10 +327,7 @@ class Jira(core.Input, core.Output):
         while len(results) < total and retries < 5:
             response = get_batch_of_tickets(start_at=len(results))
             total = response["total"]
-            results += [
-                f"{issue['key']} {issue['fields']['summary']}"
-                for issue in response["issues"]
-            ]
+            results += [f"{issue['key']} {issue['fields']['summary']}" for issue in response["issues"]]
             retries += 1
 
         return results
@@ -383,3 +376,7 @@ class Jira(core.Input, core.Output):
         elif response.status_code != 201:
             logger.debug(f"Response code: {response.status_code}")
             logger.debug(f"Could not post work log: {response.text}")
+
+
+# Force into the Input/Output classes. This is naughty, but we'll fix it later
+Jira(core.configuration.Configuration.from_default())

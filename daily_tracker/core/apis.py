@@ -66,7 +66,7 @@ import logging
 from typing import ClassVar
 
 import core
-import tracker_utils
+import utils
 
 logger = logging.getLogger("core")
 
@@ -87,13 +87,11 @@ class API(abc.ABC):
         ``apis`` property.
         """
         instance = super().__new__(cls)
-        key = tracker_utils.pascal_to_snake(cls.__name__)
+        key = utils.pascal_to_snake(cls.__name__)
 
         for base in cls.__bases__:
             if issubclass(base, API):
-                logger.debug(
-                    f"Adding class {instance} to `{base}.apis` with key '{key}'"
-                )
+                logger.debug(f"Adding class {instance} to `{base}.apis` with key '{key}'")
                 base.apis[key] = instance
         return instance
 
@@ -150,10 +148,7 @@ class Input(API, IInput, abc.ABC):
         The UI call is only made after this -- and only if the UI is enabled as
         there could be other interfaces.
         """
-        tasks = [
-            object_.on_event(date_time=date_time)
-            for name, object_ in cls.apis.items()
-        ]
+        tasks = [object_.on_event(date_time=date_time) for name, object_ in cls.apis.items()]
         return list(itertools.chain.from_iterable(tasks))
 
 

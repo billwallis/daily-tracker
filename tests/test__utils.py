@@ -1,8 +1,8 @@
 """
-Unit tests for the ``daily_tracker.tracker_utils`` module.
+Unit tests for the ``daily_tracker.utils`` module.
 """
 
-import daily_tracker.tracker_utils as tracker_utils
+from daily_tracker import utils
 
 
 def test__pascal_to_snake():
@@ -12,7 +12,7 @@ def test__pascal_to_snake():
     text = "PascalCase"
     expected = "pascal_case"
 
-    assert expected == tracker_utils.pascal_to_snake(text)
+    assert expected == utils.pascal_to_snake(text)
 
 
 def test__string_list_to_list():
@@ -23,7 +23,7 @@ def test__string_list_to_list():
     string_ = "-1,0,1,a,bb,ccc,, ,\t"
     expected = ["-1", "0", "1", "a", "bb", "ccc", "", "", ""]
 
-    assert expected == tracker_utils.string_list_to_list(string_)
+    assert expected == utils.string_list_to_list(string_)
 
 
 def test__get_first_item_in_dict():
@@ -34,4 +34,4 @@ def test__get_first_item_in_dict():
     dictionary = {"a": 1, "b": 2, "c": 3}
     expected = ("a", 1)
 
-    assert expected == tracker_utils.get_first_item_in_dict(dictionary)
+    assert expected == utils.get_first_item_in_dict(dictionary)

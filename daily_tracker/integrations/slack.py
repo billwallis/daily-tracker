@@ -10,12 +10,21 @@ post to and configuring the "Incoming Webhooks" app.
 
 import json
 import logging
+import os
 
+import dotenv
 import requests
 
 import core
+import utils
 
+# TODO: Can we correctly move this to the main file? (Simply moving it didn't work)
+dotenv.load_dotenv(dotenv_path=utils.SRC.parent / ".env")
 logger = logging.getLogger("integrations")
+
+SLACK_CREDENTIALS = {
+    "webhook_url": os.getenv("SLACK_WEBHOOK_URL"),
+}
 
 
 class SlackConnector:
@@ -42,9 +51,7 @@ class SlackConnector:
         }
         response = requests.post(url=self.webhook_url, data=json.dumps(payload))
         if response.status_code != 200:
-            raise RuntimeError(
-                f"{response.status_code}: Failed to post message to Slack\n\n{response.text}"
-            )
+            raise RuntimeError(f"{response.status_code}: Failed to post message to Slack\n\n{response.text}")
 
 
 class Slack(core.Output):
@@ -55,8 +62,8 @@ class Slack(core.Output):
     object to implement the output actions.
     """
 
-    def __init__(self, url: str, configuration: core.Configuration = None):
-        self.connector = SlackConnector(url)
+    def __init__(self, configuration: core.Configuration = None):
+        self.connector = SlackConnector(**SLACK_CREDENTIALS)
         self.configuration = configuration
 
     def post_event(self, entry: core.Entry) -> None:
@@ -77,12 +84,11 @@ class Slack(core.Output):
         self.connector.post_message(f"*{task}*: {detail}")
 
 
+# Force into the Input/Output classes. This is naughty, but we'll fix it later
+Slack(core.configuration.Configuration.from_default())
+
 if __name__ == "__main__":
     import os
 
-    if slack_connector := SlackConnector(
-        webhook_url=os.getenv("SLACK_WEBHOOK_URL")
-    ):
-        slack_connector.post_message(
-            "This is a *test* success message with a link: <https://www.google.com|Google>"
-        )
+    if slack_connector := SlackConnector(webhook_url=os.getenv("SLACK_WEBHOOK_URL")):
+        slack_connector.post_message("This is a *test* success message with a link: <https://www.google.com|Google>")

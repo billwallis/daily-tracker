@@ -10,7 +10,7 @@ tracker:
 
     # calendar
     linked-calendar: none
-    use-calendar-appointments: false
+    use-calendar-appointments: true
     appointment-category-exclusions: [Planned Work, Non-Working]
 
     # jira

@@ -29,23 +29,14 @@ def pascal_to_snake(text: str) -> str:
 
     :return: The snake-case version of the input string.
     """
-    return "".join(
-        [
-            f"_{letter.lower()}" if letter.isupper() else letter
-            for letter in text
-        ]
-    ).strip("_")
+    return "".join([f"_{letter.lower()}" if letter.isupper() else letter for letter in text]).strip("_")
 
 
 def string_list_to_list(string_list: str, sep: str = ",") -> list:
     """
     Convert a string list to a Python list by splitting on the separator.
     """
-    return (
-        [category.strip() for category in string_list.split(sep)]
-        if string_list
-        else []
-    )
+    return [category.strip() for category in string_list.split(sep)] if string_list else []
 
 
 def get_first_item_in_dict(dictionary: dict) -> tuple:

@@ -27,8 +27,8 @@ from __future__ import annotations
 import dataclasses
 import datetime
 
-import appscript
-from appscript.reference import Reference
+import appscript  # noqa
+from appscript.reference import Reference  # noqa
 
 import core
 from integrations.calendars.calendars import Calendar, CalendarEvent
@@ -78,15 +78,11 @@ class OutlookInput(Calendar, core.Input):
         and end datetime (exclusive).
         """
         restricted_calendar = self.calendar.calendar_events[
-            (appscript.its.start_time >= start_datetime).AND(
-                appscript.its.end_time < end_datetime
-            )
+            (appscript.its.start_time >= start_datetime).AND(appscript.its.end_time < end_datetime)
         ].get()
-        return [
-            OutlookEvent.from_appointment(app) for app in restricted_calendar
-        ]
+        return [OutlookEvent.from_appointment(app) for app in restricted_calendar]
 
-    def get_appointment_at_datetime(
+    def get_appointments_at_datetime(
         self,
         at_datetime: datetime.datetime,
     ) -> list[OutlookEvent]:
@@ -95,10 +91,6 @@ class OutlookInput(Calendar, core.Input):
         supplied datetime.
         """
         restricted_calendar = self.calendar.calendar_events[
-            (appscript.its.start_time <= at_datetime).AND(
-                appscript.its.end_time > at_datetime
-            )
+            (appscript.its.start_time <= at_datetime).AND(appscript.its.end_time > at_datetime)
         ].get()
-        return [
-            OutlookEvent.from_appointment(app) for app in restricted_calendar
-        ]
+        return [OutlookEvent.from_appointment(app) for app in restricted_calendar]

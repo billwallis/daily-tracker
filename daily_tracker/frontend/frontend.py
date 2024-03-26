@@ -13,10 +13,10 @@ from collections.abc import Callable
 import pandas
 import streamlit
 
-import daily_tracker.tracker_utils as tracker_utils
+import daily_tracker.utils as utils
 from core.database import DatabaseConnector
 
-CONN = DatabaseConnector(tracker_utils.DB)
+CONN = DatabaseConnector(utils.DB)
 
 
 def handle_exceptions(refresh: bool = False) -> Callable:
@@ -35,9 +35,7 @@ def handle_exceptions(refresh: bool = False) -> Callable:
                     # time.sleep(3)
                     # streamlit.experimental_rerun()
             except Exception as e:
-                streamlit.write(
-                    "Something went wrong! See the traceback below."
-                )
+                streamlit.write("Something went wrong! See the traceback below.")
                 streamlit.write(e)
 
         return inner
@@ -246,9 +244,7 @@ def edit_stuff() -> None:
     )
 
     state = streamlit.session_state["tracker-editor"]
-    edited_records: pandas.DataFrame = records.iloc[
-        list(state["edited_rows"].keys())
-    ]
+    edited_records: pandas.DataFrame = records.iloc[list(state["edited_rows"].keys())]
 
     streamlit.write("Edited records:")
     if not edited_records.empty:

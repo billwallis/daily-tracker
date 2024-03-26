@@ -60,17 +60,17 @@ testpaths = ["tests"]
 
 [tool.black]
 target_version = ["py311"]
-line-length = 80
+line-length = 120
 
 
 [tool.isort]
 profile = "black"
-line_length = 80
-known_local_folder = "daily_tracker,core,integrations,tracker_utils"
+line_length = 120
+known_local_folder = "daily_tracker,core,integrations,utils"
 
 
 [tool.pylint.format]
-max-line-length = 80
+max-line-length = 120
 
 [tool.pylint.MASTER]
 ignore-paths = "^tests/.*$"

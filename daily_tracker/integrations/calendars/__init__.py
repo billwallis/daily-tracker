@@ -4,6 +4,7 @@ Various calendar integrations.
 
 import os
 
+import core
 from integrations.calendars.calendars import Calendar, NoCalendar
 
 # from integrations.calendars.gmail import GmailInput
@@ -21,13 +22,13 @@ CALENDAR_LOOKUP = {
 }
 
 
-def get_linked_calendar(calendar_type: str) -> type[Calendar]:
+def get_linked_calendar(configuration: core.Configuration) -> Calendar:
     """
     Convert the input calendar type string to the concrete representation of the
     class.
     Currently, only using a single calendar type is supported.
     """
-    calendar = CALENDAR_LOOKUP.get(calendar_type)
+    calendar = CALENDAR_LOOKUP.get(configuration.linked_calendar)
     if calendar is None:
         raise NotImplementedError(
             f"The tracker currently does not support connections to {calendar}."
@@ -35,4 +36,8 @@ def get_linked_calendar(calendar_type: str) -> type[Calendar]:
             f"{','.join(CALENDAR_LOOKUP.keys())}"
         )
 
-    return calendar
+    return calendar(configuration)
+
+
+# Force into the Input/Output classes. This is naughty, but we'll fix it later
+get_linked_calendar(core.configuration.Configuration.from_default())

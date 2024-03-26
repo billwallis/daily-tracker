@@ -120,25 +120,25 @@ CREATE VIEW task_detail_with_defaults AS
 ------------------------------------------------------------------------------------------------------------------------
 
 /* Dirty hack -- the triggers are breaking in the sqlite3 API */
-DROP VIEW v_latest_tasks;
-CREATE VIEW v_latest_tasks AS
-    SELECT
-        CASE WHEN task IN (SELECT task FROM default_tasks) THEN 0 ELSE 1 END AS indx,
-        MAX(date_time) AS last_date_time,
-        task,
-        detail
-    FROM tracker
-    GROUP BY task
-;
-
-
-/* Example usage */
-SELECT *
-FROM v_latest_tasks
-WHERE last_date_time >= DATETIME('now', :date_modifier)
-  OR indx = 0  /* Defaults */
-ORDER BY indx, task
-;
+-- DROP VIEW v_latest_tasks;
+-- CREATE VIEW v_latest_tasks AS
+--     SELECT
+--         CASE WHEN task IN (SELECT task FROM default_tasks) THEN 0 ELSE 1 END AS indx,
+--         MAX(date_time) AS last_date_time,
+--         task,
+--         detail
+--     FROM tracker
+--     GROUP BY task
+-- ;
+--
+--
+-- /* Example usage */
+-- SELECT *
+-- FROM v_latest_tasks
+-- WHERE last_date_time >= DATETIME('now', :date_modifier)
+--   OR indx = 0  /* Defaults */
+-- ORDER BY indx, task
+-- ;
 
 
 /* Command to validate the objects in the database */
