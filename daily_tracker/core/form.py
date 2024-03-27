@@ -58,6 +58,7 @@ class TrackerForm:
         """
         Create the form handler.
         """
+        logger.debug(f"Creating the form for {at_datetime}.")
         self.at_datetime = at_datetime
         self.action_handler = action_handler
         self.interval = self.action_handler.configuration.interval

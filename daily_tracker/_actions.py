@@ -3,11 +3,14 @@ The actions for the pop-up box.
 """
 
 import datetime
+import logging
 
 import core
 import core.database
 import core.form
 import integrations
+
+logger = logging.getLogger("core")
 
 
 class ActionHandler:
@@ -58,6 +61,7 @@ class ActionHandler:
             current_meetings = []
 
         database_handler: core.database.Database = self.outputs["database"]  # type: ignore
+        logger.debug(f"Using database {database_handler}.")
         if len(current_meetings) != 1:
             # If there are two events, we don't know which one to use so
             # default to the last task from the database instead

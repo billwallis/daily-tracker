@@ -10,15 +10,15 @@ from integrations.calendars.calendars import Calendar, NoCalendar
 # from integrations.calendars.gmail import GmailInput
 
 if os.name == "nt":
-    from integrations.calendars.outlook_windows import OutlookInput
+    from integrations.calendars.outlook_windows import Outlook
 elif os.name == "posix":
-    from integrations.calendars.outlook_mac import OutlookInput
+    from integrations.calendars.outlook_mac import Outlook
 
 
 CALENDAR_LOOKUP = {
     "none": NoCalendar,
-    # "gmail": GmailInput,
-    "outlook": OutlookInput,
+    # "gmail": Gmail,
+    "outlook": Outlook,
 }
 
 

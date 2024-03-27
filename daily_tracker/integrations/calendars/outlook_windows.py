@@ -40,7 +40,7 @@ class OutlookEvent(CalendarEvent):
         )
 
 
-class OutlookInput(Calendar, core.Input):
+class Outlook(Calendar, core.Input):
     """
     Naive implementation of a connector to Outlook on Windows.
     """
