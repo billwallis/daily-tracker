@@ -3,6 +3,7 @@ tracker:
   options:
     # tracker
     interval: 15
+    keep-awake: false
     run-on-startup: true
     show-last-n-weeks: 2
     save-csv-copy: false

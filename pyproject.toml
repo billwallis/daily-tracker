@@ -27,6 +27,8 @@ requests = ">=2.28.2"
 slack-sdk = ">=3.20.0"
 streamlit = "^1.30.0"
 ttkthemes = "^3.2.2"
+wakepy = "^0.7.2"
+
 pywin32 = [
     {platform = "win32", version = "306"}
 ]
