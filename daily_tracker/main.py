@@ -10,6 +10,7 @@ import logging.config
 import _actions
 import dotenv
 import yaml
+from wakepy import keep
 
 import core
 import core.create
@@ -42,17 +43,25 @@ def main(debug_mode: bool = False) -> None:
     logging.debug(f"Setting root directory to {utils.ROOT}")
     logging.debug(f"Setting source directory to {utils.SRC}")
 
-    if debug_mode:
-        create_form(datetime.datetime.now())
-        quit()
-
-    if APPLICATION_CREATED:
-        scheduler = core.scheduler.IndefiniteScheduler(create_form)
-        scheduler.schedule_first()
-    else:
+    if not APPLICATION_CREATED:
         # core.create.create_env()
         db_handler = core.database.Database(
             utils.SRC / "tracker.db",
             core.Configuration.from_default(),
         )
         # db_handler.import_history(utils.ROOT / "tracker.csv")
+
+    if debug_mode:
+        create_form(datetime.datetime.now())
+        return
+
+    config = core.Configuration.from_default()
+    scheduler = core.scheduler.IndefiniteScheduler(create_form)
+
+    if config.keep_awake:
+        with keep.presenting():
+            scheduler.schedule_first()
+    else:
+        scheduler.schedule_first()
+
+    logging.info("Closing tracker...")

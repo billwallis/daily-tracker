@@ -16,6 +16,7 @@
           "description": "The block of options for the tracker.",
           "required": [
             "interval",
+            "keep-awake",
             "run-on-startup",
             "show-last-n-weeks",
             "save-csv-copy",
@@ -37,9 +38,14 @@
               "default": 15,
               "minimum": 1
             },
+            "keep-awake": {
+              "type": "boolean",
+              "description": "Whether to keep the screen awake while the application is running.\n\nValues of `true` or `false` only.",
+              "default": false
+            },
             "run-on-startup": {
               "type": "boolean",
-              "description": "Whether or not the tracker should start running when the application is initialised.\n\nValues of `true` or `false` only.",
+              "description": "Whether the tracker should start running when the application is initialised.\n\nValues of `true` or `false` only.",
               "default": true
             },
             "show-last-n-weeks": {

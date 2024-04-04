@@ -3,9 +3,6 @@ ci:
   autoupdate_schedule: quarterly
   skip: [poetry-lock, sourcery, pylint, pytest, coverage-badge]
 
-default_install_hook_types: [pre-commit, post-commit]
-default_stages: [pre-commit]
-
 repos:
   - repo: meta
     hooks:
@@ -111,5 +108,4 @@ repos:
         entry: coverage-badge -o coverage.svg -f
         language: system
         pass_filenames: false
-        stages: [post-commit]
         always_run: true

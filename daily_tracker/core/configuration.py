@@ -71,6 +71,10 @@ class Configuration:
         return self._get_option_value("interval", False)
 
     @property
+    def keep_awake(self) -> bool:
+        return self._get_option_value("keep-awake", False)
+
+    @property
     def run_on_startup(self) -> bool:
         return self._get_option_value("run-on-startup", False)
 
