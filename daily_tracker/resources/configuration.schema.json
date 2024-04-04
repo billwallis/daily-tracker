@@ -26,7 +26,7 @@
             "appointment-category-exclusions",
 
             "jira-type",
-            "use-jira-sprint",
+            "jira-filter",
             "post-to-jira",
 
             "post-to-slack"
@@ -56,7 +56,7 @@
             },
             "save-csv-copy": {
               "type": "boolean",
-              "description": "Whether or not the tracker should save a copy of the full history to a CSV file.\n\nIf `true`, then the `csv-filepath` property must be given an absolute filepath of the *directory* to save the file to.\n\nValues of `true` or `false` only.",
+              "description": "Whether the tracker should save a copy of the full history to a CSV file.\n\nIf `true`, then the `csv-filepath` property must be given an absolute filepath of the *directory* to save the file to.\n\nValues of `true` or `false` only.",
               "default": false
             },
             "csv-filepath": {
@@ -72,7 +72,7 @@
             },
             "use-calendar-appointments": {
               "type": "boolean",
-              "description": "Whether or not the tracker should auto-fill with meeting details from the linked calendar.\n\nValues of `true` or `false` only.",
+              "description": "Whether the tracker should autofill with meeting details from the linked calendar.\n\nValues of `true` or `false` only.",
               "default": false
             },
             "appointment-category-exclusions": {
@@ -85,10 +85,10 @@
               "description": "The Jira platform to connect to.\n\nOnly Cloud is supported, and this is to emphasise this.",
               "enum": ["cloud"]
             },
-            "use-jira-sprint": {
-              "type": "boolean",
-              "description": "Whether or not the tracker should auto-fill with task details from the linked Jira filter.\n\nValues of `true` or `false` only.",
-              "default": false
+            "jira-filter": {
+              "type": "string",
+              "description": "",
+              "default": "The Jira filter to use for filling the form with tasks."
             },
             "post-to-jira": {
               "type": "boolean",
@@ -98,7 +98,7 @@
 
             "post-to-slack": {
               "type": "boolean",
-              "description": "Whether or not the tracker should post a message with the entered pop-up values to a Slack channel.\n\nValues of `true` or `false` only.",
+              "description": "Whether the tracker should post a message with the entered pop-up values to a Slack channel.\n\nValues of `true` or `false` only.",
               "default": false
             }
           }

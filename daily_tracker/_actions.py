@@ -66,7 +66,7 @@ class ActionHandler:
         assert len(current_meetings) == 1
         return "Meetings", current_meetings[0].subject
 
-    def get_dropdown_options(self, use_jira_sprint: bool) -> dict[str, str]:
+    def get_dropdown_options(self, jira_filter: str) -> dict[str, str]:
         """
         Return the latest tasks and their most recent detail as a dictionary.
 
@@ -77,7 +77,7 @@ class ActionHandler:
         jira_handler: integrations.Jira = self.inputs.get("jira")  # type: ignore
 
         recent_tasks = database_handler.get_recent_tasks(self.configuration.show_last_n_weeks)
-        if jira_handler and use_jira_sprint:
+        if jira_handler and jira_filter:
             recent_tickets = [
                 ticket for ticket in jira_handler.get_tickets_in_sprint() if ticket not in recent_tasks.keys()
             ]

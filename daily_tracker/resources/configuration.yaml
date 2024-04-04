@@ -16,7 +16,7 @@ tracker:
 
     # jira
     jira-type: cloud # Just to emphasise that Server is not supported
-    use-jira-sprint: false
+    jira-filter: "" # sprint IN openSprints() AND assignee = currentUser()
     post-to-jira: false
 
     # slack
