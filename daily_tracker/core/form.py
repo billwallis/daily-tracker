@@ -67,7 +67,7 @@ class TrackerForm:
             at_datetime=self.at_datetime,
         )
         self.options = self.action_handler.get_dropdown_options(
-            use_jira_sprint=self.action_handler.configuration.use_jira_sprint,
+            jira_filter=self.action_handler.configuration.jira_filter,
         )
 
     @property

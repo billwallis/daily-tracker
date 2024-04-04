@@ -283,25 +283,15 @@ class Jira(core.Input, core.Output):
         """
         The actions to perform before the event.
         """
-        if self.configuration.use_jira_sprint:
+        if self.configuration.jira_filter:
             return [core.Task(task_name=ticket) for ticket in self.get_tickets_in_sprint()]
 
         return []
 
-    def get_tickets_in_sprint(self, project_key: str = None) -> list[str]:
+    def get_tickets_in_sprint(self) -> list[str]:
         """
         Get the list of tickets in the active sprint for the current user.
         """
-        fields = ["summary", "duedate", "assignee"]
-        jql = " AND ".join(
-            item
-            for item in [
-                f"project = {project_key}" if project_key else None,
-                "sprint IN openSprints()",
-                "assignee = currentUser()",
-            ]
-            if item is not None
-        )
 
         def get_batch_of_tickets(start_at: int) -> dict:
             """
@@ -310,8 +300,8 @@ class Jira(core.Input, core.Output):
             try:
                 return json.loads(
                     self.connector.search_for_issues_using_jql(
-                        jql=jql,
-                        fields=fields,
+                        jql=self.configuration.jira_filter,
+                        fields=["summary", "duedate", "assignee"],
                         start_at=start_at,
                     ).text
                 )
@@ -326,6 +316,11 @@ class Jira(core.Input, core.Output):
         retries = 0
         while len(results) < total and retries < 5:
             response = get_batch_of_tickets(start_at=len(results))
+            if "errorMessages" in response:
+                error_message = " ".join(response["errorMessages"])
+                logger.warning(f"Could not get tickets in sprint: {error_message}")
+                return []
+
             total = response["total"]
             results += [f"{issue['key']} {issue['fields']['summary']}" for issue in response["issues"]]
             retries += 1

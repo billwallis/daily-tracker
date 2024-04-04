@@ -95,8 +95,8 @@ class Configuration:
         return self._get_option_value("linked-calendar", None)
 
     @property
-    def use_jira_sprint(self) -> bool:
-        return self._get_option_value("use-jira-sprint", False)
+    def jira_filter(self) -> str:
+        return self._get_option_value("jira-filter", None)
 
     @property
     def post_to_slack(self) -> bool:
