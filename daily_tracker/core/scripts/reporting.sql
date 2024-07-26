@@ -84,15 +84,23 @@ CREATE VIEW tasks_from_yesterday AS
 */
 DROP VIEW IF EXISTS tasks_from_yesterday_rollup;
 CREATE VIEW tasks_from_yesterday_rollup AS
-    SELECT
-        task,
-        detail,
-        SUM(interval) AS minutes,
-        PRINTF('%.*c', SUM(interval) / 15, '*') AS chart
-    FROM tasks_from_yesterday
-    WHERE task != 'Lunch Break'
-    GROUP BY task, detail
-    ORDER BY task, detail
+        SELECT
+            task,
+            detail,
+            SUM(interval) AS minutes,
+            PRINTF('%.*c', SUM(interval) / 15, '*') AS chart
+        FROM tasks_from_yesterday
+        WHERE task != 'Lunch Break'
+        GROUP BY task, detail
+    UNION ALL
+        SELECT
+            NULL,
+            NULL,
+            SUM(interval) AS minutes,
+            CAST(SUM(interval) / 60 AS TEXT) || ' hours ' || CAST(SUM(interval) % 60 AS TEXT) || ' minutes' AS chart
+        FROM tasks_from_yesterday
+        WHERE task != 'Lunch Break'
+    ORDER BY task NULLS LAST, detail
 ;
 
 
