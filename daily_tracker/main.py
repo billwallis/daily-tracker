@@ -39,6 +39,9 @@ def main(debug_mode: bool = False) -> None:
 
     _in_debug_mode = " in debug mode" if debug_mode else ""
     logging.info(f"Starting tracker{_in_debug_mode}...")
+    logging.info(
+        f"Logging level: {logging.getLevelName(logging.getLogger().getEffectiveLevel())}"
+    )
     logging.debug(f"Setting root directory to {utils.ROOT}")
     logging.debug(f"Setting source directory to {utils.SRC}")
 

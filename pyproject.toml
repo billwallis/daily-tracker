@@ -19,7 +19,7 @@ packages = [
 daily-tracker = "daily_tracker.main:main"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "~3.11"
 Pillow = ">=9.4.0"
 python-dotenv = ">=0.21.1"
 pyyaml = ">=6.0"
@@ -44,6 +44,7 @@ test.optional = true
 coverage-badge = "^1.1.0"
 pre-commit = "^3.6.2"
 pylint = "3.1.0"
+pyinstaller = "^6.9.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.0.2"

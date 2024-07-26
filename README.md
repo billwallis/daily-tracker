@@ -7,8 +7,7 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/Bilbottom/daily-tracker)](https://shields.io/)
 
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
-[![code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Bilbottom/daily-tracker/main.svg)](https://results.pre-commit.ci/latest/github/Bilbottom/daily-tracker/main)
 [![Sourcery](https://img.shields.io/badge/Sourcery-enabled-brightgreen)](https://sourcery.ai)
 
@@ -75,3 +74,19 @@ This has been tested and confirmed to work on an M1 Mac with version `8.6.13` of
 More details available at:
 
 - https://tkdocs.com/tutorial/install.html#install-macos
+
+### 💽 Building the executable
+
+> [!ERROR]
+>
+> This doesn't work yet.
+
+This project uses [PyInstaller](https://www.pyinstaller.org/) to build the executable; run:
+
+```bash
+poetry run pyinstaller daily_tracker/__main__.py \
+  --name daily-tracker \
+  --icon=daily_tracker/resources/clock-icon.ico \
+  --onefile \
+  --windowed
+```
