@@ -9,7 +9,7 @@ import datetime
 
 import pytest
 
-import daily_tracker.core.apis as apis
+from daily_tracker.core import apis
 
 
 class SomeInput(apis.Input):

@@ -27,7 +27,7 @@ requests = ">=2.28.2"
 slack-sdk = ">=3.20.0"
 streamlit = "^1.37.0"
 ttkthemes = "^3.2.2"
-wakepy = "^0.7.2"
+wakepy = "^0.9.1"
 
 pywin32 = [
     {platform = "win32", version = "306"}
@@ -39,7 +39,6 @@ appscript = [
 [tool.poetry.group]
 dev.optional = true
 test.optional = true
-ide.optional = true
 
 [tool.poetry.group.dev.dependencies]
 coverage-badge = "^1.1.0"
@@ -50,29 +49,34 @@ pylint = "3.1.0"
 pytest = "^8.0.2"
 pytest-cov = "^4.1.0"
 
-# Packages just for IDE integration
-[tool.poetry.group.ide.dependencies]
-black = "*"
-
 
 [tool.pytest.ini_options]
 addopts = "--cov=daily_tracker --cov-fail-under=10"
 testpaths = ["tests"]
 
 
-[tool.black]
-target_version = ["py311"]
-line-length = 120
+[tool.ruff]
+line-length = 80
+indent-width = 4
+target-version = "py311"
 
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
 
-[tool.isort]
-profile = "black"
-line_length = 120
-known_local_folder = "daily_tracker,core,integrations,utils"
+[tool.ruff.lint]
+select = ["F", "I", "N", "PL", "R", "RUF", "S", "UP", "W"]
+ignore = []
+fixable = ["ALL"]
+unfixable = []
+# Allow unused variables when underscore-prefixed
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
-
-[tool.pylint.format]
-max-line-length = 120
-
-[tool.pylint.MASTER]
-ignore-paths = "^tests/.*$"
+# https://github.com/astral-sh/ruff/issues/4368
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/**/*.py" = [
+    "S101",    #  Use of `assert` detected
+    "PLR2004", #  Magic value used in comparison
+]

@@ -56,6 +56,7 @@ type classes through the corresponding ``apis`` class property::
         Output : APIS
         Output : post_event()
 """
+
 from __future__ import annotations
 
 import abc
@@ -91,7 +92,9 @@ class API(abc.ABC):
 
         for base in cls.__bases__:
             if issubclass(base, API):
-                logger.debug(f"Adding class {instance} to `{base}.apis` with key '{key}'")
+                logger.debug(
+                    f"Adding class {instance} to `{base}.apis` with key '{key}'"
+                )
                 base.apis[key] = instance
         return instance
 
@@ -148,7 +151,10 @@ class Input(API, IInput, abc.ABC):
         The UI call is only made after this -- and only if the UI is enabled as
         there could be other interfaces.
         """
-        tasks = [object_.on_event(date_time=date_time) for name, object_ in cls.apis.items()]
+        tasks = [
+            object_.on_event(date_time=date_time)
+            for name, object_ in cls.apis.items()
+        ]
         return list(itertools.chain.from_iterable(tasks))
 
 

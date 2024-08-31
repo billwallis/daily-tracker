@@ -13,9 +13,8 @@ import collections
 import pathlib
 from typing import Any
 
-import yaml
-
 import utils
+import yaml
 
 # TODO: Take the default values from the JSON schema validator file
 DEFAULT_CONFIG = utils.SRC / "resources/configuration.yaml"
@@ -46,11 +45,11 @@ class Configuration:
         TODO: Include the API tokens/keys/secrets in the config file (#5)
         """
         with open(filepath) as f_custom, open(DEFAULT_CONFIG) as f_base:
-            config = yaml.load(f_custom.read(), yaml.Loader)
+            config = yaml.load(f_custom.read(), yaml.Loader)  # noqa: S506
 
             config["tracker"]["options"] = collections.ChainMap(
                 config["tracker"]["options"],
-                yaml.load(f_base.read(), yaml.Loader)["tracker"]["options"],
+                yaml.load(f_base.read(), yaml.Loader)["tracker"]["options"],  # noqa: S506
             )
 
             return Configuration(config)
@@ -61,7 +60,7 @@ class Configuration:
         Read the ``configuration.yaml`` into a Configuration object.
         """
         with open(DEFAULT_CONFIG) as f:
-            return Configuration(yaml.load(f.read(), yaml.Loader))
+            return Configuration(yaml.load(f.read(), yaml.Loader))  # noqa: S506
 
     def _get_option_value(self, option: str, default: Any) -> Any:
         return self.options.get(option, default)

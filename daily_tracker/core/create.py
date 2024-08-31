@@ -19,7 +19,7 @@ def create_env() -> None:
     """
     filepath = ".env"
     if pathlib.Path(filepath).exists():
-        return None
+        return
 
     with open(filepath, "w+") as f:
         keys = ["JIRA_URL", "JIRA_KEY", "JIRA_SECRET", "SLACK_URL"]

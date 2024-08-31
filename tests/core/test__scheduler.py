@@ -6,7 +6,7 @@ import datetime
 
 import pytest
 
-import daily_tracker.core.scheduler as scheduler
+from daily_tracker.core import scheduler
 
 # Just for brevity
 iso = datetime.datetime.fromisoformat

@@ -3,11 +3,14 @@ The actions for the pop-up box.
 """
 
 import datetime
+import logging
 
 import core
 import core.database
 import core.form
 import integrations
+
+logger = logging.getLogger("core")
 
 
 class ActionHandler:
@@ -52,18 +55,24 @@ class ActionHandler:
                     at_datetime=at_datetime,
                 )
                 if not meeting.all_day_event
-                and all(i not in meeting.categories for i in self.configuration.appointment_category_exclusions)
+                and all(
+                    i not in meeting.categories
+                    for i in self.configuration.appointment_category_exclusions
+                )
             ]
         else:
             current_meetings = []
 
         database_handler: core.database.Database = self.outputs["database"]  # type: ignore
+        logger.debug(f"Using database {database_handler}.")
         if len(current_meetings) != 1:
             # If there are two events, we don't know which one to use so
             # default to the last task from the database instead
-            return database_handler.get_last_task_and_detail(date_time=at_datetime) or ("", "")
+            return database_handler.get_last_task_and_detail(
+                date_time=at_datetime
+            ) or ("", "")
 
-        assert len(current_meetings) == 1
+        assert len(current_meetings) == 1  # noqa: S101
         return "Meetings", current_meetings[0].subject
 
     def get_dropdown_options(self, jira_filter: str) -> dict[str, str]:
@@ -76,10 +85,14 @@ class ActionHandler:
         database_handler: core.database.Database = self.outputs["database"]  # type: ignore
         jira_handler: integrations.Jira = self.inputs.get("jira")  # type: ignore
 
-        recent_tasks = database_handler.get_recent_tasks(self.configuration.show_last_n_weeks)
+        recent_tasks = database_handler.get_recent_tasks(
+            self.configuration.show_last_n_weeks
+        )
         if jira_handler and jira_filter:
             recent_tickets = [
-                ticket for ticket in jira_handler.get_tickets_in_sprint() if ticket not in recent_tasks.keys()
+                ticket
+                for ticket in jira_handler.get_tickets_in_sprint()
+                if ticket not in recent_tasks.keys()
             ]
         else:
             recent_tickets = []
@@ -95,7 +108,9 @@ class ActionHandler:
         """
         # Dirty approach to get the database stuff done first
         outputs_ = [self.outputs["database"]] + [
-            handler for name, handler in self.outputs.items() if name != "database"
+            handler
+            for name, handler in self.outputs.items()
+            if name != "database"
         ]
 
         for handler in outputs_:

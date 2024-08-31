@@ -8,14 +8,14 @@ You can generate a webhook URL by navigating to the channel you want to
 post to and configuring the "Incoming Webhooks" app.
 """
 
+import http
 import json
 import logging
 import os
 
+import core
 import dotenv
 import requests
-
-import core
 import utils
 
 # TODO: Can we correctly move this to the main file? (Simply moving it didn't work)
@@ -49,9 +49,11 @@ class SlackConnector:
             "username": "Daily Tracker",
             "icon_emoji": ":clock10:",
         }
-        response = requests.post(url=self.webhook_url, data=json.dumps(payload))
-        if response.status_code != 200:
-            raise RuntimeError(f"{response.status_code}: Failed to post message to Slack\n\n{response.text}")
+        response = requests.post(url=self.webhook_url, data=json.dumps(payload))  # noqa: S113
+        if response.status_code != http.HTTPStatus.OK:
+            raise RuntimeError(
+                f"{response.status_code}: Failed to post message to Slack\n\n{response.text}"
+            )
 
 
 class Slack(core.Output):
@@ -90,5 +92,9 @@ Slack(core.configuration.Configuration.from_default())
 if __name__ == "__main__":
     import os
 
-    if slack_connector := SlackConnector(webhook_url=os.getenv("SLACK_WEBHOOK_URL")):
-        slack_connector.post_message("This is a *test* success message with a link: <https://www.google.com|Google>")
+    if slack_connector := SlackConnector(
+        webhook_url=os.getenv("SLACK_WEBHOOK_URL")
+    ):
+        slack_connector.post_message(
+            "This is a *test* success message with a link: <https://www.google.com|Google>"
+        )

@@ -31,12 +31,12 @@ class DatabaseConnector:
     def execute(
         self,
         sql: str,
-        parameters: Mapping[str, Any] = None,
+        parameters: Mapping[str, Any] | None = None,
     ) -> sqlite3.Cursor:
         """
         Shortcut to the execute method on the SQLite connection object.
         """
-        return self.connection.execute(sql, parameters)  # noqa
+        return self.connection.execute(sql, parameters)
 
     def run_query_from_file(self, filepath: str) -> sqlite3.Cursor:
         """
@@ -75,9 +75,7 @@ class DatabaseConnector:
             {"table_name": table_name},
         ).fetchone():
             self.connection.execute(
-                f"""
-                DELETE FROM {table_name} WHERE 1=1
-                """
+                f"""DELETE FROM {table_name} WHERE 1=1"""  # noqa: S608
             )
 
 
@@ -132,7 +130,9 @@ class Database(core.Input, core.Output):
         """
         Import the existing CSV file into the SQLite database.
         """
-        raise NotImplementedError("'Database.import_history' has not been implemented.")
+        raise NotImplementedError(
+            "'Database.import_history' has not been implemented."
+        )
         # column_names = [
         #     "date_time",
         #     "task",
@@ -169,7 +169,9 @@ class Database(core.Input, core.Output):
         """
         The actions to perform before the event.
         """
-        latest_task_and_detail = self.get_last_task_and_detail(date_time=date_time)
+        latest_task_and_detail = self.get_last_task_and_detail(
+            date_time=date_time
+        )
         recent_tasks_with_defaults = self.get_recent_tasks_with_defaults(
             show_last_n_weeks=self.configuration.show_last_n_weeks
         ).items()
@@ -327,7 +329,9 @@ class Database(core.Input, core.Output):
                 },
             )
 
-    def write_to_csv(self, filepath: str, previous_days: int = None) -> None:
+    def write_to_csv(
+        self, filepath: str, previous_days: int | None = None
+    ) -> None:
         """
         Write the tracker history to a CSV file.
 
@@ -352,7 +356,10 @@ class Database(core.Input, core.Output):
         headers = [("date_time", "task", "detail", "interval")]
         to_csv(
             data=headers + result,
-            path=(pathlib.Path(filepath) / f"daily-tracker-{datetime.datetime.now().strftime('%Y-%m-%d')}.csv"),
+            path=(
+                pathlib.Path(filepath)
+                / f"daily-tracker-{datetime.datetime.now().strftime('%Y-%m-%d')}.csv"
+            ),
         )
 
 

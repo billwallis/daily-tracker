@@ -8,15 +8,14 @@ import logging
 import logging.config
 
 import _actions
-import dotenv
-import yaml
-from wakepy import keep
-
 import core
 import core.create
 import core.database
 import core.scheduler
+import dotenv
 import utils
+import yaml
+from wakepy import keep
 
 dotenv.load_dotenv(dotenv_path=utils.ROOT / ".env")
 
@@ -45,7 +44,7 @@ def main(debug_mode: bool = False) -> None:
 
     if not APPLICATION_CREATED:
         # core.create.create_env()
-        db_handler = core.database.Database(
+        db_handler = core.database.Database(  # noqa: F841
             utils.SRC / "tracker.db",
             core.Configuration.from_default(),
         )

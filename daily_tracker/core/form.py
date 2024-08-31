@@ -11,14 +11,13 @@ import datetime
 import logging
 import textwrap
 import tkinter
-import tkinter.ttk as ttk
+from tkinter import ttk
 
 import _actions
+import core.database
 import PIL.Image
 import PIL.ImageTk
 import ttkthemes
-
-import core.database
 import utils
 
 logger = logging.getLogger("core")
@@ -58,6 +57,7 @@ class TrackerForm:
         """
         Create the form handler.
         """
+        logger.debug(f"Creating the form for {at_datetime}.")
         self.at_datetime = at_datetime
         self.action_handler = action_handler
         self.interval = self.action_handler.configuration.interval
@@ -154,7 +154,7 @@ class TrackerForm:
 
         https://youtu.be/ibf5cx221hk
         """
-        if event.state == 12 and event.keysym == "Return":
+        if event.state == 12 and event.keysym == "Return":  # noqa: PLR2004
             self.action_wrapper()
 
     def generate_form(self) -> None:
@@ -163,7 +163,7 @@ class TrackerForm:
         """
         self._root = ttkthemes.ThemedTk(theme="arc")
         self._root.geometry(f"{self._width}x{self._height}")
-        self._root.eval("tk::PlaceWindow . center")  # noqa
+        self._root.eval("tk::PlaceWindow . center")
         self._root.title(self.title)
         self._root.wm_iconphoto(False, load_icon(ICON))
 

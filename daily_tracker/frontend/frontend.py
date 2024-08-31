@@ -5,6 +5,7 @@ This is currently more of a POC, but will be improved over time.
 
 TODO: Callbacks should be tied to the backend
 """
+# ruff: noqa: S608
 
 import datetime
 import functools
@@ -12,9 +13,9 @@ from collections.abc import Callable
 
 import pandas
 import streamlit
-
-import daily_tracker.utils as utils
 from core.database import DatabaseConnector
+
+from daily_tracker import utils
 
 CONN = DatabaseConnector(utils.DB)
 
@@ -35,7 +36,9 @@ def handle_exceptions(refresh: bool = False) -> Callable:
                     # time.sleep(3)
                     # streamlit.experimental_rerun()
             except Exception as e:
-                streamlit.write("Something went wrong! See the traceback below.")
+                streamlit.write(
+                    "Something went wrong! See the traceback below."
+                )
                 streamlit.write(e)
 
         return inner
@@ -43,7 +46,7 @@ def handle_exceptions(refresh: bool = False) -> Callable:
     return wrapper
 
 
-def execute(sql: str, parameters: dict = None) -> pandas.DataFrame:
+def execute(sql: str, parameters: dict | None = None) -> pandas.DataFrame:
     """
     Convert the result of a query to a dataframe.
     """
@@ -206,7 +209,7 @@ def save_changes_callback(edited_records: pandas.DataFrame) -> None:
     """
     state = streamlit.session_state["tracker-editor"]
     for index, changes in state["edited_rows"].items():
-        assert isinstance(changes, dict)
+        assert isinstance(changes, dict)  # noqa: S101
         # Get the PK from the Pandas index
         date_time = edited_records.loc[index, "date_time"]
         update_row(date_time, changes)
@@ -244,7 +247,9 @@ def edit_stuff() -> None:
     )
 
     state = streamlit.session_state["tracker-editor"]
-    edited_records: pandas.DataFrame = records.iloc[list(state["edited_rows"].keys())]
+    edited_records: pandas.DataFrame = records.iloc[
+        list(state["edited_rows"].keys())
+    ]
 
     streamlit.write("Edited records:")
     if not edited_records.empty:
