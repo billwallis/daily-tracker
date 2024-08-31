@@ -25,7 +25,8 @@ def _filter_appointments(
     return [
         event
         for event in events
-        if not event.all_day_event and all(i not in event.categories for i in categories_to_exclude)
+        if not event.all_day_event
+        and all(i not in event.categories for i in categories_to_exclude)
     ]
 
 
@@ -87,8 +88,12 @@ class Calendar(abc.ABC):
             events=self.get_appointments_at_datetime(at_datetime=at_datetime),
             categories_to_exclude=self.configuration.appointment_category_exclusions,
         )
-        s = "s" if len(events) != 1 else ""  # sourcery skip: avoid-single-character-names-variables
-        logger.debug(f"Found {len(events)} calendar event{s} for {at_datetime}.")
+        s = (
+            "s" if len(events) != 1 else ""
+        )  # sourcery skip: avoid-single-character-names-variables
+        logger.debug(
+            f"Found {len(events)} calendar event{s} for {at_datetime}."
+        )
 
         return [
             core.Task(
@@ -97,11 +102,13 @@ class Calendar(abc.ABC):
             )
         ]
 
-    def post_event(self, entry: core.Entry) -> None:  # noqa
+    def post_event(self, entry: core.Entry) -> None:
         """
         Do nothing.
         """
-        logger.debug(f"No post-event actions for the calendar with entry {entry}.")
+        logger.debug(
+            f"No post-event actions for the calendar with entry {entry}."
+        )
 
 
 class NoCalendar(Calendar, core.Input, core.Output):
@@ -120,13 +127,15 @@ class NoCalendar(Calendar, core.Input, core.Output):
         """
         Return an empty list.
         """
-        logger.debug("Calling 'get_appointments_between_datetimes' for NoCalendar...")
+        logger.debug(
+            "Calling 'get_appointments_between_datetimes' for NoCalendar..."
+        )
         return []
 
     def get_appointments_at_datetime(
         self,
         at_datetime: datetime.datetime,
-        categories_to_exclude: list[str] = None,
+        categories_to_exclude: list[str] | None = None,
     ) -> list:
         """
         Return an empty list.

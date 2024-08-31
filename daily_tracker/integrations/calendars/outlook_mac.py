@@ -28,10 +28,9 @@ import dataclasses
 import datetime
 import logging
 
-import appscript  # noqa
-from appscript.reference import Reference  # noqa
-
+import appscript
 import core
+from appscript.reference import Reference
 from integrations.calendars.calendars import Calendar, CalendarEvent
 
 logger = logging.getLogger("integrations")
@@ -81,12 +80,20 @@ class Outlook(Calendar, core.Input):
         and end datetime (exclusive).
         """
         restricted_calendar = self.calendar.calendar_events[
-            (appscript.its.start_time >= start_datetime).AND(appscript.its.end_time < end_datetime)
+            (appscript.its.start_time >= start_datetime).AND(
+                appscript.its.end_time < end_datetime
+            )
         ].get()
-        events = [OutlookEvent.from_appointment(app) for app in restricted_calendar]
+        events = [
+            OutlookEvent.from_appointment(app) for app in restricted_calendar
+        ]
 
-        s = "s" if len(events) != 1 else ""  # sourcery skip: avoid-single-character-names-variables
-        logger.debug(f"Found {len(events)} calendar event{s} between {start_datetime} and {end_datetime}.")
+        s = (
+            "s" if len(events) != 1 else ""
+        )  # sourcery skip: avoid-single-character-names-variables
+        logger.debug(
+            f"Found {len(events)} calendar event{s} between {start_datetime} and {end_datetime}."
+        )
 
         return events
 
@@ -99,11 +106,19 @@ class Outlook(Calendar, core.Input):
         supplied datetime.
         """
         restricted_calendar = self.calendar.calendar_events[
-            (appscript.its.start_time <= at_datetime).AND(appscript.its.end_time > at_datetime)
+            (appscript.its.start_time <= at_datetime).AND(
+                appscript.its.end_time > at_datetime
+            )
         ].get()
-        events = [OutlookEvent.from_appointment(app) for app in restricted_calendar]
+        events = [
+            OutlookEvent.from_appointment(app) for app in restricted_calendar
+        ]
 
-        s = "s" if len(events) != 1 else ""  # sourcery skip: avoid-single-character-names-variables
-        logger.debug(f"Found {len(events)} calendar event{s} for {at_datetime}.")
+        s = (
+            "s" if len(events) != 1 else ""
+        )  # sourcery skip: avoid-single-character-names-variables
+        logger.debug(
+            f"Found {len(events)} calendar event{s} for {at_datetime}."
+        )
 
         return events

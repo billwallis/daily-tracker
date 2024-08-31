@@ -17,15 +17,15 @@ TODO: This should be updated to pick up the API implementation from the Jira
 
 import base64
 import datetime
+import http
 import json
 import logging
 import os
 import re
 
+import core
 import dotenv
 import requests
-
-import core
 import utils
 
 # TODO: Can we correctly move this to the main file? (Simply moving it didn't work)
@@ -60,7 +60,12 @@ class JiraConnector:
         See more at the Atlassian documentation:
             https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/#supply-basic-auth-headers
         """
-        return "Basic " + base64.b64encode(f"{self._api_key}:{self._api_secret}".encode()).decode()
+        return (
+            "Basic "
+            + base64.b64encode(
+                f"{self._api_key}:{self._api_secret}".encode()
+            ).decode()
+        )
 
     @property
     def request_headers(self) -> dict:
@@ -83,7 +88,7 @@ class JiraConnector:
         https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-projects/#api-rest-api-3-project-search-get
         """
         endpoint = "project/search"
-        return requests.request(
+        return requests.request(  # noqa: S113
             method="GET",
             url=self._base_url + endpoint,
             headers=self.request_headers,
@@ -97,7 +102,7 @@ class JiraConnector:
         https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-get
         """
         endpoint = f"issue/{issue_key}"
-        return requests.request(
+        return requests.request(  # noqa: S113
             method="GET",
             url=self._base_url + endpoint,
             headers=self.request_headers,
@@ -123,7 +128,7 @@ class JiraConnector:
             "startAt": start_at,
             "maxResults": max_results,
         }
-        return requests.request(
+        return requests.request(  # noqa: S113
             method="GET",
             url=self._base_url + endpoint,
             headers=self.request_headers,
@@ -137,7 +142,7 @@ class JiraConnector:
         https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-project-components/#api-rest-api-3-project-projectidorkey-components-get
         """
         endpoint = f"project/{project_id}/components"
-        return requests.request(
+        return requests.request(  # noqa: S113
             method="GET",
             url=self._base_url + endpoint,
             headers=self.request_headers,
@@ -151,7 +156,7 @@ class JiraConnector:
         https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-project-roles
         """
         endpoint = "role"
-        return requests.request(
+        return requests.request(  # noqa: S113
             method="GET",
             url=self._base_url + endpoint,
             headers=self.request_headers,
@@ -205,13 +210,13 @@ class JiraConnector:
         )
 
         try:
-            return requests.request(
+            return requests.request(  # noqa: S113
                 method="POST",
                 url=self._base_url + endpoint,
                 headers=self.request_headers,
                 data=payload,
             )
-        except Exception as e:  # noqa
+        except Exception as e:
             logger.debug(f"Could not add worklog: {e}")
 
     def create_issue(
@@ -253,7 +258,7 @@ class JiraConnector:
                 },
             }
         )
-        return requests.request(
+        return requests.request(  # noqa: S113
             method="POST",
             url=self._base_url + endpoint,
             headers=self.request_headers,
@@ -284,7 +289,10 @@ class Jira(core.Input, core.Output):
         The actions to perform before the event.
         """
         if self.configuration.jira_filter:
-            return [core.Task(task_name=ticket) for ticket in self.get_tickets_in_sprint()]
+            return [
+                core.Task(task_name=ticket)
+                for ticket in self.get_tickets_in_sprint()
+            ]
 
         return []
 
@@ -314,15 +322,21 @@ class Jira(core.Input, core.Output):
         results = []
         total = 999
         retries = 0
-        while len(results) < total and retries < 5:
+        max_retries = 5
+        while len(results) < total and retries < max_retries:
             response = get_batch_of_tickets(start_at=len(results))
             if "errorMessages" in response:
                 error_message = " ".join(response["errorMessages"])
-                logger.warning(f"Could not get tickets in sprint: {error_message}")
+                logger.warning(
+                    f"Could not get tickets in sprint: {error_message}"
+                )
                 return []
 
             total = response["total"]
-            results += [f"{issue['key']} {issue['fields']['summary']}" for issue in response["issues"]]
+            results += [
+                f"{issue['key']} {issue['fields']['summary']}"
+                for issue in response["issues"]
+            ]
             retries += 1
 
         return results
@@ -357,7 +371,7 @@ class Jira(core.Input, core.Output):
         issue_key = re.search(self.project_key_pattern, task)
         if issue_key is None:
             logger.debug(f"Could not find {self.project_key_pattern} in {task}")
-            return None
+            return
 
         logger.debug(f"Posting work log to {issue_key[0]}")
         response = self.connector.add_worklog(
@@ -368,7 +382,7 @@ class Jira(core.Input, core.Output):
         )
         if response is None:
             logger.debug("Could not post work log, see above")
-        elif response.status_code != 201:
+        elif response.status_code != http.HTTPStatus.CREATED:
             logger.debug(f"Response code: {response.status_code}")
             logger.debug(f"Could not post work log: {response.text}")
 

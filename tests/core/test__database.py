@@ -4,9 +4,8 @@ Unit tests for the ``daily_tracker.core.database`` module.
 
 import pytest
 
-import daily_tracker.core.configuration as configuration
-import daily_tracker.core.database as database
-import daily_tracker.utils as utils
+from daily_tracker import utils
+from daily_tracker.core import configuration, database
 
 
 @pytest.mark.skip(reason="Should use a fake database.")

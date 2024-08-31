@@ -109,7 +109,7 @@ class IndefiniteScheduler:
         """
         Schedule the next event.
         """
-        assert self._running
+        assert self._running  # noqa: S101
 
         self._next_schedule_time = get_next_interval(
             from_time=self._next_schedule_time,
@@ -132,7 +132,7 @@ class IndefiniteScheduler:
         """
         Schedule the first event.
         """
-        assert not self._running, "The scheduler is already running."
+        assert not self._running, "The scheduler is already running."  # noqa: S101
 
         self._running = True
         self._next_schedule_time = schedule_at
