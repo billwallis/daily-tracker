@@ -31,6 +31,7 @@
 
             "post-to-slack"
           ],
+          "additionalProperties": false,
           "properties": {
             "interval": {
               "type": "integer",
