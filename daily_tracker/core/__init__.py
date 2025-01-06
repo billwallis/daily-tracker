@@ -6,9 +6,9 @@ from core.apis import Entry, Input, Output, Task
 from core.configuration import Configuration
 
 __all__ = [
+    "Configuration",
+    "Entry",
     "Input",
     "Output",
-    "Entry",
     "Task",
-    "Configuration",
 ]
