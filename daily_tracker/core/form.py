@@ -128,12 +128,12 @@ class TrackerForm:
         logger.info(
             textwrap.dedent(
                 f"""
-                {30 * '-'}
+                {30 * "-"}
                 Project:  {self.task}
                 Detail:   {self.detail}
                 Interval: {self.interval}
-                Datetime: {self.at_datetime.strftime('%Y-%m-%d %H:%M:%S')}
-                {30 * '-'}
+                Datetime: {self.at_datetime.strftime("%Y-%m-%d %H:%M:%S")}
+                {30 * "-"}
                 """
             )
         )
