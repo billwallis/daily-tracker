@@ -7,15 +7,12 @@ import datetime
 import logging
 import logging.config
 
-import _actions
-import core
-import core.create
-import core.database
-import core.scheduler
 import dotenv
-import utils
 import yaml
 from wakepy import keep
+
+from daily_tracker import _actions, core, utils
+from daily_tracker.core import database, scheduler
 
 dotenv.load_dotenv(dotenv_path=utils.ROOT / ".env")
 
@@ -43,8 +40,8 @@ def main(debug_mode: bool = False) -> None:
     logging.debug(f"Setting source directory to {utils.SRC}")
 
     if not APPLICATION_CREATED:
-        # core.create.create_env()
-        db_handler = core.database.Database(  # noqa: F841
+        # create.create_env()
+        db_handler = database.Database(  # noqa: F841
             utils.SRC / "tracker.db",
             core.Configuration.from_default(),
         )
@@ -55,12 +52,12 @@ def main(debug_mode: bool = False) -> None:
         return
 
     config = core.Configuration.from_default()
-    scheduler = core.scheduler.IndefiniteScheduler(create_form)
+    indefinite_scheduler = scheduler.IndefiniteScheduler(create_form)
 
     if config.keep_awake:
         with keep.presenting():
-            scheduler.schedule_first()
+            indefinite_scheduler.schedule_first()
     else:
-        scheduler.schedule_first()
+        indefinite_scheduler.schedule_first()
 
     logging.info("Closing tracker...")

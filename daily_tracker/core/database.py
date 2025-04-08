@@ -10,8 +10,7 @@ import sqlite3
 from collections.abc import Mapping
 from typing import Any
 
-import core
-import utils
+from daily_tracker import core, utils
 
 logger = logging.getLogger("core")
 

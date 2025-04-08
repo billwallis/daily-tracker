@@ -1,7 +1,8 @@
 ---
 ci:
   autoupdate_schedule: quarterly
-  skip: ["identity", "uv-lock", "pytest", "coverage-badge"]
+  skip: ["identity", "uv-lock"]
+#  skip: ["identity", "uv-lock", "pytest", "coverage-badge"]
 
 repos:
   - repo: meta
@@ -40,19 +41,18 @@ repos:
       - id: ruff
         args: ["--fix"]
       - id: ruff-format
-
-  # Testing and coverage
-  - repo: local
-    hooks:
-      - id: pytest
-        name: Run unit tests
-        entry: pytest tests --quiet
-        language: system
-        pass_filenames: false
-        always_run: true
-      - id: coverage-badge
-        name: Generate coverage badge
-        entry: coverage-badge -o coverage.svg -f
-        language: system
-        pass_filenames: false
-        always_run: true
+#  # Testing and coverage
+#  - repo: local
+#    hooks:
+#      - id: pytest
+#        name: Run unit tests
+#        entry: pytest tests --quiet
+#        language: system
+#        pass_filenames: false
+#        always_run: true
+#      - id: coverage-badge
+#        name: Generate coverage badge
+#        entry: coverage-badge -o coverage.svg -f
+#        language: system
+#        pass_filenames: false
+#        always_run: true

@@ -5,9 +5,8 @@ application is deployed.
 
 import pathlib
 
-import core
-import core.database
-import utils
+from daily_tracker import core, utils
+from daily_tracker.core import database
 
 
 def create_env() -> None:
@@ -32,7 +31,7 @@ def main() -> None:
     database.
     """
     create_env()
-    db_handler = core.database.Database(
+    db_handler = database.Database(
         database_filepath=utils.DB,
         configuration=core.Configuration.from_default(),
     )

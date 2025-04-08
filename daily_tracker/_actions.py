@@ -5,10 +5,8 @@ The actions for the pop-up box.
 import datetime
 import logging
 
-import core
-import core.database
-import core.form
-import integrations
+from daily_tracker import core, integrations
+from daily_tracker.core import database, form
 
 logger = logging.getLogger("core")
 
@@ -29,7 +27,7 @@ class ActionHandler:
         self.outputs = core.Output.apis
 
         # Form
-        self.form = core.form.TrackerForm(
+        self.form = form.TrackerForm(
             at_datetime=at_datetime,
             action_handler=self,
         )
@@ -63,7 +61,7 @@ class ActionHandler:
         else:
             current_meetings = []
 
-        database_handler: core.database.Database = self.outputs["database"]  # type: ignore
+        database_handler: database.Database = self.outputs["database"]  # type: ignore
         logger.debug(f"Using database {database_handler}.")
         if len(current_meetings) != 1:
             # If there are two events, we don't know which one to use so
@@ -82,7 +80,7 @@ class ActionHandler:
         This is always the most recent tasks, and optionally the tickets in the
         active sprint if a Jira connection has been configured.
         """
-        database_handler: core.database.Database = self.outputs["database"]  # type: ignore
+        database_handler: database.Database = self.outputs["database"]  # type: ignore
         jira_handler: integrations.Jira = self.inputs.get("jira")  # type: ignore
 
         recent_tasks = database_handler.get_recent_tasks(

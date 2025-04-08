@@ -4,15 +4,15 @@ Various calendar integrations.
 
 import os
 
-import core
-from integrations.calendars.calendars import Calendar, NoCalendar
+from daily_tracker import core
+from daily_tracker.integrations.calendars.calendars import Calendar, NoCalendar
 
-# from integrations.calendars.gmail import GmailInput
+# from daily_tracker.integrations.calendars.gmail import GmailInput
 
 if os.name == "nt":
-    from integrations.calendars.outlook_windows import Outlook
+    from daily_tracker.integrations.calendars.outlook_windows import Outlook
 elif os.name == "posix":
-    from integrations.calendars.outlook_mac import Outlook
+    from daily_tracker.integrations.calendars.outlook_mac import Outlook
 
 
 CALENDAR_LOOKUP = {

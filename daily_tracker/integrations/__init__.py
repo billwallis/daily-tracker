@@ -5,9 +5,9 @@ These aren't required for the application to run, but they add some
 additional functionality.
 """
 
-from integrations.calendars import Calendar
-from integrations.jira import Jira
-from integrations.slack import Slack
+from daily_tracker.integrations.calendars import Calendar
+from daily_tracker.integrations.jira import Jira
+from daily_tracker.integrations.slack import Slack
 
 __all__ = [
     "Calendar",
