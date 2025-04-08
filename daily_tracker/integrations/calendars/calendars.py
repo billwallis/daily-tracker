@@ -9,7 +9,7 @@ import dataclasses
 import datetime
 import logging
 
-import core
+from daily_tracker import core
 
 logger = logging.getLogger("integrations")
 

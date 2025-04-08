@@ -29,9 +29,13 @@ import datetime
 import logging
 
 import appscript
-import core
 from appscript.reference import Reference
-from integrations.calendars.calendars import Calendar, CalendarEvent
+
+from daily_tracker import core
+from daily_tracker.integrations.calendars.calendars import (
+    Calendar,
+    CalendarEvent,
+)
 
 logger = logging.getLogger("integrations")
 

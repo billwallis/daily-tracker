@@ -23,10 +23,10 @@ import logging
 import os
 import re
 
-import core
 import dotenv
 import requests
-import utils
+
+from daily_tracker import core, utils
 
 # TODO: Can we correctly move this to the main file? (Simply moving it didn't work)
 dotenv.load_dotenv(dotenv_path=utils.SRC.parent / ".env")

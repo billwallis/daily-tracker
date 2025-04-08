@@ -11,7 +11,7 @@ import time
 from collections.abc import Callable
 from typing import Any
 
-import core
+from daily_tracker import core
 
 logger = logging.getLogger("core")
 

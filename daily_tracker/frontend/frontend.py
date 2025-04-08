@@ -13,9 +13,9 @@ from collections.abc import Callable
 
 import pandas
 import streamlit
-from core.database import DatabaseConnector
 
 from daily_tracker import utils
+from daily_tracker.core.database import DatabaseConnector
 
 CONN = DatabaseConnector(utils.DB)
 

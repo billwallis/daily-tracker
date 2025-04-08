@@ -13,12 +13,12 @@ import textwrap
 import tkinter
 from tkinter import ttk
 
-import _actions
-import core.database
 import PIL.Image
 import PIL.ImageTk
 import ttkthemes
-import utils
+
+from daily_tracker import _actions, utils
+from daily_tracker.core import database
 
 logger = logging.getLogger("core")
 
@@ -93,7 +93,7 @@ class TrackerForm:
               talk to the database here (I think).
         """
         # fmt: off
-        database_handler: core.database.Database = self.action_handler.inputs["database"]
+        database_handler: database.Database = self.action_handler.inputs["database"]
         return database_handler.get_details_for_task(self.task)
         # fmt: on
 
@@ -128,12 +128,12 @@ class TrackerForm:
         logger.info(
             textwrap.dedent(
                 f"""
-                {30 * '-'}
+                {30 * "-"}
                 Project:  {self.task}
                 Detail:   {self.detail}
                 Interval: {self.interval}
-                Datetime: {self.at_datetime.strftime('%Y-%m-%d %H:%M:%S')}
-                {30 * '-'}
+                Datetime: {self.at_datetime.strftime("%Y-%m-%d %H:%M:%S")}
+                {30 * "-"}
                 """
             )
         )

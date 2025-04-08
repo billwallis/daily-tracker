@@ -66,8 +66,7 @@ import itertools
 import logging
 from typing import ClassVar
 
-import core
-import utils
+from daily_tracker import core, utils
 
 logger = logging.getLogger("core")
 
