@@ -1,57 +1,44 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "daily-tracker"
 version = "0.0.0"
 description = "An application for keeping track of tasks throughout the day."
 authors = [{name = "Bilbottom"}]
 readme = "README.md"
-repository = "https://github.com/Bilbottom/daily-tracker"
 requires-python = ">=3.11"
-dynamic = ["dependencies"]
+dependencies = [
+    "Pillow>=9.4.0",
+    "python-dotenv>=0.21.1",
+    "pyyaml>=6.0.0",
+    "requests>=2.28.2",
+    "slack-sdk>=3.20.0",
+    "streamlit>=1.37.0",
+    "ttkthemes>=3.2.2",
+    "wakepy>=0.9.1",
+    # platform-specific
+    "pywin32==306; sys_platform == 'win32'",
+    "appscript==1.2.2; sys_platform == 'darwin'",
+]
 
 [project.scripts]
 daily-tracker = "daily_tracker.main:main"
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-
-[tool.poetry]
-packages = [
-    {include = "daily_tracker"},
-    {include = "core", from = "daily_tracker"},
-    {include = "integrations", from = "daily_tracker"},
+[dependency-groups]
+dev = [
+    "coverage-badge>=1.1.0",
+    "pre-commit>=4.1.0",
+]
+test = [
+    "pytest>=8.3.5",
+    "pytest-cov>=6.0.0",
 ]
 
-[tool.poetry.dependencies]
-Pillow = ">=9.4.0"
-python-dotenv = ">=0.21.1"
-pyyaml = ">=6.0"
-requests = ">=2.28.2"
-slack-sdk = ">=3.20.0"
-streamlit = "^1.37.0"
-ttkthemes = "^3.2.2"
-wakepy = "^0.9.1"
 
-pywin32 = [
-    {platform = "win32", version = "306"}
-]
-appscript = [
-    {platform = "darwin", version = "1.2.2"}
-]
-
-[tool.poetry.group]
-dev.optional = false
-test.optional = false
-
-[tool.poetry.group.dev.dependencies]
-coverage-badge = "^1.1.0"
-pre-commit = "^3.6.2"
-pylint = "3.1.0"
-
-[tool.poetry.group.test.dependencies]
-pytest = "^8.0.2"
-pytest-cov = "^4.1.0"
+[tool.setuptools]
+packages = ["daily_tracker"]
 
 
 [tool.pytest.ini_options]
@@ -83,4 +70,5 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 "tests/**/*.py" = [
     "S101",    #  Use of `assert` detected
     "PLR2004", #  Magic value used in comparison
+    "PLR0913", #  Too many arguments in function definition
 ]
