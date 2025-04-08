@@ -4,7 +4,7 @@
 *.xls?
 
 # Database files
-*.db
+*.*db
 *.sqlite
 
 # IDE and system iles
