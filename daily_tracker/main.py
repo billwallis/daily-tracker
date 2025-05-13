@@ -61,3 +61,7 @@ def main(debug_mode: bool = False) -> None:
         indefinite_scheduler.schedule_first()
 
     logging.info("Closing tracker...")
+
+
+if __name__ == "__main__":
+    main(debug_mode=False)
