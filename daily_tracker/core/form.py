@@ -13,8 +13,6 @@ import textwrap
 import tkinter
 from tkinter import ttk
 
-import PIL.Image
-import PIL.ImageTk
 import ttkthemes
 
 from daily_tracker import _actions, utils
@@ -23,14 +21,6 @@ from daily_tracker.core import database
 logger = logging.getLogger("core")
 
 ICON = utils.SRC / "resources/clock-icon.png"
-
-
-def load_icon(filepath: str) -> PIL.ImageTk.PhotoImage | PIL.Image.Image:
-    """
-    Load an image to the ICO format so that it can be used as application
-    icons.
-    """
-    return PIL.ImageTk.PhotoImage(PIL.Image.open(filepath))
 
 
 class TrackerForm:
@@ -93,7 +83,7 @@ class TrackerForm:
               talk to the database here (I think).
         """
         # fmt: off
-        database_handler: database.Database = self.action_handler.inputs["database"]
+        database_handler: database.Database = self.action_handler.inputs["database"]  # type: ignore
         return database_handler.get_details_for_task(self.task)
         # fmt: on
 
@@ -165,18 +155,18 @@ class TrackerForm:
         self._root.geometry(f"{self._width}x{self._height}")
         self._root.eval("tk::PlaceWindow . center")
         self._root.title(self.title)
-        self._root.wm_iconphoto(False, load_icon(ICON))
+        self._root.iconphoto(True, tkinter.PhotoImage(file=ICON))
 
         form_frame = ttk.Frame(self._root)
-        form_frame.pack(expand=tkinter.YES, fill=tkinter.BOTH)
+        form_frame.pack(expand=tkinter.YES, fill="both")
 
         text_box_frame = ttk.LabelFrame(
             form_frame,
             text="Current Task Details",
         )
         text_box_frame.pack(
-            side=tkinter.TOP,
-            fill=tkinter.BOTH,
+            side="top",
+            fill="both",
             expand=tkinter.YES,
             padx=10,
             pady=10,
@@ -184,8 +174,8 @@ class TrackerForm:
 
         button_frame = ttk.Frame(form_frame)
         button_frame.pack(
-            side=tkinter.BOTTOM,
-            fill=tkinter.BOTH,
+            side="bottom",
+            fill="both",
             expand=tkinter.TRUE,
             padx=10,
             pady=(0, 10),
@@ -228,14 +218,14 @@ class TrackerForm:
             text="OK",
             command=self.action_wrapper,
         )
-        okay_button.pack(side=tkinter.LEFT, expand=tkinter.TRUE, padx=10)
+        okay_button.pack(side="left", expand=tkinter.TRUE, padx=10)
 
         cancel_button = ttk.Button(
             button_frame,
             text="Cancel",
             command=self.close_form,
         )
-        cancel_button.pack(side=tkinter.RIGHT, expand=tkinter.TRUE, padx=10)
+        cancel_button.pack(side="right", expand=tkinter.TRUE, padx=10)
 
         # Could only get these to work by sticking the call inside a lambda
         okay_button.bind("<Return>", lambda _: self.action_wrapper())
@@ -280,7 +270,7 @@ class TextBox:
             frame,
             text=self.label_text,
             width=8,
-            anchor=tkinter.E,
+            anchor="e",
         )
 
         text_box_value = tkinter.StringVar(frame)
@@ -295,7 +285,7 @@ class TextBox:
         self.variable = text_box_value
         self.text_box = text_box
 
-        label.pack(side=tkinter.LEFT, padx=2)
-        text_box.pack(side=tkinter.RIGHT, padx=2)
+        label.pack(side="left", padx=2)
+        text_box.pack(side="right", padx=2)
 
         return frame
