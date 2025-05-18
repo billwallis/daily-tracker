@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "daily-tracker"
 version = "0.0.0"
 description = "An application for keeping track of tasks throughout the day."
-authors = [{name = "Bilbottom"}]
+authors = [{name = "billwallis"}]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
