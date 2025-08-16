@@ -162,7 +162,7 @@ def test__output__apis(some_output, some_input_output):
     assert not hasattr(apis.Output.apis["some_input_output"], "other_value")
 
 
-@pytest.mark.skip("Need to figure out how to test this.")
+@pytest.mark.skip("Need to figure out how to test this")
 def test__output__post_events():
     """
     Test the ``Output.post_events`` method.
