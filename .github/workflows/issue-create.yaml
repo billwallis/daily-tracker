@@ -2,9 +2,10 @@ name: Issue create actions
 run-name: Issue create actions
 
 on:
-  issues:
-    types:
-      - opened
+  workflow_dispatch:
+#  issues:
+#    types:
+#      - opened
 
 jobs:
   raise-jira-ticket:
