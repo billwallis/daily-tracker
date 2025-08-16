@@ -65,19 +65,19 @@ repos:
       - id: tidy-gitkeep
         name: Remove redundant .gitkeep files
 
-#  - repo: local
-#    hooks:
-#      - id: pytest
-#        name: Run unit tests
-#        entry: pytest tests --quiet
-#        stages: ["pre-push"]
-#        language: system
-#        pass_filenames: false
-#        always_run: true
-#      - id: coverage-badge
-#        name: Generate coverage badge
-#        entry: coverage-badge -o coverage.svg -f
-#        stages: ["pre-push"]
-#        language: system
-#        pass_filenames: false
-#        always_run: true
+  - repo: local
+    hooks:
+      - id: pytest
+        name: Run unit tests
+        entry: pytest tests --quiet
+        stages: ["pre-push"]
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: coverage-badge
+        name: Generate coverage badge
+        entry: coverage-badge -o coverage.svg -f
+        stages: ["pre-push"]
+        language: system
+        pass_filenames: false
+        always_run: true
