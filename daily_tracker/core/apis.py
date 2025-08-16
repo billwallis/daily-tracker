@@ -62,9 +62,10 @@ from __future__ import annotations
 import abc
 import dataclasses
 import datetime
+import functools
 import itertools
 import logging
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from daily_tracker import core, utils
 
@@ -175,6 +176,7 @@ class Output(API, IOutput, abc.ABC):
 
 
 @dataclasses.dataclass
+@functools.total_ordering
 class Task:
     """
     A task/project.
@@ -187,6 +189,15 @@ class Task:
     details: list[str] = dataclasses.field(default_factory=list)
     priority: int = 1
     is_default: bool = False
+
+    def __lt__(self, other: Any) -> bool:
+        if isinstance(other, Task):
+            # This should probably include `self.priority`
+            return self.task_name < other.task_name
+        if isinstance(other, str):
+            return self.task_name < other
+
+        return NotImplemented
 
 
 @dataclasses.dataclass
