@@ -28,6 +28,7 @@ daily-tracker = "daily_tracker.main:main"
 [dependency-groups]
 dev = [
     "coverage-badge>=1.1.0",
+    "poethepoet>=0.37.0",
     "pre-commit>=4.3.0",
 ]
 test = [
@@ -39,12 +40,26 @@ test = [
 [tool.uv]
 default-groups = "all"
 required-version = ">=0.8,<1.0"
-build-backend.namespace = true
 
 
 [tool.pytest.ini_options]
-addopts = "--cov=daily_tracker --cov-fail-under=10"
+addopts = "--cov=src --cov-fail-under=10"
 testpaths = ["tests"]
+
+
+[tool.poe]
+verbosity = -1
+
+[tool.poe.tasks]
+run = "uv run -m daily_tracker"
+test = "uv run pytest tests/ -v"
+lint.shell = """
+    echo -e "\\033[0;34mpre-commit checks\\033[0m"
+    pre-commit run --all-files --hook-stage pre-commit
+    echo -e "\\033[0;34mpre-push checks\\033[0m"
+    pre-commit run --all-files --hook-stage pre-push
+"""
+lint.env = {SKIP = "identity"}
 
 
 [tool.ruff]

@@ -58,7 +58,9 @@ class DatabaseConnector:
                 """
             ).fetchone()
         ):
-            self.run_query_from_file(utils.SRC / "core/scripts/create.sql")
+            self.run_query_from_file(
+                utils.DAILY_TRACKER / "core/scripts/create.sql"
+            )
 
     def truncate_table(self, table_name: str) -> None:
         """

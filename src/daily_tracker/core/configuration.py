@@ -18,7 +18,7 @@ import yaml
 from daily_tracker import utils
 
 # TODO: Take the default values from the JSON schema validator file
-DEFAULT_CONFIG = utils.SRC / "resources/configuration.yaml"
+DEFAULT_CONFIG = utils.DAILY_TRACKER / "resources/configuration.yaml"
 
 
 class Configuration:

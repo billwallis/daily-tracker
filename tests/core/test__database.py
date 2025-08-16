@@ -8,7 +8,7 @@ from daily_tracker import utils
 from daily_tracker.core import configuration, database
 
 
-@pytest.mark.skip(reason="Should use a fake database.")
+@pytest.mark.skip(reason="Should use a fake database")
 def test__get_recent_tasks():
     """
     The most recent tasks are returned.
