@@ -39,11 +39,10 @@ test = [
 [tool.uv]
 default-groups = "all"
 required-version = ">=0.8,<1.0"
-build-backend.namespace = true
 
 
 [tool.pytest.ini_options]
-addopts = "--cov=daily_tracker --cov-fail-under=10"
+addopts = "--cov=src --cov-fail-under=10"
 testpaths = ["tests"]
 
 

@@ -31,18 +31,18 @@ def main(debug_mode: bool = False) -> None:
     Entry point into this project.
     """
     (utils.ROOT / "logs").mkdir(exist_ok=True)
-    with open(utils.SRC / "logger.yaml") as f:
+    with open(utils.DAILY_TRACKER / "logger.yaml") as f:
         logging.config.dictConfig(yaml.safe_load(f.read()))
 
     _in_debug_mode = " in debug mode" if debug_mode else ""
     logging.info(f"Starting tracker{_in_debug_mode}...")
     logging.debug(f"Setting root directory to {utils.ROOT}")
-    logging.debug(f"Setting source directory to {utils.SRC}")
+    logging.debug(f"Setting source directory to {utils.DAILY_TRACKER}")
 
     if not APPLICATION_CREATED:
         # create.create_env()
         db_handler = database.Database(  # noqa: F841
-            utils.SRC / "tracker.db",
+            utils.DAILY_TRACKER / "tracker.db",
             core.Configuration.from_default(),
         )
         # db_handler.import_history(utils.ROOT / "tracker.csv")

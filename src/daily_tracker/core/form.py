@@ -20,7 +20,7 @@ from daily_tracker.core import database
 
 logger = logging.getLogger("core")
 
-ICON = utils.SRC / "resources/clock-icon.png"
+ICON = utils.DAILY_TRACKER / "resources/clock-icon.png"
 
 
 class TrackerForm:

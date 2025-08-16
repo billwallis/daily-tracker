@@ -4,9 +4,9 @@ Utilities to use throughout the modules.
 
 import pathlib
 
-SRC = pathlib.Path(__file__).parent  # `daily_tracker/`
-ROOT = SRC.parent
-DB = SRC / "tracker.db"  # `daily_tracker/tracker.db`
+DAILY_TRACKER = pathlib.Path(__file__).parent  # `src/daily_tracker/`
+ROOT = DAILY_TRACKER.parent.parent
+DB = DAILY_TRACKER / "tracker.db"
 
 
 def pascal_to_snake(text: str) -> str:
