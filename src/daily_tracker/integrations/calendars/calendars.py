@@ -49,7 +49,7 @@ class Calendar(abc.ABC):
     daily tracker.
     """
 
-    def __init__(self, configuration: core.Configuration):
+    def __init__(self, configuration: core.Configuration) -> None:
         self.configuration = configuration
 
     @abc.abstractmethod
@@ -88,19 +88,20 @@ class Calendar(abc.ABC):
             events=self.get_appointments_at_datetime(at_datetime=at_datetime),
             categories_to_exclude=self.configuration.appointment_category_exclusions,
         )
-        s = (
-            "s" if len(events) != 1 else ""
-        )  # sourcery skip: avoid-single-character-names-variables
+        s = "s" if len(events) != 1 else ""
         logger.debug(
             f"Found {len(events)} calendar event{s} for {at_datetime}."
         )
 
-        return [
-            core.Task(
-                task_name="Meetings",
-                details=events[0].subject if len(events) == 1 else [],
-            )
-        ]
+        if events:
+            return [
+                core.Task(
+                    task_name="Meetings",
+                    details=[event.subject for event in events],
+                )
+            ]
+
+        return []
 
     def post_event(self, entry: core.Entry) -> None:
         """
@@ -116,7 +117,7 @@ class NoCalendar(Calendar, core.Input, core.Output):
     A 'None' calendar.
     """
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return False
 
     def get_appointments_between_datetimes(

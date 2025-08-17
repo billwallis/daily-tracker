@@ -47,7 +47,7 @@ class JiraConnector:
     any layers on top of this.
     """
 
-    def __init__(self, domain: str, key: str, secret: str):
+    def __init__(self, domain: str, key: str, secret: str) -> None:
         self._base_url = f"https://{domain}.atlassian.net/rest/api/3/"
         self._api_key = key
         self._api_secret = secret
@@ -278,7 +278,7 @@ class Jira(core.Input, core.Output):
         self,
         configuration: core.Configuration,
         debug_mode: bool = False,
-    ):
+    ) -> None:
         self.connector = JiraConnector(**JIRA_CREDENTIALS)
         self.project_key_pattern = re.compile(r"^[A-Z]\w{1,9}-\d+")
         self.configuration = configuration
@@ -385,7 +385,3 @@ class Jira(core.Input, core.Output):
         elif response.status_code != http.HTTPStatus.CREATED:
             logger.debug(f"Response code: {response.status_code}")
             logger.debug(f"Could not post work log: {response.text}")
-
-
-# Force into the Input/Output classes. This is naughty, but we'll fix it later
-Jira(core.configuration.Configuration.from_default())

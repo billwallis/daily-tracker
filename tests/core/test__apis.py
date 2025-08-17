@@ -13,7 +13,7 @@ from daily_tracker.core import apis
 
 
 class SomeInput(apis.Input):
-    def __init__(self, value: str):
+    def __init__(self, value: str) -> None:
         self.value = value
 
     def on_event(self, date_time: datetime.datetime) -> list:
@@ -21,10 +21,10 @@ class SomeInput(apis.Input):
 
 
 class SomeOutput(apis.Output):
-    def __init__(self, other_value: str):
+    def __init__(self, other_value: str) -> None:
         self.other_value = other_value
 
-    def post_event(self, entry) -> None:
+    def post_event(self, entry: apis.Entry) -> None:
         pass
 
 
@@ -32,7 +32,7 @@ class SomeInputOutput(apis.Input, apis.Output):
     def on_event(self, date_time: datetime.datetime) -> list:
         return ["some-input-with-output", "some-other-input-with-output"]
 
-    def post_event(self, entry) -> None:
+    def post_event(self, entry: apis.Entry) -> None:
         pass
 
 
@@ -99,12 +99,11 @@ def test__input__apis(some_input, some_input_output):
     Test the ``Input.apis`` class variable.
     """
     # fmt: off
-    # assert sorted(apis.Input.apis.keys()) == sorted(["some_input", "some_input_output"])
-    assert sorted(apis.Input.apis.keys()) == sorted(["some_input", "some_input_output", "database"])  # TODO: `database` shouldn't be here!
+    assert sorted(apis.Input.apis.keys()) == sorted(["some_input", "some_input_output"])
     # fmt: on
     assert apis.Input.apis["some_input"] == some_input
     assert apis.Input.apis["some_input_output"] == some_input_output
-    assert getattr(apis.Input.apis["some_input"], "value") == "input"
+    assert apis.Input.apis["some_input"].value == "input"
     assert not hasattr(apis.Input.apis["some_input_output"], "value")
 
 
@@ -123,8 +122,6 @@ def test__input__on_events():
     date_time = datetime.datetime(2020, 1, 1)
 
     actual = sorted(apis.Input.on_events(date_time))  # type: ignore
-    # TODO: this is filtering out the default Task items, and it shouldn't
-    actual = [item for item in actual if isinstance(item, str)]
     expected = sorted(
         [
             "some-input",
@@ -153,12 +150,11 @@ def test__output__apis(some_output, some_input_output):
     Test the ``API`` class.
     """
     # fmt: off
-    # assert sorted(apis.Output.apis.keys()) == sorted(["some_output", "some_input_output"])
-    assert sorted(apis.Output.apis.keys()) == sorted(["some_output", "some_input_output", "database"])  # TODO: `database` shouldn't be here!
+    assert sorted(apis.Output.apis.keys()) == sorted(["some_output", "some_input_output"])
     # fmt: on
     assert apis.Output.apis["some_output"] == some_output
     assert apis.Output.apis["some_input_output"] == some_input_output
-    assert getattr(apis.Output.apis["some_output"], "other_value") == "output"
+    assert apis.Output.apis["some_output"].other_value == "output"
     assert not hasattr(apis.Output.apis["some_input_output"], "other_value")
 
 

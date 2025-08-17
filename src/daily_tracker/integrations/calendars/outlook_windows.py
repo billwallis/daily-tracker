@@ -47,7 +47,7 @@ class Outlook(Calendar, core.Input):
     Naive implementation of a connector to Outlook on Windows.
     """
 
-    def __init__(self, configuration: core.Configuration):
+    def __init__(self, configuration: core.Configuration) -> None:
         # sourcery skip: docstrings-for-functions
         super().__init__(configuration=configuration)
 

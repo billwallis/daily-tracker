@@ -11,12 +11,23 @@ import dotenv
 import yaml
 from wakepy import keep
 
-from daily_tracker import _actions, core, utils
+from daily_tracker import _actions, core, integrations, utils
 from daily_tracker.core import database, scheduler
 
 dotenv.load_dotenv(dotenv_path=utils.ROOT / ".env")
 
 APPLICATION_CREATED = True
+
+
+def configure_integrations(config: core.configuration.Configuration) -> None:
+    """
+    Force the integrations into the API classes.
+    """
+
+    database.Database(utils.DB, config)
+    integrations.calendars.get_linked_calendar(config)
+    integrations.jira.Jira(config)
+    integrations.slack.Slack(config)
 
 
 def create_form(at_datetime: datetime.datetime) -> None:
@@ -39,6 +50,10 @@ def main(debug_mode: bool = False) -> None:
     logging.debug(f"Setting root directory to {utils.ROOT}")
     logging.debug(f"Setting source directory to {utils.DAILY_TRACKER}")
 
+    config = core.Configuration.from_default()
+    configure_integrations(config)
+    indefinite_scheduler = scheduler.IndefiniteScheduler(create_form)
+
     if not APPLICATION_CREATED:
         # create.create_env()
         db_handler = database.Database(  # noqa: F841
@@ -50,9 +65,6 @@ def main(debug_mode: bool = False) -> None:
     if debug_mode:
         create_form(datetime.datetime.now())
         return
-
-    config = core.Configuration.from_default()
-    indefinite_scheduler = scheduler.IndefiniteScheduler(create_form)
 
     if config.keep_awake:
         with keep.presenting():

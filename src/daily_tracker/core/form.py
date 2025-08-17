@@ -43,7 +43,11 @@ class TrackerForm:
     options: dict[str, str]
     # project_details: dict[str, list[str]]  # See `task_details` below
 
-    def __init__(self, at_datetime: datetime.datetime, action_handler):
+    def __init__(
+        self,
+        at_datetime: datetime.datetime,
+        action_handler: _actions.ActionHandler,
+    ) -> None:
         """
         Create the form handler.
         """
@@ -53,7 +57,7 @@ class TrackerForm:
         self.interval = self.action_handler.configuration.interval
         self._width = 350
         self._height = 150
-        self.defaults = self.action_handler.get_default_task_and_detail(
+        self.defaults = self.action_handler.do_on_events(
             at_datetime=self.at_datetime,
         )
         self.options = self.action_handler.get_dropdown_options(
@@ -114,7 +118,7 @@ class TrackerForm:
         """
         Wrap the action so that we can schedule the next event when it's called.
         """
-        self.action_handler.ok_actions()
+        self.action_handler.do_post_events()
         logger.info(
             textwrap.dedent(
                 f"""
@@ -129,7 +133,7 @@ class TrackerForm:
         )
         self.close_form()
 
-    def on_project_change(self, *_) -> None:
+    def on_project_change(self, *_) -> None:  # noqa: ANN002
         """
         When the value of the Project box changes, update the Detail box with
         the latest value from the Project.
@@ -250,7 +254,7 @@ class TextBox:
         label_text: str,
         default: str,
         values: list[str],
-    ):
+    ) -> None:
         """
         Set the text box properties and create the widget.
         """

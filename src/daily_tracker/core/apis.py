@@ -81,7 +81,7 @@ class API(abc.ABC):
     apis: ClassVar[dict[str, API]]
 
     @classmethod
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs) -> API:  # noqa: ANN002, ANN003
         """
         During the initialisation of the subclass, use some metaprogramming to
         automatically bind the subclass to the ``Input`` and ``Output`` classes
@@ -171,7 +171,7 @@ class Output(API, IOutput, abc.ABC):
         """
         Execute the actions after the "pop-up" event.
         """
-        for name, object_ in Output.apis.items():
+        for object_ in Output.apis.values():
             object_.post_event(entry=entry)
 
 
