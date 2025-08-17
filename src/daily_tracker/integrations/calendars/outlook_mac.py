@@ -68,7 +68,7 @@ class Outlook(Calendar, core.Input):
     Naive implementation of a connector to Outlook on macOS.
     """
 
-    def __init__(self, configuration: core.Configuration):
+    def __init__(self, configuration: core.Configuration) -> None:
         super().__init__(configuration=configuration)
 
         # TODO: Set the calendar ID dynamically rather than hard-coding it

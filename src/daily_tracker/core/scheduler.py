@@ -69,7 +69,7 @@ class IndefiniteScheduler:
     _scheduler: sched.scheduler
     action: Action
 
-    def __init__(self, action: Action):
+    def __init__(self, action: Action) -> None:
         """
         Create the scheduler to call the ``action`` on a schedule.
 
@@ -127,7 +127,7 @@ class IndefiniteScheduler:
 
     def schedule_first(
         self,
-        schedule_at: datetime.datetime = datetime.datetime.now(),
+        schedule_at: datetime.datetime = datetime.datetime.now(),  # noqa: B008
     ) -> None:
         """
         Schedule the first event.

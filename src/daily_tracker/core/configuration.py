@@ -31,7 +31,7 @@ class Configuration:
     The docstrings should be taken from the ``description`` property.
     """
 
-    def __init__(self, configuration: dict):
+    def __init__(self, configuration: dict) -> None:
         self.configuration = configuration
         self.options = self.configuration["tracker"]["options"]
 

@@ -51,7 +51,7 @@ class SlackConnector:
         }
         response = requests.post(url=self.webhook_url, data=json.dumps(payload))  # noqa: S113
         if response.status_code != http.HTTPStatus.OK:
-            raise RuntimeError(
+            raise RuntimeError(  # noqa: TRY003
                 f"{response.status_code}: Failed to post message to Slack\n\n{response.text}"
             )
 
@@ -64,7 +64,7 @@ class Slack(core.Output):
     object to implement the output actions.
     """
 
-    def __init__(self, configuration: core.Configuration = None):
+    def __init__(self, configuration: core.Configuration = None) -> None:
         self.connector = SlackConnector(**SLACK_CREDENTIALS)
         self.configuration = configuration
 

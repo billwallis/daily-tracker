@@ -16,7 +16,7 @@ class ActionHandler:
     Handler for the actions that are triggered on the pop-up box.
     """
 
-    def __init__(self, at_datetime: datetime.datetime):
+    def __init__(self, at_datetime: datetime.datetime) -> None:
         """
         Initialise the main handler and the various handlers to other systems.
         """

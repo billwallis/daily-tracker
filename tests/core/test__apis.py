@@ -13,7 +13,7 @@ from daily_tracker.core import apis
 
 
 class SomeInput(apis.Input):
-    def __init__(self, value: str):
+    def __init__(self, value: str) -> None:
         self.value = value
 
     def on_event(self, date_time: datetime.datetime) -> list:
@@ -21,10 +21,10 @@ class SomeInput(apis.Input):
 
 
 class SomeOutput(apis.Output):
-    def __init__(self, other_value: str):
+    def __init__(self, other_value: str) -> None:
         self.other_value = other_value
 
-    def post_event(self, entry) -> None:
+    def post_event(self, entry: apis.Entry) -> None:
         pass
 
 
@@ -32,7 +32,7 @@ class SomeInputOutput(apis.Input, apis.Output):
     def on_event(self, date_time: datetime.datetime) -> list:
         return ["some-input-with-output", "some-other-input-with-output"]
 
-    def post_event(self, entry) -> None:
+    def post_event(self, entry: apis.Entry) -> None:
         pass
 
 
@@ -103,7 +103,7 @@ def test__input__apis(some_input, some_input_output):
     # fmt: on
     assert apis.Input.apis["some_input"] == some_input
     assert apis.Input.apis["some_input_output"] == some_input_output
-    assert getattr(apis.Input.apis["some_input"], "value") == "input"
+    assert apis.Input.apis["some_input"].value == "input"
     assert not hasattr(apis.Input.apis["some_input_output"], "value")
 
 
@@ -154,7 +154,7 @@ def test__output__apis(some_output, some_input_output):
     # fmt: on
     assert apis.Output.apis["some_output"] == some_output
     assert apis.Output.apis["some_input_output"] == some_input_output
-    assert getattr(apis.Output.apis["some_output"], "other_value") == "output"
+    assert apis.Output.apis["some_output"].other_value == "output"
     assert not hasattr(apis.Output.apis["some_input_output"], "other_value")
 
 

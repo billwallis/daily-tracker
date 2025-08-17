@@ -27,7 +27,7 @@ def handle_exceptions(refresh: bool = False) -> Callable:
 
     def wrapper(func: Callable) -> Callable:
         @functools.wraps(func)
-        def inner(*args, **kwargs) -> None:
+        def inner(*args, **kwargs) -> None:  # noqa: ANN002, ANN003
             try:
                 func(*args, **kwargs)
                 if refresh:

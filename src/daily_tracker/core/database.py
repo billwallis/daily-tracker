@@ -22,7 +22,7 @@ class DatabaseConnector:
     Connects to an SQLite database.
     """
 
-    def __init__(self, filepath: str):
+    def __init__(self, filepath: str) -> None:
         self.filepath = filepath
         self.connection = sqlite3.connect(self.filepath, timeout=15)
         self._create_backend()
@@ -114,7 +114,7 @@ class Database(core.Input, core.Output):
         self,
         database_filepath: str,
         configuration: core.Configuration,
-    ):
+    ) -> None:
         logger.debug(f"Loading database file at {database_filepath}...")
         self.connection = DatabaseConnector(database_filepath)
         self.configuration = configuration

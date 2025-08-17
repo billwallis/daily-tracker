@@ -43,7 +43,11 @@ class TrackerForm:
     options: dict[str, str]
     # project_details: dict[str, list[str]]  # See `task_details` below
 
-    def __init__(self, at_datetime: datetime.datetime, action_handler):
+    def __init__(
+        self,
+        at_datetime: datetime.datetime,
+        action_handler: _actions.ActionHandler,
+    ) -> None:
         """
         Create the form handler.
         """
@@ -129,7 +133,7 @@ class TrackerForm:
         )
         self.close_form()
 
-    def on_project_change(self, *_) -> None:
+    def on_project_change(self, *_) -> None:  # noqa: ANN002
         """
         When the value of the Project box changes, update the Detail box with
         the latest value from the Project.
@@ -250,7 +254,7 @@ class TextBox:
         label_text: str,
         default: str,
         values: list[str],
-    ):
+    ) -> None:
         """
         Set the text box properties and create the widget.
         """

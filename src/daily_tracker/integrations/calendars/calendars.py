@@ -49,7 +49,7 @@ class Calendar(abc.ABC):
     daily tracker.
     """
 
-    def __init__(self, configuration: core.Configuration):
+    def __init__(self, configuration: core.Configuration) -> None:
         self.configuration = configuration
 
     @abc.abstractmethod
@@ -117,7 +117,7 @@ class NoCalendar(Calendar, core.Input, core.Output):
     A 'None' calendar.
     """
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return False
 
     def get_appointments_between_datetimes(
