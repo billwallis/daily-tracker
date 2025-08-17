@@ -33,46 +33,6 @@ class ActionHandler:
         )
         self.form.generate_form()
 
-    def get_default_task_and_detail(
-        self,
-        at_datetime: datetime.datetime,
-    ) -> tuple[str, str]:
-        """
-        Get the default values for the input box.
-
-        This takes the meeting details from the linked calendar (if one has been
-        linked), or just uses the latest task.
-
-        TODO: Replace with the ``on_event`` methods from the input classes.
-        """
-        calendar_handler: integrations.Calendar = self.inputs.get("calendar")  # type: ignore
-        if calendar_handler and self.configuration.use_calendar_appointments:
-            current_meetings = [
-                meeting
-                for meeting in calendar_handler.get_appointments_at_datetime(
-                    at_datetime=at_datetime,
-                )
-                if not meeting.all_day_event
-                and all(
-                    i not in meeting.categories
-                    for i in self.configuration.appointment_category_exclusions
-                )
-            ]
-        else:
-            current_meetings = []
-
-        database_handler: database.Database = self.outputs["database"]  # type: ignore
-        logger.debug(f"Using database {database_handler}.")
-        if len(current_meetings) != 1:
-            # If there are two events, we don't know which one to use so
-            # default to the last task from the database instead
-            return database_handler.get_last_task_and_detail(
-                date_time=at_datetime
-            ) or ("", "")
-
-        assert len(current_meetings) == 1  # noqa: S101
-        return "Meetings", current_meetings[0].subject
-
     def get_dropdown_options(self, jira_filter: str) -> dict[str, str]:
         """
         Return the latest tasks and their most recent detail as a dictionary.
@@ -95,12 +55,43 @@ class ActionHandler:
         else:
             recent_tickets = []
 
-        return {
-            **recent_tasks,
-            **dict.fromkeys(recent_tickets, ""),
-        }
+        return recent_tasks | dict.fromkeys(recent_tickets, "")
 
-    def ok_actions(self) -> None:
+    def do_on_events(
+        self,
+        at_datetime: datetime.datetime,
+    ) -> tuple[str, str]:
+        """
+        Get the default values for the input box.
+
+        This takes the meeting details from the linked calendar (if one has been
+        linked), or just uses the latest task.
+
+        TODO: Replace with the ``on_event`` methods from the input classes.
+        """
+
+        (calendar_handler,) = [
+            h
+            for h in self.inputs.values()
+            if isinstance(h, integrations.Calendar)
+        ]
+        current_meetings = calendar_handler.on_event(at_datetime)
+
+        database_handler: database.Database = self.outputs["database"]  # type: ignore
+        logger.debug(f"Using database {database_handler}.")
+        if len(current_meetings) != 1:
+            # If there are two events, we don't know which one to use so
+            # default to the last task from the database instead
+            fallback = ("", "")
+            return (
+                database_handler.get_last_task_and_detail(at_datetime)
+                or fallback
+            )
+
+        (current_meeting,) = current_meetings
+        return current_meeting.task_name, current_meeting.details[0]
+
+    def do_post_events(self) -> None:
         """
         The actions to perform after the "pop-up" event.
         """
@@ -112,14 +103,10 @@ class ActionHandler:
         ]
 
         for handler in outputs_:
-            if hasattr(handler, "ok_actions"):
-                # For backwards compatibility
-                handler.ok_actions(self.configuration, self.form)
-            else:
-                entry = core.Entry(
-                    date_time=self.form.at_datetime,
-                    task_name=self.form.task,
-                    detail=self.form.detail,
-                    interval=self.form.interval,
-                )
-                handler.post_event(entry)
+            entry = core.Entry(
+                date_time=self.form.at_datetime,
+                task_name=self.form.task,
+                detail=self.form.detail,
+                interval=self.form.interval,
+            )
+            handler.post_event(entry)

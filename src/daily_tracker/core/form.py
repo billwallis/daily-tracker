@@ -53,7 +53,7 @@ class TrackerForm:
         self.interval = self.action_handler.configuration.interval
         self._width = 350
         self._height = 150
-        self.defaults = self.action_handler.get_default_task_and_detail(
+        self.defaults = self.action_handler.do_on_events(
             at_datetime=self.at_datetime,
         )
         self.options = self.action_handler.get_dropdown_options(
@@ -114,7 +114,7 @@ class TrackerForm:
         """
         Wrap the action so that we can schedule the next event when it's called.
         """
-        self.action_handler.ok_actions()
+        self.action_handler.do_post_events()
         logger.info(
             textwrap.dedent(
                 f"""
