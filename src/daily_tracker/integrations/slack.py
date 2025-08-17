@@ -86,9 +86,6 @@ class Slack(core.Output):
         self.connector.post_message(f"*{task}*: {detail}")
 
 
-# Force into the Input/Output classes. This is naughty, but we'll fix it later
-Slack(core.configuration.Configuration.from_default())
-
 if __name__ == "__main__":
     import os
 

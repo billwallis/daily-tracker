@@ -362,7 +362,3 @@ class Database(core.Input, core.Output):
                 / f"daily-tracker-{datetime.datetime.now().strftime('%Y-%m-%d')}.csv"
             ),
         )
-
-
-# Force into the Input/Output classes. This is naughty, but we'll fix it later
-Database(utils.DB, core.configuration.Configuration.from_default())

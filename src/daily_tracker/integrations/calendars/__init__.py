@@ -37,7 +37,3 @@ def get_linked_calendar(configuration: core.Configuration) -> Calendar:
         )
 
     return calendar(configuration)
-
-
-# Force into the Input/Output classes. This is naughty, but we'll fix it later
-get_linked_calendar(core.configuration.Configuration.from_default())

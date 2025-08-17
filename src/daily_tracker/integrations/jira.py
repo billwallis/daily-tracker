@@ -385,7 +385,3 @@ class Jira(core.Input, core.Output):
         elif response.status_code != http.HTTPStatus.CREATED:
             logger.debug(f"Response code: {response.status_code}")
             logger.debug(f"Could not post work log: {response.text}")
-
-
-# Force into the Input/Output classes. This is naughty, but we'll fix it later
-Jira(core.configuration.Configuration.from_default())
