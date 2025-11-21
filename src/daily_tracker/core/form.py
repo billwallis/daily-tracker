@@ -88,7 +88,15 @@ class TrackerForm:
         """
         # fmt: off
         database_handler: database.Database = self.action_handler.inputs["database"]  # type: ignore
-        return database_handler.get_details_for_task(self.task)
+        recent_tasks: list[str] = database_handler.get_details_for_task(self.task)
+        recent_tasks.extend(
+            [
+                detail
+                for task, detail in self.options.items()
+                if task == self.task and detail not in recent_tasks and detail != ""
+            ]
+        )
+        return recent_tasks
         # fmt: on
 
     @property

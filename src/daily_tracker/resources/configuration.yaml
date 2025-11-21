@@ -22,3 +22,28 @@ tracker:
 
     # slack
     post-to-slack: false
+
+    # monday.com
+    monday-filter: |-
+      query {
+        boards(ids: [123]) {
+          name
+          items_page(
+            limit: 500
+            query_params: {
+              operator: and
+              rules: [
+                {
+                  column_id: "person"
+                  compare_value: ["assigned_to_me"]
+                }
+              ]
+            }
+          ) {
+            items {
+              name
+              parent_item {name}
+            }
+          }
+        }
+      }

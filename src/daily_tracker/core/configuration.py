@@ -5,6 +5,8 @@ TODO: This is mastered in the ``configuration.yaml`` file, so do we need
     this class? Or should we just use ``yaml2pyclass``?
 
     https://github.com/a-nau/yaml2pyclass
+
+TODO: Inherit types from the JSON schema validator file?
 """
 
 from __future__ import annotations
@@ -113,3 +115,7 @@ class Configuration:
     @property
     def csv_filepath(self) -> str:
         return self._get_option_value("csv-filepath", str(pathlib.Path.home()))
+
+    @property
+    def monday_filter(self) -> str:
+        return self._get_option_value("monday-filter", None)
