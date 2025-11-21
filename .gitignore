@@ -5,6 +5,7 @@
 
 # Database files
 *.*db
+*.*db.wal
 *.sqlite
 
 # IDE and system iles
@@ -123,6 +124,7 @@ celerybeat.pid
 
 # Environments
 .env
+.envrc
 .venv
 env/
 venv/
