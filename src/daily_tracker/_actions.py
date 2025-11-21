@@ -33,29 +33,43 @@ class ActionHandler:
         )
         self.form.generate_form()
 
-    def get_dropdown_options(self, jira_filter: str) -> dict[str, str]:
+    def get_dropdown_options(
+        self,
+        jira_filter: str | None = None,
+    ) -> dict[str, str]:
         """
         Return the latest tasks and their most recent detail as a dictionary.
 
         This is always the most recent tasks, and optionally the tickets in the
         active sprint if a Jira connection has been configured.
         """
+
         database_handler: database.Database = self.outputs["database"]  # type: ignore
         jira_handler: integrations.Jira = self.inputs.get("jira")  # type: ignore
+        monday_handler: integrations.Monday = self.inputs.get("monday")  # type: ignore
 
         recent_tasks = database_handler.get_recent_tasks(
             self.configuration.show_last_n_weeks
         )
         if jira_handler and jira_filter:
-            recent_tickets = [
-                ticket
-                for ticket in jira_handler.get_tickets_in_sprint()
-                if ticket not in recent_tasks.keys()
-            ]
-        else:
-            recent_tickets = []
+            recent_tasks |= dict.fromkeys(
+                [
+                    ticket
+                    for ticket in jira_handler.get_tickets_in_sprint()
+                    if ticket not in recent_tasks.keys()
+                ],
+                "",
+            )
+        if monday_handler:
+            recent_tasks |= {
+                subtask.task_name: subtask.details
+                for subtask in monday_handler.on_event(
+                    date_time=datetime.datetime.now()
+                )
+                if subtask.task_name not in recent_tasks.keys()
+            }
 
-        return recent_tasks | dict.fromkeys(recent_tickets, "")
+        return recent_tasks
 
     def do_on_events(
         self,

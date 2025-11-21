@@ -24,10 +24,15 @@ def configure_integrations(config: core.configuration.Configuration) -> None:
     Force the integrations into the API classes.
     """
 
+    # This isn't smart: we just need to import the modules so that their
+    # classes get registered in the API class dictionaries. We can probably
+    # do something smart with `importlib`.
+
     database.Database(utils.DB, config)
     integrations.calendars.get_linked_calendar(config)
     integrations.jira.Jira(config)
     integrations.slack.Slack(config)
+    integrations.monday.Monday(config)
 
 
 def create_form(at_datetime: datetime.datetime) -> None:
