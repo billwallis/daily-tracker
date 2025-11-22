@@ -22,7 +22,6 @@
             "save-csv-copy",
 
             "linked-calendar",
-            "use-calendar-appointments",
             "appointment-category-exclusions",
 
             "jira-type",
@@ -69,13 +68,8 @@
 
             "linked-calendar": {
               "type": "string",
-              "description": "The calendar to sync with for meeting defaults.\n\nValues of `none`, `outlook`, or `gmail` only.",
-              "enum": ["none", "outlook", "gmail"]
-            },
-            "use-calendar-appointments": {
-              "type": "boolean",
-              "description": "Whether the tracker should autofill with meeting details from the linked calendar.\n\nValues of `true` or `false` only.",
-              "default": false
+              "description": "The calendar to sync with for meeting defaults.\n\nValues of `none`, `outlook`, or `google` only.",
+              "enum": ["none", "outlook", "google"]
             },
             "appointment-category-exclusions": {
               "type": "array",

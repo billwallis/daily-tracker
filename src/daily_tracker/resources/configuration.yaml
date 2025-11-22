@@ -12,8 +12,7 @@ tracker:
 
     # calendar
     linked-calendar: none
-    use-calendar-appointments: true
-    appointment-category-exclusions: [Planned Work, Non-Working]
+    appointment-category-exclusions: ["Planned Work", "Non-Working"]
 
     # jira
     jira-type: cloud # Just to emphasise that Server is not supported

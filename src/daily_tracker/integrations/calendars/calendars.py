@@ -80,9 +80,6 @@ class Calendar(abc.ABC):
         This excludes meetings that are daily meetings and meetings whose
         categories are in the supplied list of exclusions.
         """
-        if not self.configuration.use_calendar_appointments:
-            logger.debug("Calendar appointments are disabled.")
-            return []
 
         events = _filter_appointments(
             events=self.get_appointments_at_datetime(at_datetime=at_datetime),
