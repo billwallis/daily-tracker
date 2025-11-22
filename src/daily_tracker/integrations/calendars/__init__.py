@@ -6,8 +6,7 @@ import os
 
 from daily_tracker import core
 from daily_tracker.integrations.calendars.calendars import Calendar, NoCalendar
-
-# from daily_tracker.integrations.calendars.gmail import GmailInput
+from daily_tracker.integrations.calendars.google_calendar import GoogleCalendar
 
 if os.name == "nt":
     from daily_tracker.integrations.calendars.outlook_windows import Outlook
@@ -17,7 +16,7 @@ elif os.name == "posix":
 
 CALENDAR_LOOKUP = {
     "none": NoCalendar,
-    # "gmail": Gmail,
+    "google": GoogleCalendar,
     "outlook": Outlook,
 }
 

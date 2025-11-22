@@ -85,10 +85,6 @@ class Configuration:
         return self._get_option_value("show-last-n-weeks", 2)
 
     @property
-    def use_calendar_appointments(self) -> bool:
-        return self._get_option_value("use-calendar-appointments", False)
-
-    @property
     def appointment_category_exclusions(self) -> list[str]:
         return self._get_option_value("appointment-category-exclusions", [])
 
