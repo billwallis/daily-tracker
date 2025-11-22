@@ -1,3 +1,6 @@
+# Google auth
+credentials.json
+token.json
 
 # Flat files
 *.[cpt]sv

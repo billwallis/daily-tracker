@@ -20,6 +20,9 @@ dependencies = [
     # platform-specific
     "pywin32==311; sys_platform == 'win32'",
     "appscript==1.2.2; sys_platform == 'darwin'",
+    "google-api-python-client>=2.187.0",
+    "google-auth-httplib2>=0.2.1",
+    "google-auth-oauthlib>=1.2.3",
 ]
 
 [project.scripts]
