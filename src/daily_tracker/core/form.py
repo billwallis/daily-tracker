@@ -7,6 +7,7 @@ https://github.com/codefirstio/tkinter-data-entry
 
 from __future__ import annotations
 
+import collections
 import datetime
 import logging
 import textwrap
@@ -40,7 +41,7 @@ class TrackerForm:
     # Shouldn't this just be the first of the options?
     defaults: tuple[str, str]
 
-    options: dict[str, str]
+    options: dict[str, list[str]]
     # project_details: dict[str, list[str]]  # See `task_details` below
 
     def __init__(
@@ -86,18 +87,19 @@ class TrackerForm:
         TODO: This should be given as an argument -- we don't want to have to
               talk to the database here (I think).
         """
+
         # fmt: off
         database_handler: database.Database = self.action_handler.inputs["database"]  # type: ignore
-        recent_tasks: list[str] = database_handler.get_details_for_task(self.task)
-        recent_tasks.extend(
-            [
-                detail
-                for task, detail in self.options.items()
-                if task == self.task and detail not in recent_tasks and detail != ""
-            ]
-        )
-        return recent_tasks
+        recent_details: list[str] = database_handler.get_details_for_task(self.task)
         # fmt: on
+
+        task_and_details = collections.defaultdict(list)
+        task_and_details[self.task].extend(recent_details)
+        task_and_details[self.task].extend(
+            detail for detail in self.options.get(self.task, [])
+        )
+
+        return list(dict.fromkeys(task_and_details[self.task]))
 
     @property
     def date_time(self) -> str:

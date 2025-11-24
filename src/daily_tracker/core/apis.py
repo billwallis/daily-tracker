@@ -186,13 +186,15 @@ class Task:
     """
 
     task_name: str
-    details: list[str] = dataclasses.field(default_factory=list)
+    details: list[str] = dataclasses.field(
+        default_factory=list
+    )  # TODO: Replace with (ordered?) set
     priority: int = 1
     is_default: bool = False
 
     def __lt__(self, other: Any) -> bool:
         if isinstance(other, Task):
-            # This should probably include `self.priority`
+            # TODO: This should probably include `self.priority`
             return self.task_name < other.task_name
         if isinstance(other, str):
             return self.task_name < other
