@@ -96,7 +96,7 @@ class TrackerForm:
         task_and_details = collections.defaultdict(list)
         task_and_details[self.task].extend(recent_details)
         task_and_details[self.task].extend(
-            detail for detail in self.options.get(self.task, [])
+            iter(self.options.get(self.task, []))
         )
 
         return list(dict.fromkeys(task_and_details[self.task]))
