@@ -235,16 +235,20 @@ class Monday(core.Input):
         )
 
 
-# if __name__ == "__main__":
-#     import json
-#     config_ = core.Configuration.from_default()
-#     monday = MondayConnector(**MONDAY_CREDENTIALS)
-#     def pp(response: requests.Response) -> None:
-#         print(json.dumps(response.json(), indent=2))
-#         print()
-#     pp(monday.get_me())
-#     pp(monday.get_favourites())
-#     pp(monday.get_workspaces(SIERRA_SQUAD_WORKSPACE_ID))
-#     pp(monday.get_all_boards())
-#     pp(monday.get_boards(workspace_ids=SIERRA_SQUAD_WORKSPACE_ID))
-#     pp(monday.get_boards(board_ids=[3137038078]))
+if __name__ == "__main__":
+    import json
+
+    config_ = core.Configuration.from_default()
+    monday = MondayConnector(**MONDAY_CREDENTIALS)
+
+    def pp(response: requests.Response) -> None:
+        print(json.dumps(response.json(), indent=2))
+        print()
+
+    # pp(monday.get_me())
+    # pp(monday.get_favourites())
+    # pp(monday.get_workspaces(SIERRA_SQUAD_WORKSPACE_ID))
+    # pp(monday.get_all_boards())
+    # pp(monday.get_boards(workspace_ids=SIERRA_SQUAD_WORKSPACE_ID))
+    # pp(monday.get_boards(board_ids=[3137038078]))
+    pp(monday.query(config_.monday_filter))

@@ -9,6 +9,7 @@ def test__pascal_to_snake():
     """
     Test that a pascal-case string is converted to a snake-case string.
     """
+
     text = "PascalCase"
     expected = "pascal_case"
 
@@ -20,6 +21,7 @@ def test__string_list_to_list():
     Test that a string of delimited values is split into a list with each
     element trimmed.
     """
+
     string_ = "-1,0,1,a,bb,ccc,, ,\t"
     expected = ["-1", "0", "1", "a", "bb", "ccc", "", "", ""]
 
@@ -31,6 +33,7 @@ def test__get_first_item_in_dict():
     Test that the first key and value in a dictionary are returned as a
     tuple.
     """
+
     dictionary = {"a": 1, "b": 2, "c": 3}
     expected = ("a", 1)
 

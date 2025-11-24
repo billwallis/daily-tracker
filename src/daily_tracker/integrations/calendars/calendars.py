@@ -1,7 +1,3 @@
-"""
-Calendar types available to use for linking.
-"""
-
 from __future__ import annotations
 
 import abc
@@ -22,6 +18,7 @@ def _filter_appointments(
     Filter out the appointments that are all day events or are in the
     exclusion list.
     """
+
     return [
         event
         for event in events
@@ -104,6 +101,7 @@ class Calendar(abc.ABC):
         """
         Do nothing.
         """
+
         logger.debug(
             f"No post-event actions for the calendar with entry {entry}."
         )
@@ -125,6 +123,7 @@ class NoCalendar(Calendar, core.Input, core.Output):
         """
         Return an empty list.
         """
+
         logger.debug(
             "Calling 'get_appointments_between_datetimes' for NoCalendar..."
         )
@@ -138,5 +137,6 @@ class NoCalendar(Calendar, core.Input, core.Output):
         """
         Return an empty list.
         """
+
         logger.debug("Calling 'get_appointments_at_datetime' for NoCalendar...")
         return []

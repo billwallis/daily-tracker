@@ -54,6 +54,7 @@ class OutlookEvent(CalendarEvent):
         :param appointment: The appscript appointment to generate the event
          from.
         """
+
         return OutlookEvent(
             subject=appointment.subject.get(),
             start=appointment.start_time.get(),
@@ -83,6 +84,7 @@ class Outlook(Calendar, core.Input):
         Return the events in the calendar between the start datetime (inclusive)
         and end datetime (exclusive).
         """
+
         restricted_calendar = self.calendar.calendar_events[
             (appscript.its.start_time >= start_datetime).AND(
                 appscript.its.end_time < end_datetime
@@ -92,9 +94,7 @@ class Outlook(Calendar, core.Input):
             OutlookEvent.from_appointment(app) for app in restricted_calendar
         ]
 
-        s = (
-            "s" if len(events) != 1 else ""
-        )  # sourcery skip: avoid-single-character-names-variables
+        s = "s" if len(events) != 1 else ""
         logger.debug(
             f"Found {len(events)} calendar event{s} between {start_datetime} and {end_datetime}."
         )
@@ -109,6 +109,7 @@ class Outlook(Calendar, core.Input):
         Return the events in the calendar that are scheduled to on or over the
         supplied datetime.
         """
+
         restricted_calendar = self.calendar.calendar_events[
             (appscript.its.start_time <= at_datetime).AND(
                 appscript.its.end_time > at_datetime
@@ -118,9 +119,7 @@ class Outlook(Calendar, core.Input):
             OutlookEvent.from_appointment(app) for app in restricted_calendar
         ]
 
-        s = (
-            "s" if len(events) != 1 else ""
-        )  # sourcery skip: avoid-single-character-names-variables
+        s = "s" if len(events) != 1 else ""
         logger.debug(
             f"Found {len(events)} calendar event{s} for {at_datetime}."
         )

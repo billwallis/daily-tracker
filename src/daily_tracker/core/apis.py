@@ -1,4 +1,3 @@
-# sourcery skip: upper-camel-case-classes,snake-case-variable-declarations
 """
 The API classes that all integration classes should inherit from.
 
@@ -87,6 +86,7 @@ class API(abc.ABC):
         automatically bind the subclass to the ``Input`` and ``Output`` classes
         ``apis`` property.
         """
+
         instance = super().__new__(cls)
         key = utils.pascal_to_snake(cls.__name__)
 
@@ -96,6 +96,7 @@ class API(abc.ABC):
                     f"Adding class {instance} to `{base}.apis` with key '{key}'"
                 )
                 base.apis[key] = instance
+
         return instance
 
 
@@ -151,10 +152,12 @@ class Input(API, IInput, abc.ABC):
         The UI call is only made after this -- and only if the UI is enabled as
         there could be other interfaces.
         """
+
         tasks = [
             object_.on_event(date_time=date_time)
             for name, object_ in cls.apis.items()
         ]
+
         return list(itertools.chain.from_iterable(tasks))
 
 
@@ -171,6 +174,7 @@ class Output(API, IOutput, abc.ABC):
         """
         Execute the actions after the "pop-up" event.
         """
+
         for object_ in Output.apis.values():
             object_.post_event(entry=entry)
 
@@ -186,9 +190,8 @@ class Task:
     """
 
     task_name: str
-    details: list[str] = dataclasses.field(
-        default_factory=list
-    )  # TODO: Replace with (ordered?) set
+    # TODO: Replace with (ordered?) set
+    details: list[str] = dataclasses.field(default_factory=list)
     priority: int = 1
     is_default: bool = False
 

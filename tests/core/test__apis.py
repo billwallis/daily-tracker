@@ -41,6 +41,7 @@ def some_input() -> apis.Input:
     """
     Return a ``Input`` instance.
     """
+
     return SomeInput("input")
 
 
@@ -49,6 +50,7 @@ def some_output() -> apis.Output:
     """
     Return an ``Output`` instance.
     """
+
     return SomeOutput("output")
 
 
@@ -57,6 +59,7 @@ def some_input_output() -> apis.API:
     """
     Return an ``Input`` and ``Output`` mixin instance.
     """
+
     return SomeInputOutput()
 
 
@@ -64,6 +67,7 @@ def test__api():
     """
     Test the ``API`` class.
     """
+
     assert issubclass(apis.API, abc.ABC)
 
 
@@ -71,6 +75,7 @@ def test__iinput():
     """
     Test the ``IInput`` class.
     """
+
     assert issubclass(apis.IInput, abc.ABC)
     assert hasattr(apis.IInput, "on_event")
 
@@ -79,6 +84,7 @@ def test__ioutput():
     """
     Test the ``IOutput`` class.
     """
+
     assert issubclass(apis.IOutput, abc.ABC)
     assert hasattr(apis.IOutput, "post_event")
 
@@ -87,6 +93,7 @@ def test__input():
     """
     Test the ``Input`` class.
     """
+
     assert issubclass(apis.Input, apis.API)
     assert issubclass(apis.Input, apis.IInput)
     assert issubclass(apis.Input, abc.ABC)
@@ -98,6 +105,7 @@ def test__input__apis(some_input, some_input_output):
     """
     Test the ``Input.apis`` class variable.
     """
+
     # fmt: off
     assert sorted(apis.Input.apis.keys()) == sorted(["some_input", "some_input_output"])
     # fmt: on
@@ -111,6 +119,7 @@ def test__input__apis__raises(some_output):
     """
     Test that the ``Input.apis`` class variable raises a key error.
     """
+
     with pytest.raises(KeyError):
         assert apis.Input.apis["some_output"]
 
@@ -119,6 +128,7 @@ def test__input__on_events():
     """
     Test the ``Input.on_events`` method.
     """
+
     date_time = datetime.datetime(2020, 1, 1)
 
     actual = sorted(apis.Input.on_events(date_time))  # type: ignore
@@ -138,6 +148,7 @@ def test__output():
     """
     Test the ``Output`` class.
     """
+
     assert issubclass(apis.Output, apis.API)
     assert issubclass(apis.Output, apis.IOutput)
     assert issubclass(apis.Output, abc.ABC)
@@ -149,6 +160,7 @@ def test__output__apis(some_output, some_input_output):
     """
     Test the ``API`` class.
     """
+
     # fmt: off
     assert sorted(apis.Output.apis.keys()) == sorted(["some_output", "some_input_output"])
     # fmt: on
@@ -166,6 +178,7 @@ def test__output__post_events():
     TODO: Need to figure out how to test this.
         - https://stackoverflow.com/a/69620212/8213085
     """
+
     entry = "some-entry"
     apis.Output.post_events(entry=entry)  # type: ignore
 
@@ -174,6 +187,7 @@ def test__task():
     """
     Test the ``Task`` class.
     """
+
     task = apis.Task(task_name="some-task")
 
     assert task.task_name == "some-task"
@@ -186,6 +200,7 @@ def test__entry():
     """
     Test the ``Entry`` class.
     """
+
     task = apis.Entry(
         date_time=datetime.datetime(2020, 1, 1),
         task_name="some-task",

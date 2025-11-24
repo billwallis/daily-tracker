@@ -47,6 +47,7 @@ class Configuration:
 
         TODO: Include the API tokens/keys/secrets in the config file (#5)
         """
+
         with open(filepath) as f_custom, open(DEFAULT_CONFIG) as f_base:
             config = yaml.load(f_custom.read(), yaml.Loader)  # noqa: S506
 
@@ -55,13 +56,14 @@ class Configuration:
                 yaml.load(f_base.read(), yaml.Loader)["tracker"]["options"],  # noqa: S506
             )
 
-            return Configuration(config)
+        return Configuration(config)
 
     @classmethod
     def from_default(cls) -> Configuration:
         """
         Read the ``configuration.yaml`` into a Configuration object.
         """
+
         with open(DEFAULT_CONFIG) as f:
             return Configuration(yaml.load(f.read(), yaml.Loader))  # noqa: S506
 
