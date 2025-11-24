@@ -1,7 +1,3 @@
-"""
-The actions for the pop-up box.
-"""
-
 import collections
 import datetime
 import logging
@@ -21,6 +17,7 @@ class ActionHandler:
         """
         Initialise the main handler and the various handlers to other systems.
         """
+
         self.configuration = core.Configuration.from_default()
         # These only work because we cheat and instantiate the Input/Output
         # subclasses in their corresponding modules
@@ -110,6 +107,7 @@ class ActionHandler:
         """
         The actions to perform after the "pop-up" event.
         """
+
         # Dirty approach to get the database stuff done first
         outputs_ = [self.outputs["database"]] + [
             handler

@@ -1,7 +1,3 @@
-"""
-Various calendar integrations.
-"""
-
 import os
 
 from daily_tracker import core
@@ -27,6 +23,7 @@ def get_linked_calendar(configuration: core.Configuration) -> Calendar:
     class.
     Currently, only using a single calendar type is supported.
     """
+
     calendar = CALENDAR_LOOKUP.get(configuration.linked_calendar)
     if calendar is None:
         raise NotImplementedError(

@@ -16,6 +16,7 @@ def create_env() -> None:
     This should be deprecated and the values should be saved in the config
     file instead.
     """
+
     filepath = ".env"
     if pathlib.Path(filepath).exists():
         return
@@ -30,6 +31,7 @@ def main() -> None:
     Create the config files and database, then load existing data into the
     database.
     """
+
     create_env()
     db_handler = database.Database(
         database_filepath=utils.DB,

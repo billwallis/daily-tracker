@@ -60,6 +60,7 @@ class JiraConnector:
         See more at the Atlassian documentation:
             https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/#supply-basic-auth-headers
         """
+
         return (
             "Basic "
             + base64.b64encode(
@@ -72,6 +73,7 @@ class JiraConnector:
         """
         Expose the default headers in a dictionary.
         """
+
         return {
             "Content-Type": "application/json",
             "Accept": "application/json",
@@ -87,6 +89,7 @@ class JiraConnector:
 
         https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-projects/#api-rest-api-3-project-search-get
         """
+
         endpoint = "project/search"
         return requests.request(  # noqa: S113
             method="GET",
@@ -101,6 +104,7 @@ class JiraConnector:
 
         https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-get
         """
+
         endpoint = f"issue/{issue_key}"
         return requests.request(  # noqa: S113
             method="GET",
@@ -121,6 +125,7 @@ class JiraConnector:
 
         https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-rest-api-3-search-get
         """
+
         endpoint = "search"
         params = {
             "jql": jql,
@@ -141,6 +146,7 @@ class JiraConnector:
 
         https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-project-components/#api-rest-api-3-project-projectidorkey-components-get
         """
+
         endpoint = f"project/{project_id}/components"
         return requests.request(  # noqa: S113
             method="GET",
@@ -155,6 +161,7 @@ class JiraConnector:
 
         https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-project-roles
         """
+
         endpoint = "role"
         return requests.request(  # noqa: S113
             method="GET",
@@ -169,7 +176,7 @@ class JiraConnector:
         detail: str,
         at_datetime: datetime.datetime,
         interval: int,
-    ) -> requests.Response:
+    ) -> requests.Response | None:
         """
         Call the "Add worklog" endpoint of the API.
 
@@ -185,6 +192,7 @@ class JiraConnector:
         TODO: Change this so that it updates the previous worklog if multiple
             work logs are added in succession.
         """
+
         endpoint = f"issue/{issue_key}/worklog"
         payload = json.dumps(
             {
@@ -230,6 +238,7 @@ class JiraConnector:
 
         https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-post
         """
+
         endpoint = "issue"
         payload = json.dumps(
             {
@@ -288,6 +297,7 @@ class Jira(core.Input, core.Output):
         """
         The actions to perform before the event.
         """
+
         if self.configuration.jira_filter:
             return [
                 core.Task(task_name=ticket)
@@ -305,6 +315,7 @@ class Jira(core.Input, core.Output):
             """
             Inner function to loop over until all tickets have been retrieved.
             """
+
             try:
                 return json.loads(
                     self.connector.search_for_issues_using_jql(
@@ -345,6 +356,7 @@ class Jira(core.Input, core.Output):
         """
         The actions to perform after the event.
         """
+
         logger.debug("Doing Jira actions...")
         if self.debug_mode:
             return
@@ -367,6 +379,7 @@ class Jira(core.Input, core.Output):
         """
         Post the task, detail, and time to the corresponding ticket's worklog.
         """
+
         logger.debug("Posting log to Jira...")
         issue_key = re.search(self.project_key_pattern, task)
         if issue_key is None:

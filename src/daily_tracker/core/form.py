@@ -52,6 +52,7 @@ class TrackerForm:
         """
         Create the form handler.
         """
+
         logger.debug(f"Creating the form for {at_datetime}.")
         self.at_datetime = at_datetime
         self.action_handler = action_handler
@@ -70,6 +71,7 @@ class TrackerForm:
         """
         Return the current task value.
         """
+
         return self.project_text_box.text_box.get()
 
     @property
@@ -77,6 +79,7 @@ class TrackerForm:
         """
         Return the current detail value.
         """
+
         return self.detail_text_box.text_box.get()
 
     @property
@@ -106,6 +109,7 @@ class TrackerForm:
         """
         Return the pop-up datetime in the hh:mm format.
         """
+
         return self.at_datetime.strftime("%H:%M")
 
     @property
@@ -113,12 +117,14 @@ class TrackerForm:
         """
         Return the title to use for the pop-up.
         """
+
         return f"Interval Tracker at {self.date_time} ({self.interval})"
 
     def close_form(self) -> None:
         """
         Close the form window.
         """
+
         self._root.destroy()
         # self._root.quit()
         # self._root.protocol("WM_DELETE_WINDOW", lambda: sys.exit())
@@ -128,6 +134,7 @@ class TrackerForm:
         """
         Wrap the action so that we can schedule the next event when it's called.
         """
+
         self.action_handler.do_post_events()
         logger.info(
             textwrap.dedent(
@@ -148,6 +155,7 @@ class TrackerForm:
         When the value of the Project box changes, update the Detail box with
         the latest value from the Project.
         """
+
         details = self.task_details
         self.detail_text_box.text_box["values"] = details
         self.detail_text_box.text_box.set(details[0] if details else "")
@@ -158,6 +166,7 @@ class TrackerForm:
 
         https://youtu.be/ibf5cx221hk
         """
+
         if event.state == 12 and event.keysym == "Return":  # noqa: PLR2004
             self.action_wrapper()
 
@@ -165,6 +174,7 @@ class TrackerForm:
         """
         Generate the tracker pop-up form.
         """
+
         self._root = ttkthemes.ThemedTk(theme="arc")
         self._root.geometry(f"{self._width}x{self._height}")
         self._root.eval("tk::PlaceWindow . center")
@@ -204,6 +214,7 @@ class TrackerForm:
         """
         Set the text boxes for the form.
         """
+
         self.project_text_box = TextBox(
             parent=text_box_frame,
             label_text="Project",
@@ -227,6 +238,7 @@ class TrackerForm:
         """
         Set the buttons for the form.
         """
+
         okay_button = ttk.Button(
             button_frame,
             text="OK",
@@ -268,6 +280,7 @@ class TextBox:
         """
         Set the text box properties and create the widget.
         """
+
         self.parent = parent
         self.label_text = label_text
         self.values = values
@@ -277,6 +290,7 @@ class TextBox:
         """
         Build the text box and return it.
         """
+
         frame = ttk.Frame(self.parent)
         frame.pack(ipady=4)
 

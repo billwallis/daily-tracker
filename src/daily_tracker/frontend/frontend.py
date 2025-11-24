@@ -50,6 +50,7 @@ def execute(sql: str, parameters: dict | None = None) -> pandas.DataFrame:
     """
     Convert the result of a query to a dataframe.
     """
+
     result = CONN.execute(sql, parameters or {})
 
     return pandas.DataFrame(
@@ -62,6 +63,7 @@ def header_text() -> None:
     """
     Add the text at the top of the application.
     """
+
     streamlit.header("Daily Tracker :stopwatch:")
     streamlit.write(
         """
@@ -79,17 +81,18 @@ def copy_latest_callback(interval: int) -> None:
     """
     Copy the latest entry from the tracker.
     """
+
     CONN.connection.execute(
         """
         insert into tracker(date_time, task, detail, interval)
-            select
-                datetime(date_time, :interval_adjustment),
-                task,
-                detail,
-                interval
-            from tracker
-            order by date_time desc
-            limit 1
+        select
+            datetime(date_time, :interval_adjustment),
+            task,
+            detail,
+            interval
+        from tracker
+        order by date_time desc
+        limit 1
         """,
         {
             "interval_adjustment": f"+{interval} minutes",
@@ -103,6 +106,7 @@ def show_latest_entry() -> pandas.DataFrame:
     """
     Show the latest entry from the tracker.
     """
+
     streamlit.subheader("Latest entry")
     latest_entry = execute(
         """
@@ -142,6 +146,7 @@ def insert_entry_callback(
     """
     Insert an entry into the tracker.
     """
+
     CONN.connection.execute(
         """
         insert into tracker(date_time, task, detail, interval)
@@ -162,6 +167,7 @@ def insert_entry(latest_entry: pandas.DataFrame) -> None:
     """
     Insert an entry into the tracker.
     """
+
     streamlit.subheader("Insert entry")
 
     entry = latest_entry.to_dict(orient="records")[0]
@@ -190,6 +196,7 @@ def update_row(date_time: str, changes: dict[str, str]) -> None:
     """
     Update a row in the tracker.
     """
+
     # We have to do a smidge of dynamic SQL here -- can we find a way to
     # use Metabase's [[ ]] syntax?
 
@@ -207,6 +214,7 @@ def save_changes_callback(edited_records: pandas.DataFrame) -> None:
     """
     Save changes to the tracker.
     """
+
     state = streamlit.session_state["tracker-editor"]
     for index, changes in state["edited_rows"].items():
         assert isinstance(changes, dict)  # noqa: S101
@@ -219,6 +227,7 @@ def edit_stuff() -> None:
     """
     Edit stuff.
     """
+
     streamlit.subheader("Edit stuff")
 
     filters, _ = streamlit.columns(2)
@@ -270,6 +279,7 @@ def rename_something_callback(column: str, from_: str, to: str) -> None:
     """
     Rename something.
     """
+
     CONN.connection.execute(
         f"""
         update tracker
@@ -288,6 +298,7 @@ def rename_something() -> None:
     """
     Rename something.
     """
+
     streamlit.subheader("Rename something")
 
     select_option, filters = streamlit.columns(2)
@@ -344,6 +355,7 @@ def main() -> None:
     """
     The entry point into the application.
     """
+
     header_text()
 
     latest_entry = show_latest_entry()

@@ -35,12 +35,14 @@ class DatabaseConnector:
         """
         Shortcut to the execute method on the SQLite connection object.
         """
+
         return self.connection.execute(sql, parameters)
 
     def run_query_from_file(self, filepath: str) -> sqlite3.Cursor:
         """
         Open a file and execute the query inside it.
         """
+
         with open(filepath) as f:
             return self.connection.executescript(f.read())
 
@@ -48,6 +50,7 @@ class DatabaseConnector:
         """
         Create the backend if it doesn't already exist.
         """
+
         if not (
             self.connection.execute(
                 """
@@ -66,6 +69,7 @@ class DatabaseConnector:
         """
         Truncate a table if it exists.
         """
+
         if self.connection.execute(
             """
                 select name
@@ -76,7 +80,7 @@ class DatabaseConnector:
             {"table_name": table_name},
         ).fetchone():
             self.connection.execute(
-                f"""DELETE FROM {table_name} WHERE 1=1"""  # noqa: S608
+                f"""delete from {table_name} where 1=1"""  # noqa: S608
             )
 
 
@@ -88,6 +92,7 @@ def read_sql(
     """
     Return the result set from running SQL on a database connection.
     """
+
     with con.connection as conn:
         results = conn.execute(sql, params)
 
@@ -98,6 +103,7 @@ def to_csv(data: list[tuple[Any, ...]], path: pathlib.Path) -> None:
     """
     Write the data to a CSV file.
     """
+
     with open(path, "w", newline="") as out:
         csv.writer(out).writerows(data)
 
@@ -123,6 +129,7 @@ class Database(core.Input, core.Output):
         """
         Truncate the tables in the database that are updated through the form.
         """
+
         for table in ["tracker", "task_last_detail"]:
             self.connection.truncate_table(table_name=table)
         self.connection.connection.commit()
@@ -131,6 +138,7 @@ class Database(core.Input, core.Output):
         """
         Import the existing CSV file into the SQLite database.
         """
+
         raise NotImplementedError(
             "'Database.import_history' has not been implemented."
         )
@@ -170,6 +178,7 @@ class Database(core.Input, core.Output):
         """
         The actions to perform before the event.
         """
+
         latest_task_and_detail = self.get_last_task_and_detail(
             date_time=date_time
         )
@@ -203,6 +212,7 @@ class Database(core.Input, core.Output):
         """
         Return the most recent task and its detail.
         """
+
         with self.connection.connection as conn:
             return conn.execute(
                 """
@@ -223,6 +233,7 @@ class Database(core.Input, core.Output):
         dataframe into a dictionary whose keys are the tasks and the values are
         the task's latest detail.
         """
+
         # latest_tasks = """
         #     select task, detail
         #     from v_latest_tasks
@@ -253,6 +264,7 @@ class Database(core.Input, core.Output):
         Return the drop-down list of recent tasks with a flag to indicate
         default tasks.
         """
+
         latest_tasks = """
             select task, (indx = 0) as default_flag
             from task_detail_with_defaults
@@ -274,6 +286,7 @@ class Database(core.Input, core.Output):
 
         TODO: Use memoisation/caching to avoid repeated queries to the DB.
         """
+
         details = self.connection.execute(
             """
             select detail
@@ -285,12 +298,14 @@ class Database(core.Input, core.Output):
             """,
             {"task": task},
         ).fetchall()
+
         return [detail[0] for detail in details]
 
     def post_event(self, entry: core.Entry) -> None:
         """
         The actions to perform after the event.
         """
+
         logger.debug("Doing database actions...")
         if DEBUG_MODE:
             return
@@ -316,6 +331,7 @@ class Database(core.Input, core.Output):
         """
         Write the form values to the database.
         """
+
         with self.connection.connection as conn:
             conn.execute(
                 """
@@ -331,7 +347,9 @@ class Database(core.Input, core.Output):
             )
 
     def write_to_csv(
-        self, filepath: str, previous_days: int | None = None
+        self,
+        filepath: str,
+        previous_days: int | None = None,
     ) -> None:
         """
         Write the tracker history to a CSV file.
@@ -339,6 +357,7 @@ class Database(core.Input, core.Output):
         By default, this will download the entire history. To limit this, set
         the number of days to limit this to with the `previous_days` parameter.
         """
+
         tracker_history = """
             select
                 date_time,

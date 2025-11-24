@@ -33,6 +33,7 @@ class OutlookEvent(CalendarEvent):
 
         :param appointment: The win32com appointment to generate the event from.
         """
+
         return OutlookEvent(
             subject=appointment.subject,
             start=appointment.start,
@@ -48,7 +49,6 @@ class Outlook(Calendar, core.Input):
     """
 
     def __init__(self, configuration: core.Configuration) -> None:
-        # sourcery skip: docstrings-for-functions
         super().__init__(configuration=configuration)
 
         outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace(
@@ -67,6 +67,7 @@ class Outlook(Calendar, core.Input):
         Return the events in the calendar between the start datetime (inclusive)
         and end datetime exclusive.
         """
+
         restricted_calendar = self.calendar.Restrict(
             " AND ".join(
                 [
@@ -75,6 +76,7 @@ class Outlook(Calendar, core.Input):
                 ]
             )
         )
+
         return [
             OutlookEvent.from_appointment(app) for app in restricted_calendar
         ]
@@ -87,6 +89,7 @@ class Outlook(Calendar, core.Input):
         Return the events in the calendar that are scheduled to on or over the
         supplied datetime.
         """
+
         datetime_string = at_datetime.strftime("%Y-%m-%d %H:%M")
         restricted_calendar = self.calendar.Restrict(
             " AND ".join(
@@ -96,6 +99,7 @@ class Outlook(Calendar, core.Input):
                 ]
             )
         )
+
         return [
             OutlookEvent.from_appointment(app) for app in restricted_calendar
         ]

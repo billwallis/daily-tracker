@@ -3,15 +3,14 @@
     + tracker +
     The core table in this application that holds all historic data.
 */
-DROP TABLE IF EXISTS tracker;
-CREATE TABLE tracker(
-    date_time DATETIME NOT NULL PRIMARY KEY UNIQUE,
-    task TEXT NOT NULL,
-    detail TEXT NOT NULL DEFAULT '',
-    interval INTEGER NOT NULL
+drop table if exists tracker;
+create table tracker(
+    date_time datetime not null primary key unique,
+    task text not null,
+    detail text not null default '',
+    interval integer not null
 );
-CREATE INDEX tracker_task
-    ON tracker(task)
+create index tracker_task on tracker(task)
 ;
 
 
@@ -20,38 +19,38 @@ CREATE INDEX tracker_task
     The latest detail per task. Used for automatically filling the detail text
     box for each task. Updates on inserts and updates of the main.tracker table.
 */
-DROP TABLE IF EXISTS task_last_detail;
-CREATE TABLE task_last_detail(
-    task TEXT NOT NULL PRIMARY KEY UNIQUE REFERENCES tracker(task),
-    detail TEXT NOT NULL,
-    last_date_time DATETIME NOT NULL
+drop table if exists task_last_detail;
+create table task_last_detail(
+    task text not null primary key unique references tracker(task),
+    detail text not null,
+    last_date_time datetime not null
 );
 
 
-DROP TRIGGER IF EXISTS set_tracker_latest_task_on_insert;
-CREATE TRIGGER set_tracker_latest_task_on_insert
-    BEFORE INSERT ON tracker
-BEGIN
-    INSERT INTO task_last_detail
-    VALUES (NEW.task, NEW.detail, NEW.date_time)
-    ON CONFLICT(task) DO UPDATE
-    SET detail = NEW.detail,
-        last_date_time = NEW.date_time
-    ;
-END
+drop trigger if exists set_tracker_latest_task_on_insert;
+create trigger set_tracker_latest_task_on_insert
+    before insert on tracker
+    begin
+        insert into task_last_detail
+        values (new.task, new.detail, new.date_time)
+        on conflict(task) do update
+        set detail = new.detail,
+            last_date_time = new.date_time
+        ;
+    end
 ;
 
-DROP TRIGGER IF EXISTS set_tracker_latest_task_on_update;
-CREATE TRIGGER set_tracker_latest_task_on_update
-    BEFORE UPDATE ON tracker
-BEGIN
-    INSERT INTO task_last_detail
-    VALUES (NEW.task, NEW.detail, NEW.date_time)
-    ON CONFLICT(task) DO UPDATE
-    SET detail = NEW.detail,
-        last_date_time = NEW.date_time
-    ;
-END
+drop trigger if exists set_tracker_latest_task_on_update;
+create trigger set_tracker_latest_task_on_update
+    before update on tracker
+    begin
+        insert into task_last_detail
+        values (new.task, new.detail, new.date_time)
+        on conflict(task) do update
+        set detail = new.detail,
+            last_date_time = new.date_time
+        ;
+    end
 ;
 
 
@@ -60,12 +59,12 @@ END
     The default tasks used to populate the task input box drop-down. This
     should be configurable outside of this module.
 */
-DROP TABLE IF EXISTS default_tasks;
-CREATE TABLE default_tasks(
-    task TEXT NOT NULL UNIQUE
+drop table if exists default_tasks;
+create table default_tasks(
+    task text not null unique
 );
-INSERT INTO default_tasks
-VALUES
+insert into default_tasks
+values
     ('Lunch Break'),
     ('Meetings'),
     ('Housekeeping'),
@@ -75,12 +74,12 @@ VALUES
     ('Personal Development'),
     ('Unable to Work')
 ;
-INSERT INTO task_last_detail(task, detail, last_date_time)
-    SELECT
+insert into task_last_detail(task, detail, last_date_time)
+    select
         task,
         '',
         ''
-FROM default_tasks
+from default_tasks
 ;
 
 
@@ -88,58 +87,33 @@ FROM default_tasks
     + task_detail_with_defaults +
     The latest detail per task.
 */
-DROP VIEW IF EXISTS task_detail_with_defaults;
-CREATE VIEW task_detail_with_defaults AS
-    WITH defaults AS (
-        SELECT
+drop view if exists task_detail_with_defaults;
+create view task_detail_with_defaults as
+    with defaults as (
+        select
             dt.task,
             tld.detail,
-            COALESCE(NULLIF(tld.last_date_time, ''), '9999-12-31 00:00:00') AS last_date_time
-        FROM default_tasks AS dt
-            LEFT JOIN task_last_detail AS tld USING(task)
+            coalesce(nullif(tld.last_date_time, ''), '9999-12-31 00:00:00') as last_date_time
+        from default_tasks as dt
+            left join task_last_detail as tld using(task)
     )
 
-        SELECT
-            0 AS indx,
+        select
+            0 as indx,
             task,
             detail,
             last_date_time
-        FROM defaults
-    UNION
-        SELECT
-            1 AS indx,
+        from defaults
+    union
+        select
+            1 as indx,
             task,
             detail,
             last_date_time
-        FROM task_last_detail
-        WHERE task NOT IN (SELECT task FROM defaults)
+        from task_last_detail
+        where task not in (select task from defaults)
 ;
 
 
-------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------
-
-/* Dirty hack -- the triggers are breaking in the sqlite3 API */
--- DROP VIEW v_latest_tasks;
--- CREATE VIEW v_latest_tasks AS
---     SELECT
---         CASE WHEN task IN (SELECT task FROM default_tasks) THEN 0 ELSE 1 END AS indx,
---         MAX(date_time) AS last_date_time,
---         task,
---         detail
---     FROM tracker
---     GROUP BY task
--- ;
---
---
--- /* Example usage */
--- SELECT *
--- FROM v_latest_tasks
--- WHERE last_date_time >= DATETIME('now', :date_modifier)
---   OR indx = 0  /* Defaults */
--- ORDER BY indx, task
--- ;
-
-
 /* Command to validate the objects in the database */
-PRAGMA quick_check;
+pragma quick_check;

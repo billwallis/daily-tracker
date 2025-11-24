@@ -39,6 +39,7 @@ def create_form(at_datetime: datetime.datetime) -> None:
     """
     Launch the tracker.
     """
+
     _actions.ActionHandler(at_datetime)
 
 
@@ -46,6 +47,7 @@ def main(debug_mode: bool = False) -> None:
     """
     Entry point into this project.
     """
+
     (utils.ROOT / "logs").mkdir(exist_ok=True)
     with open(utils.DAILY_TRACKER / "logger.yaml") as f:
         logging.config.dictConfig(yaml.safe_load(f.read()))

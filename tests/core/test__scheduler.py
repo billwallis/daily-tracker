@@ -30,6 +30,7 @@ def test__get_next_interval(
     """
     Datetimes are 'rounded up' to the nearest interval.
     """
+
     assert expected_next_interval == scheduler.get_next_interval(
         from_time=from_time,
         interval_in_minutes=interval_in_minutes,

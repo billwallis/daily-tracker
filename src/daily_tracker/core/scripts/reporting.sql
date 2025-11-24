@@ -3,56 +3,56 @@
     + daily_summary +
     The daily summary of tracker records.
 */
-DROP VIEW IF EXISTS daily_summary;
-CREATE VIEW daily_summary AS
-    WITH
-        daily_summary AS (
-            SELECT
-                DATE(date_time, 'weekday 0', '-6 days') AS week_date,
-                DATE(date_time) AS task_date,
+drop view if exists daily_summary;
+create view daily_summary as
+    with
+        daily_summary as (
+            select
+                date(date_time, 'weekday 0', '-6 days') as week_date,
+                date(date_time) as task_date,
                 task,
-                SUM(interval) AS total_interval_daily
-            FROM tracker
-            GROUP BY
-                DATE(date_time, 'weekday 0', '-6 days'),
-                DATE(date_time),
+                sum(interval) as total_interval_daily
+            from tracker
+            group by
+                date(date_time, 'weekday 0', '-6 days'),
+                date(date_time),
                 task
         ),
-        weekly_summary AS (
-            SELECT
+        weekly_summary as (
+            select
                 week_date,
                 task,
-                IIF(
-                    ROW_NUMBER() OVER(
-                        PARTITION BY week_date
-                        ORDER BY total_interval_weekly DESC, task
+                iif(
+                    row_number() over(
+                        partition by week_date
+                        order by total_interval_weekly desc, task
                     ) < 8,
                     0, 1
-                ) AS others_flag
-            FROM (
-                SELECT
+                ) as others_flag
+            from (
+                select
                     week_date,
                     task,
-                    SUM(total_interval_daily) AS total_interval_weekly
-                FROM daily_summary
-                GROUP BY
+                    sum(total_interval_daily) as total_interval_weekly
+                from daily_summary
+                group by
                     week_date,
                     task
-            ) AS weekly_raw
+            ) as weekly_raw
         )
 
-    SELECT
+    select
         ds.week_date,
         ds.task_date,
-        IIF(ws.others_flag = 1, 'Others', ds.task) AS task,
-        SUM(ds.total_interval_daily) AS total_interval
-    FROM daily_summary AS ds
-        LEFT JOIN weekly_summary AS ws
-            USING(week_date, task)
-    GROUP BY
+        iif(ws.others_flag = 1, 'Others', ds.task) as task,
+        sum(ds.total_interval_daily) as total_interval
+    from daily_summary as ds
+        left join weekly_summary as ws
+            using(week_date, task)
+    group by
         ds.week_date,
         ds.task_date,
-        IIF(ws.others_flag = 1, 'Others', ds.task)
+        iif(ws.others_flag = 1, 'Others', ds.task)
 ;
 
 
@@ -61,20 +61,20 @@ CREATE VIEW daily_summary AS
     The tasks and their detail from "yesterday", with yesterday defined as today
     minus 1 working day so that Monday shows the details from a previous Friday.
 */
-DROP VIEW IF EXISTS tasks_from_yesterday;
-CREATE VIEW tasks_from_yesterday AS
-    SELECT
+drop view if exists tasks_from_yesterday;
+create view tasks_from_yesterday as
+    select
         date_time,
         task,
         detail,
         interval
-    FROM tracker
-    WHERE DATE(date_time) = (
-        SELECT DATE(MAX(date_time))
-        FROM tracker
-        WHERE date_time < CURRENT_DATE
+    from tracker
+    where date(date_time) = (
+        select date(max(date_time))
+        from tracker
+        where date_time < current_date
     )
-    ORDER BY date_time DESC
+    order by date_time desc
 ;
 
 
@@ -82,25 +82,25 @@ CREATE VIEW tasks_from_yesterday AS
     + tasks_from_yesterday_rollup +
     A rolled-up version of `tasks_from_yesterday` for a simplified view.
 */
-DROP VIEW IF EXISTS tasks_from_yesterday_rollup;
-CREATE VIEW tasks_from_yesterday_rollup AS
-        SELECT
+drop view if exists tasks_from_yesterday_rollup;
+create view tasks_from_yesterday_rollup as
+        select
             task,
             detail,
-            SUM(interval) AS minutes,
-            PRINTF('%.*c', SUM(interval) / 15, '*') AS chart
-        FROM tasks_from_yesterday
-        WHERE task != 'Lunch Break'
-        GROUP BY task, detail
-    UNION ALL
-        SELECT
-            NULL,
-            NULL,
-            SUM(interval) AS minutes,
-            CAST(SUM(interval) / 60 AS TEXT) || ' hours ' || CAST(SUM(interval) % 60 AS TEXT) || ' minutes' AS chart
-        FROM tasks_from_yesterday
-        WHERE task != 'Lunch Break'
-    ORDER BY task NULLS LAST, detail
+            sum(interval) as minutes,
+            printf('%.*c', sum(interval) / 15, '*') as chart
+        from tasks_from_yesterday
+        where task != 'Lunch Break'
+        group by task, detail
+    union all
+        select
+            null,
+            null,
+            sum(interval) as minutes,
+            cast(sum(interval) / 60 as text) || ' hours ' || cast(sum(interval) % 60 as text) || ' minutes' as chart
+        from tasks_from_yesterday
+        where task != 'Lunch Break'
+    order by task nulls last, detail
 ;
 
 
@@ -110,28 +110,28 @@ CREATE VIEW tasks_from_yesterday_rollup AS
 */
 -- DROP VIEW IF EXISTS weekly_report;
 -- CREATE VIEW weekly_report AS
-    WITH
-    dates AS (
-        SELECT
+    with
+    dates as (
+        select
             /* The first Monday at least 6 months ago */
-            DATE(DATE(CURRENT_TIMESTAMP, '-6 months'), 'weekday 0', '-6 days') AS from_date
+            date(date(current_timestamp, '-6 months'), 'weekday 0', '-6 days') as from_date
     ),
-    axis AS (
-            SELECT from_date AS week_starting
-            FROM dates
-        UNION ALL
-            SELECT DATE(week_starting, '+7 days')
-            FROM axis
-            WHERE week_starting < DATE(CURRENT_DATE, '-7 days')
+    axis as (
+            select from_date as week_starting
+            from dates
+        union all
+            select date(week_starting, '+7 days')
+            from axis
+            where week_starting < date(current_date, '-7 days')
     ),
 
-    records AS (
-        SELECT
-            DATE(date_time, 'weekday 0', '-6 days') AS week_starting,
-            SUM(interval) AS total_interval
-        FROM main.tracker
-        WHERE date_time > (SELECT from_date FROM dates)
-          AND task != 'Lunch Break'
+    records as (
+        select
+            date(date_time, 'weekday 0', '-6 days') as week_starting,
+            sum(interval) as total_interval
+        from main.tracker
+        where date_time > (select from_date from dates)
+          and task != 'Lunch Break'
         GROUP BY DATE(date_time, 'weekday 0', '-6 days')
     ),
 
@@ -141,36 +141,36 @@ CREATE VIEW tasks_from_yesterday_rollup AS
             COALESCE(records.total_interval, 0) AS total_interval,
             37 * 2 * 60 AS fortnightly_commitment,  /* 37 hours per week, 2 week sprints */
             ''
-                || (COALESCE(records.total_interval, 0) / 60)
+                || (coalesce(records.total_interval, 0) / 60)
                 || ' hours, '
-                || (COALESCE(records.total_interval, 0) % 60)
+                || (coalesce(records.total_interval, 0) % 60)
                 ||' minutes'
-            AS TIME_WORKING
-        FROM axis
-            LEFT JOIN records USING (week_starting)
+            as time_working
+        from axis
+            left join records using (week_starting)
     ),
-    weekly_report AS (
-        SELECT
+    weekly_report as (
+        select
             week_starting,
             total_interval,
             time_working,
             fortnightly_commitment,
-            SUM(total_interval) OVER(
-                ORDER BY week_starting ROWS BETWEEN 1 PRECEDING AND CURRENT ROW
-            ) AS fortnightly_total,
-            ROUND(100.0 * SUM(total_interval) OVER(
-                ORDER BY week_starting ROWS BETWEEN 1 PRECEDING AND CURRENT ROW
-            ) / fortnightly_commitment, 2) AS proportion_of_commitment
-        FROM weekly_aggregates
+            sum(total_interval) over(
+                order by week_starting rows between 1 preceding and current row
+            ) as fortnightly_total,
+            round(100.0 * sum(total_interval) over(
+                order by week_starting rows between 1 preceding and current row
+            ) / fortnightly_commitment, 2) as proportion_of_commitment
+        from weekly_aggregates
     )
 
-    SELECT
+    select
         week_starting,
         total_interval,
         time_working,
         proportion_of_commitment,
         fortnightly_commitment,
         fortnightly_total
-    FROM weekly_report
-    ORDER BY week_starting DESC
+    from weekly_report
+    order by week_starting desc
 ;

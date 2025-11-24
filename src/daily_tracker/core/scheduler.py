@@ -25,6 +25,7 @@ def _get_interval_from_configuration() -> int:
     It's important to re-call this so that updates to the configuration file
     while the scheduler is running can be reflected in the scheduled events.
     """
+
     return core.Configuration.from_default().interval
 
 
@@ -46,6 +47,7 @@ def get_next_interval(
 
     :return: The next scheduled datetime.
     """
+
     return datetime.timedelta(minutes=interval_in_minutes) + datetime.datetime(
         year=from_time.year,
         month=from_time.month,
@@ -78,6 +80,7 @@ class IndefiniteScheduler:
 
         :param action: The function to call when the schedule is executed.
         """
+
         self._interval = _get_interval_from_configuration()
         self._running = False
         self._scheduler = sched.scheduler(time.time, time.sleep)
@@ -87,6 +90,7 @@ class IndefiniteScheduler:
         """
         Wrap the action so that we can schedule the next event when it's called.
         """
+
         self.action(self._next_schedule_time)
         self._interval = _get_interval_from_configuration()
         self._schedule_next()
@@ -95,6 +99,7 @@ class IndefiniteScheduler:
         """
         Schedule (or cancel) the next event.
         """
+
         if cancel:
             self._scheduler.cancel(self._next_event)
             self._next_event = None
@@ -109,6 +114,7 @@ class IndefiniteScheduler:
         """
         Schedule the next event.
         """
+
         assert self._running  # noqa: S101
 
         self._next_schedule_time = get_next_interval(
@@ -122,6 +128,7 @@ class IndefiniteScheduler:
         """
         Cancel the next event.
         """
+
         self._schedule(cancel=True)
         self._running = False
 
@@ -132,6 +139,7 @@ class IndefiniteScheduler:
         """
         Schedule the first event.
         """
+
         assert not self._running, "The scheduler is already running."  # noqa: S101
 
         self._running = True
