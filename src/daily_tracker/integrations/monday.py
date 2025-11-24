@@ -10,6 +10,7 @@ See more at:
 
 from __future__ import annotations
 
+import collections
 import datetime
 import logging
 import os
@@ -222,18 +223,16 @@ class Monday(core.Input):
         """
 
         monday_items = self.connector.query(self.configuration.monday_filter)
-        tasks = []
+        tasks = collections.defaultdict(list)
         for list_of_board_results in monday_items.json()["data"].values():
             for board_result in list_of_board_results:
-                tasks.extend(
-                    core.Task(
-                        task_name=item["parent_item"]["name"],
-                        details=item["name"],
-                    )
-                    for item in board_result["items_page"]["items"]
-                )
+                for item in board_result["items_page"]["items"]:
+                    task_name = item["parent_item"]["name"]
+                    tasks[task_name].append(item["name"])
 
-        return sorted(tasks, key=lambda t: (t.task_name, t.details))
+        return sorted(
+            [core.Task(task, details) for task, details in tasks.items()]
+        )
 
 
 # if __name__ == "__main__":

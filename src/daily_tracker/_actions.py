@@ -2,6 +2,7 @@
 The actions for the pop-up box.
 """
 
+import collections
 import datetime
 import logging
 
@@ -36,7 +37,7 @@ class ActionHandler:
     def get_dropdown_options(
         self,
         jira_filter: str | None = None,
-    ) -> dict[str, str]:
+    ) -> dict[str, list[str]]:
         """
         Return the latest tasks and their most recent detail as a dictionary.
 
@@ -48,28 +49,28 @@ class ActionHandler:
         jira_handler: integrations.Jira = self.inputs.get("jira")  # type: ignore
         monday_handler: integrations.Monday = self.inputs.get("monday")  # type: ignore
 
-        recent_tasks = database_handler.get_recent_tasks(
-            self.configuration.show_last_n_weeks
-        )
-        if jira_handler and jira_filter:
-            recent_tasks |= dict.fromkeys(
-                [
-                    ticket
-                    for ticket in jira_handler.get_tickets_in_sprint()
-                    if ticket not in recent_tasks.keys()
-                ],
-                "",
-            )
-        if monday_handler:
-            recent_tasks |= {
-                subtask.task_name: subtask.details
-                for subtask in monday_handler.on_event(
-                    date_time=datetime.datetime.now()
-                )
-                if subtask.task_name not in recent_tasks.keys()
-            }
+        tasks_and_details = collections.defaultdict(list)
 
-        return recent_tasks
+        for task, detail in database_handler.get_recent_tasks(
+            self.configuration.show_last_n_weeks
+        ).items():
+            tasks_and_details[task].append(detail)
+
+        if jira_handler and jira_filter:
+            for ticket in jira_handler.get_tickets_in_sprint():
+                tasks_and_details[ticket].append("")
+
+        if monday_handler:
+            for subtask in monday_handler.on_event(
+                date_time=datetime.datetime.now()
+            ):
+                tasks_and_details[subtask.task_name].extend(subtask.details)
+
+        # deduplicate the details
+        for task, details in tasks_and_details.items():
+            tasks_and_details[task] = list(dict.fromkeys(details))
+
+        return tasks_and_details
 
     def do_on_events(
         self,
