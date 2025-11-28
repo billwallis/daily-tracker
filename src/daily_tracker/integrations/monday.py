@@ -16,6 +16,7 @@ import logging
 import os
 from typing import Any
 
+import cachetools
 import dotenv
 import requests
 
@@ -217,9 +218,10 @@ class Monday(core.Input):
         self.configuration = configuration
         self.debug_mode = debug_mode
 
-    def on_event(self, date_time: datetime.datetime) -> list[core.Task]:
+    @cachetools.cached(cache=cachetools.TTLCache(maxsize=1, ttl=60))
+    def _on_event(self) -> list[core.Task]:
         """
-        The actions to perform before the event.
+        Cachable ``on_event`` action.
         """
 
         monday_items = self.connector.query(self.configuration.monday_filter)
@@ -233,6 +235,13 @@ class Monday(core.Input):
         return sorted(
             [core.Task(task, details) for task, details in tasks.items()]
         )
+
+    def on_event(self, date_time: datetime.datetime) -> list[core.Task]:
+        """
+        The actions to perform before the event.
+        """
+
+        return self._on_event()
 
 
 if __name__ == "__main__":

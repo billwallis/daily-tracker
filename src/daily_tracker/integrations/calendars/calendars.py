@@ -5,6 +5,8 @@ import dataclasses
 import datetime
 import logging
 
+import cachetools
+
 from daily_tracker import core
 
 logger = logging.getLogger("integrations")
@@ -70,12 +72,10 @@ class Calendar(abc.ABC):
         the supplied datetime.
         """
 
-    def on_event(self, at_datetime: datetime.datetime) -> list[core.Task]:
+    @cachetools.cached(cache=cachetools.TTLCache(maxsize=32, ttl=60))
+    def _on_event(self, at_datetime: datetime.datetime) -> list[core.Task]:
         """
-        Get the current meeting from Outlook if one exists.
-
-        This excludes meetings that are daily meetings and meetings whose
-        categories are in the supplied list of exclusions.
+        Cachable ``on_event`` action.
         """
 
         events = _filter_appointments(
@@ -96,6 +96,19 @@ class Calendar(abc.ABC):
             ]
 
         return []
+
+    def on_event(self, at_datetime: datetime.datetime) -> list[core.Task]:
+        """
+        Get the current meeting from Outlook if one exists.
+
+        This excludes meetings that are daily meetings and meetings whose
+        categories are in the supplied list of exclusions.
+        """
+
+        # Cache at the minute interval
+        current_minute = at_datetime.replace(second=0, microsecond=0)
+
+        return self._on_event(at_datetime=current_minute)
 
     def post_event(self, entry: core.Entry) -> None:
         """
