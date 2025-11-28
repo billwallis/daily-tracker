@@ -10,6 +10,10 @@ authors = [{name = "billwallis"}]
 readme = "README.md"
 requires-python = ">=3.12,<3.13"  # Capped by `pywin32`
 dependencies = [
+    "cachetools>=5.5.2",
+    "google-api-python-client>=2.187.0",
+    "google-auth-httplib2>=0.2.1",
+    "google-auth-oauthlib>=1.2.3",
     "python-dotenv>=1.1.1",
     "pyyaml>=6.0.0",
     "requests>=2.32.4",
@@ -20,9 +24,6 @@ dependencies = [
     # platform-specific
     "pywin32==311; sys_platform == 'win32'",
     "appscript==1.2.2; sys_platform == 'darwin'",
-    "google-api-python-client>=2.187.0",
-    "google-auth-httplib2>=0.2.1",
-    "google-auth-oauthlib>=1.2.3",
 ]
 
 [project.scripts]
