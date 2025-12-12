@@ -57,7 +57,7 @@ class TrackerForm:
         self.at_datetime = at_datetime
         self.action_handler = action_handler
         self.interval = self.action_handler.configuration.interval
-        self._width = 350
+        self._width = 500  # 350
         self._height = 150
         self.defaults = self.action_handler.do_on_events(
             at_datetime=self.at_datetime,

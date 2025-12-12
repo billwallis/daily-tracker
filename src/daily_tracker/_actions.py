@@ -43,24 +43,28 @@ class ActionHandler:
         """
 
         database_handler: database.Database = self.outputs["database"]  # type: ignore
+        github_handler: integrations.GitHub = self.inputs.get("git_hub")  # type: ignore
         jira_handler: integrations.Jira = self.inputs.get("jira")  # type: ignore
         monday_handler: integrations.Monday = self.inputs.get("monday")  # type: ignore
 
         tasks_and_details = collections.defaultdict(list)
+        now = datetime.datetime.now()
 
         for task, detail in database_handler.get_recent_tasks(
             self.configuration.show_last_n_weeks
         ).items():
             tasks_and_details[task].append(detail)
 
+        if github_handler:
+            for task in github_handler.on_event(now):
+                tasks_and_details[task.task_name].append(task.details)
+
         if jira_handler and jira_filter:
             for ticket in jira_handler.get_tickets_in_sprint():
                 tasks_and_details[ticket].append("")
 
         if monday_handler:
-            for subtask in monday_handler.on_event(
-                date_time=datetime.datetime.now()
-            ):
+            for subtask in monday_handler.on_event(now):
                 tasks_and_details[subtask.task_name].extend(subtask.details)
 
         # deduplicate the details

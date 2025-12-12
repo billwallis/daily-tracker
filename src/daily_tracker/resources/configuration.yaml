@@ -14,6 +14,9 @@ tracker:
     linked-calendar: none
     appointment-category-exclusions: ["Planned Work", "Non-Working"]
 
+    # github
+    github-issues-search: "is:pr+is:open+archived:false+review-requested:billwallis"
+
     # jira
     jira-type: cloud # Just to emphasise that Server is not supported
     jira-filter: "" # sprint IN openSprints() AND assignee = currentUser()

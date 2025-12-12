@@ -24,6 +24,8 @@
             "linked-calendar",
             "appointment-category-exclusions",
 
+            "github-issues-search",
+
             "jira-type",
             "jira-filter",
             "post-to-jira",
@@ -74,6 +76,11 @@
             "appointment-category-exclusions": {
               "type": "array",
               "description": "The categories to exclude when filling the form with details from the linked calendar.\n\nValues must be a list of strings. The available values should be synced from the linked calendar."
+            },
+
+            "github-issues-search": {
+              "type": "string",
+              "description": "The issue search term to filter by.\n\nSee below for more details:\n\nhttps://docs.github.com/en/search-github/searching-on-github/searching-issues-and-pull-requests"
             },
 
             "jira-type": {

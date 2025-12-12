@@ -95,6 +95,10 @@ class Configuration:
         return self._get_option_value("linked-calendar", None)
 
     @property
+    def github_issues_search(self) -> str:
+        return self._get_option_value("github-issues-search", None)
+
+    @property
     def jira_filter(self) -> str:
         return self._get_option_value("jira-filter", None)
 
