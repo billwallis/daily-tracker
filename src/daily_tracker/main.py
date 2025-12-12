@@ -30,6 +30,7 @@ def configure_integrations(config: core.configuration.Configuration) -> None:
 
     database.Database(utils.DB, config)
     integrations.calendars.get_linked_calendar(config)
+    integrations.github.GitHub(config)
     integrations.jira.Jira(config)
     integrations.slack.Slack(config)
     integrations.monday.Monday(config)
