@@ -17,12 +17,10 @@ import os
 from typing import Any
 
 import cachetools
-import dotenv
 import requests
 
-from daily_tracker import core, utils
+from daily_tracker import core
 
-dotenv.load_dotenv(dotenv_path=utils.DAILY_TRACKER.parent.parent / ".env")
 logger = logging.getLogger("integrations")
 
 BASE_URL = "https://api.monday.com/v2/"

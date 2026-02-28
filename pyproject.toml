@@ -11,19 +11,11 @@ readme = "README.md"
 requires-python = ">=3.12,<3.13"  # Capped by `pywin32`
 dependencies = [
     "cachetools>=6.2.6",
-    "google-api-python-client>=2.190.0",
-    "google-auth-httplib2>=0.3.0",
-    "google-auth-oauthlib>=1.3.0",
-    "python-dotenv>=1.2.1",
     "pyyaml>=6.0.3",
     "requests>=2.32.5",
-    "slack-sdk>=3.40.1",
     "streamlit>=1.54.0",
     "ttkthemes>=3.3.0",
     "wakepy>=1.0.0",
-    # platform-specific
-    "pywin32==311; sys_platform == 'win32'",
-    "appscript==1.2.2; sys_platform == 'darwin'",
 ]
 
 [project.scripts]
@@ -37,6 +29,19 @@ dev = [
 test = [
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
+]
+# integrations
+google-calendar = [
+    "google-api-python-client>=2.190.0",
+    "google-auth-httplib2>=0.3.0",
+    "google-auth-oauthlib>=1.3.0",
+]
+outlook = [
+    "pywin32==311; sys_platform == 'win32'",
+    "appscript==1.2.2; sys_platform == 'darwin'",
+]
+slack = [
+    "slack-sdk>=3.40.1",
 ]
 
 

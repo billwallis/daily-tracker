@@ -23,13 +23,10 @@ import logging
 import os
 import re
 
-import dotenv
 import requests
 
-from daily_tracker import core, utils
+from daily_tracker import core
 
-# TODO: Can we correctly move this to the main file? (Simply moving it didn't work)
-dotenv.load_dotenv(dotenv_path=utils.DAILY_TRACKER.parent / ".env")
 logger = logging.getLogger("integrations")
 
 JIRA_CREDENTIALS = {

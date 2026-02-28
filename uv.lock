@@ -209,16 +209,9 @@ name = "daily-tracker"
 version = "0.0.0"
 source = { editable = "." }
 dependencies = [
-    { name = "appscript", marker = "sys_platform == 'darwin'" },
     { name = "cachetools" },
-    { name = "google-api-python-client" },
-    { name = "google-auth-httplib2" },
-    { name = "google-auth-oauthlib" },
-    { name = "python-dotenv" },
-    { name = "pywin32", marker = "sys_platform == 'win32'" },
     { name = "pyyaml" },
     { name = "requests" },
-    { name = "slack-sdk" },
     { name = "streamlit" },
     { name = "ttkthemes" },
     { name = "wakepy" },
@@ -229,6 +222,18 @@ dev = [
     { name = "poethepoet" },
     { name = "pre-commit" },
 ]
+google-calendar = [
+    { name = "google-api-python-client" },
+    { name = "google-auth-httplib2" },
+    { name = "google-auth-oauthlib" },
+]
+outlook = [
+    { name = "appscript", marker = "sys_platform == 'darwin'" },
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
+]
+slack = [
+    { name = "slack-sdk" },
+]
 test = [
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -236,16 +241,9 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "appscript", marker = "sys_platform == 'darwin'", specifier = "==1.2.2" },
     { name = "cachetools", specifier = ">=6.2.6" },
-    { name = "google-api-python-client", specifier = ">=2.190.0" },
-    { name = "google-auth-httplib2", specifier = ">=0.3.0" },
-    { name = "google-auth-oauthlib", specifier = ">=1.3.0" },
-    { name = "python-dotenv", specifier = ">=1.2.1" },
-    { name = "pywin32", marker = "sys_platform == 'win32'", specifier = "==311" },
     { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "requests", specifier = ">=2.32.5" },
-    { name = "slack-sdk", specifier = ">=3.40.1" },
     { name = "streamlit", specifier = ">=1.54.0" },
     { name = "ttkthemes", specifier = ">=3.3.0" },
     { name = "wakepy", specifier = ">=1.0.0" },
@@ -256,6 +254,16 @@ dev = [
     { name = "poethepoet", specifier = ">=0.41.0" },
     { name = "pre-commit", specifier = ">=4.5.1" },
 ]
+google-calendar = [
+    { name = "google-api-python-client", specifier = ">=2.190.0" },
+    { name = "google-auth-httplib2", specifier = ">=0.3.0" },
+    { name = "google-auth-oauthlib", specifier = ">=1.3.0" },
+]
+outlook = [
+    { name = "appscript", marker = "sys_platform == 'darwin'", specifier = "==1.2.2" },
+    { name = "pywin32", marker = "sys_platform == 'win32'", specifier = "==311" },
+]
+slack = [{ name = "slack-sdk", specifier = ">=3.40.1" }]
 test = [
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
@@ -810,15 +818,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/82/bb/93a3e83bdf9322c7e21cafd092e56a4a17c4d8ef4277b6eb01af1a540a6f/python_discovery-1.1.0.tar.gz", hash = "sha256:447941ba1aed8cc2ab7ee3cb91be5fc137c5bdbb05b7e6ea62fbdcb66e50b268", size = 55674, upload-time = "2026-02-26T09:42:49.668Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/06/54/82a6e2ef37f0f23dccac604b9585bdcbd0698604feb64807dcb72853693e/python_discovery-1.1.0-py3-none-any.whl", hash = "sha256:a162893b8809727f54594a99ad2179d2ede4bf953e12d4c7abc3cc9cdbd1437b", size = 30687, upload-time = "2026-02-26T09:42:48.548Z" },
-]
-
-[[package]]
-name = "python-dotenv"
-version = "1.2.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/f0/26/19cadc79a718c5edbec86fd4919a6b6d3f681039a2f6d66d14be94e75fb9/python_dotenv-1.2.1.tar.gz", hash = "sha256:42667e897e16ab0d66954af0e60a9caa94f0fd4ecf3aaf6d2d260eec1aa36ad6", size = 44221, upload-time = "2025-10-26T15:12:10.434Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/14/1b/a298b06749107c305e1fe0f814c6c74aea7b2f1e10989cb30f544a1b3253/python_dotenv-1.2.1-py3-none-any.whl", hash = "sha256:b81ee9561e9ca4004139c6cbba3a238c32b03e4894671e181b671e8cb8425d61", size = 21230, upload-time = "2025-10-26T15:12:09.109Z" },
 ]
 
 [[package]]
