@@ -27,7 +27,7 @@ dependencies = [
 ]
 
 [project.scripts]
-daily-tracker = "daily_tracker.main:main"
+daily-tracker = "daily_tracker.cli:main"
 
 [dependency-groups]
 dev = [

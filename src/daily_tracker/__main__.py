@@ -1,4 +1,4 @@
-from daily_tracker import main
+from daily_tracker.cli import main
 
 if __name__ == "__main__":
-    main.main(debug_mode=True)
+    raise SystemExit(main())  # pragma: no cover
