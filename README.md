@@ -22,7 +22,7 @@ Not sure where all your time goes? I wasn't either 😄 This application generat
 >
 > This is a work in progress. I'm currently using it to track my time, but it's not yet ready for public consumption.
 
-## ✨ Features
+## Features
 
 The GUI is currently built with [Tkinter](https://docs.python.org/3/library/tkinter.html) and looks like:
 
@@ -43,13 +43,13 @@ This pop-up box has the following features:
   - [GitHub <img alt="GitHub" height="12px" src="https://github.com/favicon.ico"/>](https://github.com/)
   - [Monday.com <img alt="Monday.com" height="12px" src="https://monday.com/favicon.ico"/>](https://monday.com/)
 
-## 🔧 Resources and dependencies
+## Resources and dependencies
 
 The clock icon is from [icons8.com](https://icons8.com/):
 
 - https://icons8.com/icon/2YPST59G2xJZ/clock
 
-### 🍎 On macOS
+### macOS
 
 On macOS, you will probably need to install [the Tcl/Tk framework](https://www.tcl-lang.org/):
 
@@ -60,6 +60,14 @@ brew install tcl-tk
 More details available at:
 
 - https://tkdocs.com/tutorial/install.html#install-macos
+
+## Usage
+
+Configure the [configuration.yaml](src/daily_tracker/resources/configuration.yaml) appropriately, and add any required [environment variables](.env.example). Check the available CLI commands with:
+
+```shell
+daily-tracker --help
+```
 
 ## Contributing
 

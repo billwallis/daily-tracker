@@ -46,10 +46,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     subparsers = parser.add_subparsers(dest="command")
 
-    parser__foo = subparsers.add_parser("run")
+    parser__foo = subparsers.add_parser(
+        "run",
+        help="Start the tracker and schedule the pop-up boxes.",
+    )
     parser__foo.add_argument("--debug", action="store_true")
 
-    parser__bar = subparsers.add_parser("report")  # noqa: F841
+    parser__bar = subparsers.add_parser(  # noqa: F841
+        "report",
+        help="Print a report of recent entries.",
+    )
 
     args = parser.parse_args(argv)
     if args.command == "run":
