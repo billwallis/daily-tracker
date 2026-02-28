@@ -5,7 +5,7 @@ import pathlib
 import tomllib
 from collections.abc import Sequence
 
-import daily_tracker.main
+import daily_tracker
 
 SUCCESS = 0
 FAILURE = 1
@@ -21,7 +21,7 @@ def _get_version() -> str:
 
 def _run(args: argparse.Namespace) -> int:
     try:
-        daily_tracker.main.main(debug_mode=args.debug)
+        daily_tracker.run(debug_mode=args.debug)
     except KeyboardInterrupt:
         return SUCCESS
 
@@ -29,7 +29,8 @@ def _run(args: argparse.Namespace) -> int:
 
 
 def _report(args: argparse.Namespace) -> int:
-    raise NotImplementedError("Not implemented")
+    daily_tracker.report(getattr(args, "report-name"))
+    return SUCCESS
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -50,11 +51,19 @@ def main(argv: Sequence[str] | None = None) -> int:
         "run",
         help="Start the tracker and schedule the pop-up boxes.",
     )
-    parser__foo.add_argument("--debug", action="store_true")
+    parser__foo.add_argument(
+        "--debug",
+        action="store_true",
+        help="Run the tracker in debug mode.",
+    )
 
-    parser__bar = subparsers.add_parser(  # noqa: F841
+    parser__bar = subparsers.add_parser(
         "report",
         help="Print a report of recent entries.",
+    )
+    parser__bar.add_argument(
+        "report-name",
+        help="Name of the report to run.",
     )
 
     args = parser.parse_args(argv)
