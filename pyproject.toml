@@ -1,5 +1,5 @@
 [build-system]
-requires = ["uv_build>=0.8.2"]
+requires = ["uv_build>=0.8"]
 build-backend = "uv_build"
 
 [project]
@@ -10,17 +10,17 @@ authors = [{name = "billwallis"}]
 readme = "README.md"
 requires-python = ">=3.12,<3.13"  # Capped by `pywin32`
 dependencies = [
-    "cachetools>=5.5.2",
-    "google-api-python-client>=2.187.0",
-    "google-auth-httplib2>=0.2.1",
-    "google-auth-oauthlib>=1.2.3",
-    "python-dotenv>=1.1.1",
-    "pyyaml>=6.0.0",
-    "requests>=2.32.4",
-    "slack-sdk>=3.36.0",
-    "streamlit>=1.48.1",
-    "ttkthemes>=3.2.2",
-    "wakepy>=0.10.1",
+    "cachetools>=6.2.6",
+    "google-api-python-client>=2.190.0",
+    "google-auth-httplib2>=0.3.0",
+    "google-auth-oauthlib>=1.3.0",
+    "python-dotenv>=1.2.1",
+    "pyyaml>=6.0.3",
+    "requests>=2.32.5",
+    "slack-sdk>=3.40.1",
+    "streamlit>=1.54.0",
+    "ttkthemes>=3.3.0",
+    "wakepy>=1.0.0",
     # platform-specific
     "pywin32==311; sys_platform == 'win32'",
     "appscript==1.2.2; sys_platform == 'darwin'",
@@ -31,19 +31,54 @@ daily-tracker = "daily_tracker.cli:main"
 
 [dependency-groups]
 dev = [
-    "coverage-badge>=1.1.0",
-    "poethepoet>=0.37.0",
-    "pre-commit>=4.3.0",
+    "poethepoet>=0.41.0",
+    "pre-commit>=4.5.1",
 ]
 test = [
-    "pytest>=8.4.1",
-    "pytest-cov>=6.2.1",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
 ]
 
 
 [tool.uv]
 default-groups = "all"
-required-version = ">=0.8,<1.0"
+required-version = ">=0.8"
+
+
+[tool.poe]
+verbosity = -1
+envfile.optional = ".env"
+
+[tool.poe.tasks]
+install.shell = """
+    uv sync --refresh
+    uv run pre-commit install --install-hooks
+"""
+upgrade.shell = """
+    uv sync --refresh --upgrade
+    uv run pre-commit autoupdate
+"""
+test = "uv run pytest -vvv"
+
+[tool.poe.tasks.lint]
+control.expr = "sys.platform"
+
+[[tool.poe.tasks.lint.switch]]
+case = "win32"
+shell = """
+    echo '=== pre-commit checks ==='
+    SKIP=identity uv run pre-commit run --all-files --hook-stage pre-commit
+    echo '=== pre-push checks ==='
+    SKIP=identity uv run pre-commit run --all-files --hook-stage pre-push
+"""
+
+[[tool.poe.tasks.lint.switch]]
+shell = """
+    echo '\\033[0;34mpre-commit checks\\033[0m'
+    SKIP=identity uv run pre-commit run --all-files --hook-stage pre-commit
+    echo '\\033[0;34mpre-push checks\\033[0m'
+    SKIP=identity uv run pre-commit run --all-files --hook-stage pre-push
+"""
 
 
 [tool.pytest.ini_options]
@@ -51,25 +86,10 @@ addopts = "--cov=src --cov-fail-under=10"
 testpaths = ["tests"]
 
 
-[tool.poe]
-verbosity = -1
-
-[tool.poe.tasks]
-run = "uv run -m daily_tracker"
-test = "uv run pytest tests/ -v"
-lint.shell = """
-    echo -e "\\033[0;34mpre-commit checks\\033[0m"
-    pre-commit run --all-files --hook-stage pre-commit
-    echo -e "\\033[0;34mpre-push checks\\033[0m"
-    pre-commit run --all-files --hook-stage pre-push
-"""
-lint.env = {SKIP = "identity"}
-
-
 [tool.ruff]
 line-length = 80
 indent-width = 4
-target-version = "py311"
+target-version = "py312"
 
 [tool.ruff.format]
 quote-style = "double"
@@ -90,7 +110,6 @@ select = [
     "PERF",  # Perflint
     "RUF",   # Ruff-specific
     "S",     # flake8-bandit
-    "TRY",   # tryceratops
     "UP",    # pyupgrade
     "W",     # pycodestyle-warning
 ]

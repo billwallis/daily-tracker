@@ -52,7 +52,7 @@ class SlackConnector:
         }
         response = requests.post(url=self.webhook_url, data=json.dumps(payload))  # noqa: S113
         if response.status_code != http.HTTPStatus.OK:
-            raise RuntimeError(  # noqa: TRY003
+            raise RuntimeError(
                 f"{response.status_code}: Failed to post message to Slack\n\n{response.text}"
             )
 
