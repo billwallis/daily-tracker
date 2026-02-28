@@ -1,3 +1,6 @@
+# TODO: This needs to die. It's a legacy module that I haven't been able
+#       to refactor out yet
+
 import collections
 import datetime
 import logging

@@ -1,5 +1,5 @@
 [build-system]
-requires = ["uv_build>=0.8.2,<0.9.0"]
+requires = ["uv_build>=0.8.2"]
 build-backend = "uv_build"
 
 [project]
@@ -27,7 +27,7 @@ dependencies = [
 ]
 
 [project.scripts]
-daily-tracker = "daily_tracker.main:main"
+daily-tracker = "daily_tracker.cli:main"
 
 [dependency-groups]
 dev = [
