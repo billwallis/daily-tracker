@@ -25,7 +25,7 @@ def _run(args: argparse.Namespace) -> int:
     except KeyboardInterrupt:
         return SUCCESS
 
-    return FAILURE
+    return SUCCESS
 
 
 def _report(args: argparse.Namespace) -> int:
