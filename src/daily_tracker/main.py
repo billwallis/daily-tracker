@@ -7,14 +7,11 @@ import datetime
 import logging
 import logging.config
 
-import dotenv
 import yaml
 from wakepy import keep
 
 from daily_tracker import _actions, core, integrations, utils
 from daily_tracker.core import database, scheduler
-
-dotenv.load_dotenv(dotenv_path=utils.ROOT / ".env")
 
 APPLICATION_CREATED = True
 
