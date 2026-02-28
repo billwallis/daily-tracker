@@ -45,9 +45,6 @@ test = [
 default-groups = "all"
 required-version = ">=0.8,<1.0"
 
-[tool.uv.extra-build-dependencies]
-ttkthemes = ["future"]
-
 
 [tool.pytest.ini_options]
 addopts = "--cov=src --cov-fail-under=10"
