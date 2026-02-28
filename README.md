@@ -1,9 +1,9 @@
 <div align="center">
 
-[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Python](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/downloads/)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![tests](https://github.com/billwallis/daily-tracker/actions/workflows/tests.yaml/badge.svg)](https://github.com/billwallis/daily-tracker/actions/workflows/tests.yaml)
-[![coverage](https://github.com/billwallis/daily-tracker/blob/main/coverage.svg)](https://github.com/dbrgn/coverage-badge)
+[![coverage](https://github.com/billwallis/daily-tracker/blob/main/coverage.svg)](https://smarie.github.io/python-genbadge/)
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/billwallis/daily-tracker/main.svg)](https://results.pre-commit.ci/latest/github/billwallis/daily-tracker/main)
@@ -67,8 +67,14 @@ On macOS, you will probably need to install the Tcl/Tk framework:
 brew install tcl-tk
 ```
 
-This has been tested and confirmed to work on an M1 Mac with version `8.6.13` of the `tcl-tk` package, running Python `3.11.4` (installed using [pyenv](https://github.com/pyenv/pyenv)).
-
 More details available at:
 
 - https://tkdocs.com/tutorial/install.html#install-macos
+
+## Contributing
+
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and then install the dependencies:
+
+```bash
+uvx --from poethepoet poe install
+```
