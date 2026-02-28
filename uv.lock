@@ -209,15 +209,9 @@ name = "daily-tracker"
 version = "0.0.0"
 source = { editable = "." }
 dependencies = [
-    { name = "appscript", marker = "sys_platform == 'darwin'" },
     { name = "cachetools" },
-    { name = "google-api-python-client" },
-    { name = "google-auth-httplib2" },
-    { name = "google-auth-oauthlib" },
-    { name = "pywin32", marker = "sys_platform == 'win32'" },
     { name = "pyyaml" },
     { name = "requests" },
-    { name = "slack-sdk" },
     { name = "streamlit" },
     { name = "ttkthemes" },
     { name = "wakepy" },
@@ -228,6 +222,18 @@ dev = [
     { name = "poethepoet" },
     { name = "pre-commit" },
 ]
+google-calendar = [
+    { name = "google-api-python-client" },
+    { name = "google-auth-httplib2" },
+    { name = "google-auth-oauthlib" },
+]
+outlook = [
+    { name = "appscript", marker = "sys_platform == 'darwin'" },
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
+]
+slack = [
+    { name = "slack-sdk" },
+]
 test = [
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -235,15 +241,9 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "appscript", marker = "sys_platform == 'darwin'", specifier = "==1.2.2" },
     { name = "cachetools", specifier = ">=6.2.6" },
-    { name = "google-api-python-client", specifier = ">=2.190.0" },
-    { name = "google-auth-httplib2", specifier = ">=0.3.0" },
-    { name = "google-auth-oauthlib", specifier = ">=1.3.0" },
-    { name = "pywin32", marker = "sys_platform == 'win32'", specifier = "==311" },
     { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "requests", specifier = ">=2.32.5" },
-    { name = "slack-sdk", specifier = ">=3.40.1" },
     { name = "streamlit", specifier = ">=1.54.0" },
     { name = "ttkthemes", specifier = ">=3.3.0" },
     { name = "wakepy", specifier = ">=1.0.0" },
@@ -254,6 +254,16 @@ dev = [
     { name = "poethepoet", specifier = ">=0.41.0" },
     { name = "pre-commit", specifier = ">=4.5.1" },
 ]
+google-calendar = [
+    { name = "google-api-python-client", specifier = ">=2.190.0" },
+    { name = "google-auth-httplib2", specifier = ">=0.3.0" },
+    { name = "google-auth-oauthlib", specifier = ">=1.3.0" },
+]
+outlook = [
+    { name = "appscript", marker = "sys_platform == 'darwin'", specifier = "==1.2.2" },
+    { name = "pywin32", marker = "sys_platform == 'win32'", specifier = "==311" },
+]
+slack = [{ name = "slack-sdk", specifier = ">=3.40.1" }]
 test = [
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
