@@ -5,6 +5,7 @@ from daily_tracker.core.apis import (
     Task,
 )
 from daily_tracker.core.configuration import Configuration
+from daily_tracker.core.reports import report
 
 __all__ = [
     "Configuration",
@@ -12,4 +13,5 @@ __all__ = [
     "Input",
     "Output",
     "Task",
+    "report",
 ]

@@ -1,13 +1,17 @@
-import os
+import sys
 
 from daily_tracker import core
 from daily_tracker.integrations.calendars.calendars import Calendar, NoCalendar
 from daily_tracker.integrations.calendars.google_calendar import GoogleCalendar
 
-if os.name == "nt":
+if sys.platform == "win32":
     from daily_tracker.integrations.calendars.outlook_windows import Outlook
-elif os.name == "posix":
+elif sys.platform == "darwin":
     from daily_tracker.integrations.calendars.outlook_mac import Outlook
+else:
+    from daily_tracker.integrations.calendars.calendars import (
+        NoCalendar as Outlook,
+    )
 
 
 CALENDAR_LOOKUP = {
