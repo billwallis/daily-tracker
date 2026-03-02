@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import collections
 import datetime
+import http
 import logging
 import os
 from typing import Any
@@ -222,9 +223,21 @@ class Monday(core.Input):
         Cachable ``on_event`` action.
         """
 
-        monday_items = self.connector.query(self.configuration.monday_filter)
+        resp = self.connector.query(self.configuration.monday_filter)
+        if resp.status_code != http.HTTPStatus.OK:
+            logger.info(
+                f"Error {resp.status_code} connecting to Monday.com: {resp.text}"
+            )
+            return []
+        if errors := resp.json().get("errors"):
+            logger.info(
+                f"Error in the Monday.com request:\n{json.dumps(errors, indent=2)}"
+            )
+            return []
+
         tasks = collections.defaultdict(list)
-        for list_of_board_results in monday_items.json()["data"].values():
+        monday_items = resp.json().get("data", {})
+        for list_of_board_results in monday_items.values():
             for board_result in list_of_board_results:
                 for item in board_result["items_page"]["items"]:
                     task_name = item["parent_item"]["name"]
