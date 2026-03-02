@@ -1,3 +1,4 @@
+-- attach 'src/daily_tracker/tracker.db' as tracker;
 with recursive
 
 dates(from_date) as (
