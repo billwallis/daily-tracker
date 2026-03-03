@@ -1,22 +1,17 @@
 from __future__ import annotations
 
 import argparse
-import pathlib
-import tomllib
+import importlib.metadata
 from collections.abc import Sequence
 
 import daily_tracker
 
 SUCCESS = 0
 FAILURE = 1
-HERE = pathlib.Path(__file__).parent
-PYPROJECT = HERE.parent.parent / "pyproject.toml"
 
 
 def _get_version() -> str:
-    pyproject = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
-    version = pyproject["project"]["version"]
-    return f"alpha {version}"
+    return f"(alpha) %(prog)s {importlib.metadata.version('daily-tracker')}"
 
 
 def _run(args: argparse.Namespace) -> int:
