@@ -25,14 +25,14 @@ records(week_starting, total_interval) as (
 weekly_aggregates AS (
     select
         week_starting,
-        coalesce(records.total_interval, 0) AS weekly_total,
+        coalesce(records.total_interval, 0) AS total_minutes,
         40 * 60 AS weekly_commitment,  /* 40 hours per week */
         (''
-            || floor(weekly_total / 60)::int
+            || lpad(floor(total_minutes / 60)::int::text, 2, ' ')
             || ' hours '
-            || floor(weekly_total % 60)::int
+            || lpad(floor(total_minutes % 60)::int::text, 2, ' ')
             ||' minutes'
-        ) as time_working,
+        ) as hours_worked,
     from axis
         left join records
             using (week_starting)
@@ -40,9 +40,8 @@ weekly_aggregates AS (
 
 select
     week_starting,
-    weekly_total,
-    time_working,
-    round(100 * weekly_total / weekly_commitment, 2) as proportion_of_commitment,
-    -- weekly_commitment,
+    total_minutes,
+    hours_worked,
+    round(100 * total_minutes / weekly_commitment, 2)::numeric(6, 2) as proportion_of_commitment,
 from weekly_aggregates
 order by week_starting desc
