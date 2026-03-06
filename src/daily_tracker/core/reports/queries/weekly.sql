@@ -10,7 +10,7 @@ axis(week_starting) as (
     union all
         select week_starting + interval '7 days'
         from axis
-        where week_starting < date_trunc('week', current_date - interval '7 days')
+        where week_starting < date_trunc('week', current_date)
 ),
 
 records(week_starting, total_interval) as (
@@ -44,4 +44,4 @@ select
     hours_worked,
     round(100 * total_minutes / weekly_commitment, 2)::numeric(6, 2) as proportion_of_commitment,
 from weekly_aggregates
-order by week_starting desc
+order by week_starting

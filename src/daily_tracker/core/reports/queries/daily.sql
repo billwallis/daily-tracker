@@ -52,4 +52,4 @@ select
         100 * total_minutes / (daily_commitment * 60.0)
     )::numeric(5, 2) as proportion_of_commitment,
 from daily_capacity
-order by work_date desc
+order by work_date
