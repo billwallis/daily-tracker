@@ -8,9 +8,11 @@ import dataclasses
 import datetime
 from typing import Any
 
+import google.auth.exceptions
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
+import httplib2.error
 from google.auth.transport import requests
 from google.oauth2 import credentials
 
@@ -45,6 +47,7 @@ def get_credentials() -> credentials.Credentials:
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
+            # This raises `google.auth.exceptions.TransportError` if no internet
             creds.refresh(requests.Request())
         else:
             flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
@@ -91,11 +94,14 @@ class GoogleCalendar(Calendar, core.Input):
 
     def __init__(self, configuration: core.Configuration) -> None:
         super().__init__(configuration=configuration)
-        self.service = googleapiclient.discovery.build(
-            serviceName="calendar",
-            version="v3",
-            credentials=get_credentials(),
-        )
+        try:
+            self.service = googleapiclient.discovery.build(
+                serviceName="calendar",
+                version="v3",
+                credentials=get_credentials(),
+            )
+        except google.auth.exceptions.TransportError:
+            self.service = None
 
     def get_appointments_between_datetimes(
         self,
@@ -107,22 +113,25 @@ class GoogleCalendar(Calendar, core.Input):
         and end datetime exclusive.
         """
 
+        if not self.service:
+            return []
+
         # The Google API needs timezone-aware timestamps
         start_datetime = start_datetime.astimezone()
         end_datetime = end_datetime.astimezone()
 
-        events_result = (
-            self.service.events()
-            .list(
-                calendarId="primary",
-                timeMin=start_datetime.isoformat(),
-                timeMax=end_datetime.isoformat(),
-                maxResults=10,
-                singleEvents=True,
-                orderBy="startTime",
-            )
-            .execute()
+        events_request = self.service.events().list(
+            calendarId="primary",
+            timeMin=start_datetime.isoformat(),
+            timeMax=end_datetime.isoformat(),
+            maxResults=10,
+            singleEvents=True,
+            orderBy="startTime",
         )
+        try:
+            events_result = events_request.execute()
+        except httplib2.error.ServerNotFoundError:
+            return []
 
         return [
             GoogleCalendarEvent.from_event(e)
