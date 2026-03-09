@@ -87,9 +87,13 @@ class GitHub(core.Input):
         Cachable ``on_event`` action.
         """
 
-        search_results = self.connector.search_issues(
-            self.configuration.github_issues_search
-        )
+        try:
+            search_results = self.connector.search_issues(
+                self.configuration.github_issues_search
+            )
+        except requests.exceptions.ConnectionError:
+            return []
+
         details = set()
         for item in search_results.json()["items"]:
             details.add(

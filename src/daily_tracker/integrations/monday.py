@@ -223,7 +223,11 @@ class Monday(core.Input):
         Cachable ``on_event`` action.
         """
 
-        resp = self.connector.query(self.configuration.monday_filter)
+        try:
+            resp = self.connector.query(self.configuration.monday_filter)
+        except requests.exceptions.ConnectionError:
+            return []
+
         if resp.status_code != http.HTTPStatus.OK:
             logger.info(
                 f"Error {resp.status_code} connecting to Monday.com: {resp.text}"
