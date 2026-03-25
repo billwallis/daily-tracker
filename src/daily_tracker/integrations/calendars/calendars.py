@@ -37,7 +37,7 @@ def _filter_appointments(
         event
         for event in events
         if not event.all_day_event
-        if not event.response == EventResponse.DECLINED
+        and not event.response == EventResponse.DECLINED
         and all(i not in event.categories for i in categories_to_exclude)
         and (
             # TODO: Maybe they should just be lower priority, rather than excluded?
