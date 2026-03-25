@@ -17,6 +17,7 @@ from daily_tracker import core, utils
 from daily_tracker.integrations.calendars.calendars import (
     Calendar,
     CalendarEvent,
+    EventResponse,
 )
 
 
@@ -40,6 +41,7 @@ class OutlookEvent(CalendarEvent):
             end=appointment.end,
             categories=set(utils.string_list_to_list(appointment.categories)),
             all_day_event=appointment.all_day_event,
+            response=EventResponse.ACCEPTED,
         )
 
 
