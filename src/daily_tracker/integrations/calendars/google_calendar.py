@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import dataclasses
 import datetime
+import json
 from typing import Any
 
 import google.auth.exceptions
@@ -63,6 +64,16 @@ def get_credentials() -> credentials.Credentials:
     return creds
 
 
+def _parse_datetime(dt_dct: dict[str, str]) -> datetime.datetime:
+    dt_str = dt_dct.get("dateTime", dt_dct.get("date"))
+    if dt_str is None:
+        raise ValueError(
+            f"Events needs a start and end time. Could not find `dateTime` or `date` in:\n{json.dumps(dt_dct, indent=2)}"
+        )
+
+    return datetime.datetime.fromisoformat(dt_str).replace(tzinfo=None)
+
+
 @dataclasses.dataclass
 class GoogleCalendarEvent(CalendarEvent):
     """
@@ -96,8 +107,8 @@ class GoogleCalendarEvent(CalendarEvent):
 
         return GoogleCalendarEvent(
             subject=event["summary"],
-            start=event_start.get("dateTime") or event_start.get("date"),
-            end=event_end.get("dateTime") or event_end.get("date"),
+            start=_parse_datetime(event_start),
+            end=_parse_datetime(event_end),
             categories=set(category),
             all_day_event=all_day,
             response=response,
