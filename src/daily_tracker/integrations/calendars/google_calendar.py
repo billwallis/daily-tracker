@@ -20,6 +20,7 @@ from daily_tracker import core, utils
 from daily_tracker.integrations.calendars.calendars import (
     Calendar,
     CalendarEvent,
+    EventResponse,
 )
 
 SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
@@ -77,6 +78,21 @@ class GoogleCalendarEvent(CalendarEvent):
         category = [event.get("colorId", NO_CATEGORY)]
         event_start, event_end = event["start"], event["end"]
         all_day = event["start"].get("date") is not None
+        response = {
+            "accepted": EventResponse.ACCEPTED,
+            "declined": EventResponse.DECLINED,
+            "tentative": EventResponse.TENTATIVE,
+            "needsAction": EventResponse.TENTATIVE,
+        }[
+            next(
+                (
+                    attendee["responseStatus"]
+                    for attendee in event.get("attendees", [])
+                    if attendee.get("self", False)
+                ),
+                "accepted",  # no attendees => solo event
+            )
+        ]
 
         return GoogleCalendarEvent(
             subject=event["summary"],
@@ -84,6 +100,7 @@ class GoogleCalendarEvent(CalendarEvent):
             end=event_end.get("dateTime") or event_end.get("date"),
             categories=set(category),
             all_day_event=all_day,
+            response=response,
         )
 
 
@@ -151,3 +168,15 @@ class GoogleCalendar(Calendar, core.Input):
             start_datetime=at_datetime,
             end_datetime=at_datetime + datetime.timedelta(seconds=1),
         )
+
+
+if __name__ == "__main__":
+    gcal = GoogleCalendar(core.Configuration.from_default())
+    now = datetime.datetime.now()
+    events = gcal.get_appointments_between_datetimes(
+        start_datetime=now,
+        end_datetime=now + datetime.timedelta(hours=8),
+    )
+
+    for event_ in events:
+        print(event_)

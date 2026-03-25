@@ -35,6 +35,7 @@ from daily_tracker import core
 from daily_tracker.integrations.calendars.calendars import (
     Calendar,
     CalendarEvent,
+    EventResponse,
 )
 
 logger = logging.getLogger("integrations")
@@ -61,6 +62,7 @@ class OutlookEvent(CalendarEvent):
             end=appointment.end_time.get(),
             categories={cat.name.get() for cat in appointment.category.get()},
             all_day_event=appointment.start_time.get().hour == 0,
+            response=EventResponse.ACCEPTED,
         )
 
 

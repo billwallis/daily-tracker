@@ -3,6 +3,7 @@ from __future__ import annotations
 import abc
 import dataclasses
 import datetime
+import enum
 import logging
 
 import cachetools
@@ -12,20 +13,38 @@ from daily_tracker import core
 logger = logging.getLogger("integrations")
 
 
+class EventResponse(enum.StrEnum):
+    ACCEPTED = enum.auto()
+    TENTATIVE = enum.auto()
+    DECLINED = enum.auto()
+
+
 def _filter_appointments(
+    at_datetime: datetime.datetime,
     events: list[CalendarEvent],
     categories_to_exclude: list[str],
 ) -> list:
     """
-    Filter out the appointments that are all day events or are in the
-    exclusion list.
+    Filter out the appointments that are:
+
+    - all day events
+    - declined events
+    - in the exclusion list
+    - tentatively-accepted and not when they start
     """
 
     return [
         event
         for event in events
         if not event.all_day_event
+        if not event.response == EventResponse.DECLINED
         and all(i not in event.categories for i in categories_to_exclude)
+        and (
+            # TODO: Maybe they should just be lower priority, rather than excluded?
+            event.start == at_datetime
+            if event.response == EventResponse.TENTATIVE
+            else True
+        )
     ]
 
 
@@ -40,6 +59,7 @@ class CalendarEvent:
     end: datetime.datetime
     categories: set[str]
     all_day_event: bool
+    response: EventResponse
 
 
 class Calendar(abc.ABC):
@@ -79,6 +99,7 @@ class Calendar(abc.ABC):
         """
 
         events = _filter_appointments(
+            at_datetime=at_datetime,
             events=self.get_appointments_at_datetime(at_datetime=at_datetime),
             categories_to_exclude=self.configuration.appointment_category_exclusions,
         )
