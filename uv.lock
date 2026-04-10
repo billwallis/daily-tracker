@@ -253,7 +253,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "poethepoet", specifier = ">=0.41.0" },
+    { name = "poethepoet", specifier = ">=0.42.1" },
     { name = "pre-commit", specifier = ">=4.5.1" },
 ]
 google-calendar = [
