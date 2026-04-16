@@ -13,6 +13,7 @@ def _query(sql: str) -> duckdb.DuckDBPyRelation:
     return duckdb.sql(sql)
 
 
-def report(report_name: str) -> None:
-    result = _query((QUERIES / report_name).with_suffix(".sql").read_text())
+def report(report_name: str, params: dict[str, str | int]) -> None:
+    query = (QUERIES / report_name).with_suffix(".sql").read_text()
+    result = _query(query.format(**params))
     result.show(max_rows=len(result), null_value="")

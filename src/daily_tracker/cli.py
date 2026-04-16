@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.metadata
+import json
 from collections.abc import Sequence
 
 import daily_tracker
@@ -24,7 +25,11 @@ def _run(args: argparse.Namespace) -> int:
 
 
 def _report(args: argparse.Namespace) -> int:
-    daily_tracker.report(getattr(args, "report-name"))
+    params = args.params or "{}"
+    daily_tracker.report(
+        report_name=getattr(args, "report-name"),
+        params=json.loads(params),
+    )
     return SUCCESS
 
 
@@ -59,6 +64,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser__bar.add_argument(
         "report-name",
         help="Name of the report to run.",
+    )
+    parser__bar.add_argument(
+        "--params",
+        help="JSON value of parameters to pass to the report query.",
     )
 
     args = parser.parse_args(argv)
