@@ -2,7 +2,7 @@
 select
     task,
     detail,
-    (to_minutes(sum(interval)::int)::text)[0:5] as duration
+    (to_minutes(sum(interval)::int)::text)[0:-4] as duration
 from tracker.tracker
 where 1=1
     and task != 'Lunch Break'
