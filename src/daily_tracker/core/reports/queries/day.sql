@@ -1,0 +1,11 @@
+-- attach 'src/daily_tracker/tracker.db' as tracker;
+select
+    task,
+    detail,
+    (to_minutes(sum(interval)::int)::text)[0:-4] as duration
+from tracker.tracker
+where 1=1
+    and task != 'Lunch Break'
+    and date_time::date = '{date}'
+group by grouping sets ((task, detail), ())
+order by task nulls last, detail nulls last
