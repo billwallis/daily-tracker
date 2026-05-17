@@ -10,6 +10,7 @@ version = "0.0.0"
 description = "An application for keeping track of tasks throughout the day."
 authors = [{name = "billwallis"}]
 readme = "README.md"
+license-files = ["LICENSE"]
 requires-python = ">=3.12,<3.13"  # Capped by `pywin32`
 dependencies = [
     "cachetools>=6.2.6",
@@ -90,8 +91,13 @@ shell = """
 
 
 [tool.pytest.ini_options]
-addopts = "--cov=src --cov-fail-under=10"
+addopts = "--cov=src"
 testpaths = ["tests"]
+
+[tool.coverage]
+run.branch = true
+report.fail_under = 10
+report.show_missing = true
 
 
 [tool.ruff]
