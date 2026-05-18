@@ -158,7 +158,10 @@ class GoogleCalendar(Calendar, core.Input):
         )
         try:
             events_result = events_request.execute()
-        except httplib2.error.ServerNotFoundError:
+        except (
+            TimeoutError,
+            httplib2.error.ServerNotFoundError,
+        ):
             return []
 
         return [
