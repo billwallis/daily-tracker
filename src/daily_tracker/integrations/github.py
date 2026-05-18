@@ -91,7 +91,10 @@ class GitHub(core.Input):
             search_results = self.connector.search_issues(
                 self.configuration.github_issues_search
             )
-        except requests.exceptions.ConnectionError:
+        except (
+            requests.exceptions.ConnectionError,
+            requests.exceptions.ReadTimeout,
+        ):
             return []
 
         details = set()

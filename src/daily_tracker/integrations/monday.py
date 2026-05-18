@@ -225,7 +225,10 @@ class Monday(core.Input):
 
         try:
             resp = self.connector.query(self.configuration.monday_filter)
-        except requests.exceptions.ConnectionError:
+        except (
+            requests.exceptions.ConnectionError,
+            requests.exceptions.ReadTimeout,
+        ):
             return []
 
         if resp.status_code != http.HTTPStatus.OK:
