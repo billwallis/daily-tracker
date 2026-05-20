@@ -25,7 +25,7 @@ from daily_tracker import core
 logger = logging.getLogger("integrations")
 
 BASE_URL = "https://api.monday.com/v2/"
-TIMEOUT_SECONDS = 60
+TIMEOUT_SECONDS = 10
 SIERRA_SQUAD_WORKSPACE_ID = 2462089
 WEEKLY_CAPACITY_PLANNING_DASHBOARD_ID = 18825905
 MONDAY_CREDENTIALS = {
