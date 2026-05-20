@@ -23,7 +23,7 @@ from daily_tracker import core
 logger = logging.getLogger("integrations")
 
 BASE_URL = "https://api.github.com/"
-TIMEOUT_SECONDS = 60
+TIMEOUT_SECONDS = 10
 GITHUB_CREDENTIALS = {
     "api_token": os.getenv("GITHUB_TOKEN"),
 }
