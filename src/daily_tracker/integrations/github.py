@@ -90,15 +90,18 @@ class GitHub(core.Input):
         try:
             search_results = self.connector.search_issues(
                 self.configuration.github_issues_search
-            )
+            ).json()
         except (
+            # from `.search_issues(...)`
             requests.exceptions.ConnectionError,
             requests.exceptions.ReadTimeout,
+            # from `.json()`
+            requests.exceptions.JSONDecodeError,
         ):
             return []
 
         details = set()
-        for item in search_results.json()["items"]:
+        for item in search_results.get("items", []):
             details.add(
                 ""
                 + item["repository_url"].removeprefix(
