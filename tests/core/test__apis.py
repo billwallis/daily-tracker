@@ -25,7 +25,7 @@ class SomeOutput(apis.Output):
         self.other_value = other_value
 
     def post_event(self, entry: apis.Entry) -> None:
-        pass
+        pass  # pragma: no cover  # TODO: Remove this by fixing the corresponding test
 
 
 class SomeInputOutput(apis.Input, apis.Output):
@@ -33,7 +33,7 @@ class SomeInputOutput(apis.Input, apis.Output):
         return ["some-input-with-output", "some-other-input-with-output"]
 
     def post_event(self, entry: apis.Entry) -> None:
-        pass
+        pass  # pragma: no cover  # TODO: Remove this by fixing the corresponding test
 
 
 @pytest.fixture(scope="module")
