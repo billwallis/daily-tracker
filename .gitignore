@@ -2,10 +2,6 @@
 credentials.json
 token.json
 
-# Flat files
-*.[cpt]sv
-*.xls?
-
 # Logs
 logs/
 

@@ -6,7 +6,7 @@
 [![coverage](https://raw.githubusercontent.com/billwallis/daily-tracker/refs/heads/main/coverage.svg)](https://smarie.github.io/python-genbadge/)
 
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/billwallis/daily-tracker/main.svg)](https://results.pre-commit.ci/latest/github/billwallis/daily-tracker/main)
-[![GitHub last commit](https://img.shields.io/github/last-commit/billwallis/daily-tracker)](https://shields.io/)
+[![GitHub last commit](https://img.shields.io/github/last-commit/billwallis/daily-tracker)](https://shields.io/badges/git-hub-last-commit)
 
 </span>
 
@@ -73,6 +73,6 @@ daily-tracker --help
 
 Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and then install the dependencies:
 
-```bash
+```shell
 uvx --from poethepoet poe install
 ```
