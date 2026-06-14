@@ -86,23 +86,19 @@ repos:
           stages: ["pre-push"]
         id: pytest
         name: Run unit tests
-        entry: uv run pytest --quiet --cov-report=xml
+        entry: uv run coverage run -m pytest --quiet
       - <<: *tests-config
-        id: test-coverage  # https://youtu.be/70T6OxKwxm0
+        id: coverage-xml
+        name: Write coverage XML report
+        entry: uv run coverage xml --quiet
+      - <<: *tests-config
+        id: test-coverage
         name: Tests have 100% run coverage
-        entry: >
-          uv run coverage report
-          --no-skip-covered
-          --include 'tests/*'
-          --fail-under 100
+        entry: uv run coverage report --no-skip-covered --include 'tests/*' --fail-under 100
       - <<: *tests-config
         id: coverage-badge
         name: Generate coverage badge
-        entry: >
-          genbadge coverage
-          --input-file 'coverage.xml'
-          --output-file coverage.svg
-          --silent
+        entry: genbadge coverage --input-file 'coverage.xml' --output-file coverage.svg --silent
         # https://github.com/smarie/python-genbadge/releases
         additional_dependencies: ["genbadge[coverage]==1.1.3"]
         language: python
