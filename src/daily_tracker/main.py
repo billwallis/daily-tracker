@@ -11,7 +11,7 @@ import yaml
 from wakepy import keep
 
 from daily_tracker import _actions, core, integrations, utils
-from daily_tracker.core import database, scheduler
+from daily_tracker.core import apis, database, scheduler
 
 APPLICATION_CREATED = True
 
@@ -78,6 +78,19 @@ def main(debug_mode: bool = False) -> None:
         indefinite_scheduler.schedule_first()
 
     logging.info("Closing tracker...")
+
+
+def debug() -> list[tuple[int, str]]:
+    config = core.Configuration.from_default()
+    configure_integrations(config)
+
+    return [
+        connection.debug()
+        for connection in {
+            *{api for api in apis.Input.apis.values()},
+            *{api for api in apis.Output.apis.values()},
+        }
+    ]
 
 
 if __name__ == "__main__":

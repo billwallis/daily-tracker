@@ -16,6 +16,9 @@ class SomeInput(apis.Input):
     def __init__(self, value: str) -> None:
         self.value = value
 
+    def debug(self) -> tuple[int, str]:
+        return 0, ""
+
     def on_event(self, date_time: datetime.datetime) -> list:
         return ["some-input", "some-other-input"]
 
@@ -24,11 +27,17 @@ class SomeOutput(apis.Output):
     def __init__(self, other_value: str) -> None:
         self.other_value = other_value
 
+    def debug(self) -> tuple[int, str]:
+        return 0, ""
+
     def post_event(self, entry: apis.Entry) -> None:
         pass  # pragma: no cover  # TODO: Remove this by fixing the corresponding test
 
 
 class SomeInputOutput(apis.Input, apis.Output):
+    def debug(self) -> tuple[int, str]:
+        return 0, ""
+
     def on_event(self, date_time: datetime.datetime) -> list:
         return ["some-input-with-output", "some-other-input-with-output"]
 
@@ -114,6 +123,9 @@ def test__input__apis(some_input, some_input_output):
     assert apis.Input.apis["some_input"].value == "input"
     assert not hasattr(apis.Input.apis["some_input_output"], "value")
 
+    assert apis.Input.apis["some_input"].debug() == (0, "")
+    assert apis.Input.apis["some_input_output"].debug() == (0, "")
+
 
 def test__input__apis__raises(some_output):
     """
@@ -168,6 +180,9 @@ def test__output__apis(some_output, some_input_output):
     assert apis.Output.apis["some_input_output"] == some_input_output
     assert apis.Output.apis["some_output"].other_value == "output"
     assert not hasattr(apis.Output.apis["some_input_output"], "other_value")
+
+    assert apis.Output.apis["some_output"].debug() == (0, "")
+    assert apis.Output.apis["some_input_output"].debug() == (0, "")
 
 
 @pytest.mark.skip("Need to figure out how to test this")

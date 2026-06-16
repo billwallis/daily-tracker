@@ -290,6 +290,9 @@ class Jira(core.Input, core.Output):
         self.configuration = configuration
         self.debug_mode = debug_mode
 
+    def debug(self) -> tuple[int, str]:
+        return 1, "Jira connection debugger not implemented yet"
+
     def on_event(self, date_time: datetime.datetime) -> list[core.Task]:
         """
         The actions to perform before the event.

@@ -66,6 +66,9 @@ class Slack(core.Output):
         self.connector = SlackConnector(**SLACK_CREDENTIALS)
         self.configuration = configuration
 
+    def debug(self) -> tuple[int, str]:
+        return 1, "Slack connection debugger not implemented yet"
+
     def post_event(self, entry: core.Entry) -> None:
         """
         The actions to perform after the event.

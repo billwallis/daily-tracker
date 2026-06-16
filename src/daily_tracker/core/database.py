@@ -125,6 +125,15 @@ class Database(core.Input, core.Output):
         self.connection = DatabaseConnector(database_filepath)
         self.configuration = configuration
 
+    def debug(self) -> tuple[int, str]:
+        try:
+            resp = self.connection.connection.execute("select 1;").fetchone()
+            if resp != (1,):
+                return 1, "Database connection unsuccessful"
+            return 0, "Database connection successful"
+        except Exception as e:
+            return 1, f"Database error: {e}"
+
     def truncate_tables(self) -> None:
         """
         Truncate the tables in the database that are updated through the form.

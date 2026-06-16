@@ -99,6 +99,12 @@ class API(abc.ABC):
 
         return instance
 
+    @abc.abstractmethod
+    def debug(self) -> tuple[int, str]:
+        """
+        Return a connection result tuple ``(return code, response status)``.
+        """
+
 
 class IInput(abc.ABC):
     """
