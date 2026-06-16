@@ -217,6 +217,9 @@ class Monday(core.Input):
         self.configuration = configuration
         self.debug_mode = debug_mode
 
+    def debug(self) -> tuple[int, str]:
+        return 1, "Monday connection debugger not implemented yet"
+
     @cachetools.cached(cache=cachetools.TTLCache(maxsize=1, ttl=60))
     def _on_event(self) -> list[core.Task]:
         """

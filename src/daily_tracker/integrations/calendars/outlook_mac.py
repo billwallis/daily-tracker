@@ -77,6 +77,9 @@ class Outlook(Calendar, core.Input):
         # TODO: Set the calendar ID dynamically rather than hard-coding it
         self.calendar = appscript.app("Microsoft Outlook").calendars.ID(110)
 
+    def debug(self) -> tuple[int, str]:
+        return 1, "Outlook (macOS) connection debugger not implemented yet"
+
     def get_appointments_between_datetimes(
         self,
         start_datetime: datetime.datetime,

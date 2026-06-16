@@ -149,6 +149,9 @@ class NoCalendar(Calendar, core.Input, core.Output):
     def __bool__(self) -> bool:
         return False
 
+    def debug(self) -> tuple[int, str]:
+        return 0, "Calendar connection skipped"
+
     def get_appointments_between_datetimes(
         self,
         start_datetime: datetime.datetime,

@@ -60,6 +60,9 @@ class Outlook(Calendar, core.Input):
         self.calendar.IncludeRecurrences = True
         self.calendar.Sort("[Start]")
 
+    def debug(self) -> tuple[int, str]:
+        return 1, "Outlook (Windows) connection debugger not implemented yet"
+
     def get_appointments_between_datetimes(
         self,
         start_datetime: datetime.datetime,

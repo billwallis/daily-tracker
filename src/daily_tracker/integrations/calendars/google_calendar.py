@@ -131,6 +131,13 @@ class GoogleCalendar(Calendar, core.Input):
         except google.auth.exceptions.TransportError:
             self.service = None
 
+    def debug(self) -> tuple[int, str]:
+        try:
+            self.get_appointments_at_datetime(datetime.datetime.now())
+            return 0, "Google Calendar connection successful"
+        except Exception as e:
+            return 1, str(e)
+
     def get_appointments_between_datetimes(
         self,
         start_datetime: datetime.datetime,
