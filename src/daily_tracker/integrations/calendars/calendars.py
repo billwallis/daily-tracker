@@ -36,14 +36,17 @@ def _filter_appointments(
     return [
         event
         for event in events
-        if not event.all_day_event
-        and not event.response == EventResponse.DECLINED
-        and all(i not in event.categories for i in categories_to_exclude)
-        and (
-            # TODO: Maybe they should just be lower priority, rather than excluded?
-            event.start == at_datetime
-            if event.response == EventResponse.TENTATIVE
-            else True
+        if (
+            1 == 1  # noqa: PLR0133
+            and not event.all_day_event
+            and not event.response == EventResponse.DECLINED
+            and all(i not in event.categories for i in categories_to_exclude)
+            and (
+                # TODO: Maybe they should just be lower priority, rather than excluded?
+                event.start == at_datetime
+                if event.response == EventResponse.TENTATIVE
+                else True
+            )
         )
     ]
 
@@ -98,15 +101,19 @@ class Calendar(abc.ABC):
         Cachable ``on_event`` action.
         """
 
+        all_events = self.get_appointments_at_datetime(at_datetime=at_datetime)
+        s = "s" if len(all_events) != 1 else ""
+        logger.debug(
+            f"Found {len(all_events)} calendar event{s} for {at_datetime}."
+        )
+
         events = _filter_appointments(
             at_datetime=at_datetime,
-            events=self.get_appointments_at_datetime(at_datetime=at_datetime),
+            events=all_events,
             categories_to_exclude=self.configuration.appointment_category_exclusions,
         )
         s = "s" if len(events) != 1 else ""
-        logger.debug(
-            f"Found {len(events)} calendar event{s} for {at_datetime}."
-        )
+        logger.debug(f"Kept {len(events)} calendar event{s} after filtering.")
 
         if events:
             return [
