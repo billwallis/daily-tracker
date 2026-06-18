@@ -18,7 +18,7 @@ records(week_starting, total_interval) as (
     from tracker.tracker
     where 1=1
         and date_time > (select from_date from dates)
-        and task != 'Lunch Break'
+        and task not in ('Lunch Break', 'Unable to Work')
     group by all
 ),
 
