@@ -5,7 +5,7 @@ select
     (to_minutes(sum(interval)::int)::text)[0:-4] as duration
 from tracker.tracker
 where 1=1
-    and task != 'Lunch Break'
+    and task not in ('Lunch Break', 'Unable to Work')
     and date_time::date = (
         select max(date_time::date)
         from tracker.tracker

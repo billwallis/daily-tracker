@@ -20,7 +20,7 @@ daily_summary as (
     from tracker.tracker
     where 1=1
         and date_time::date >= (select min(work_date) from day_axis)
-        and task != 'Lunch Break'
+        and task not in ('Lunch Break', 'Unable to Work')
     group by work_date
 ),
 

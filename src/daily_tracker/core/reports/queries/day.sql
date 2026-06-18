@@ -5,7 +5,7 @@ select
     (to_minutes(sum(interval)::int)::text)[0:-4] as duration
 from tracker.tracker
 where 1=1
-    and task != 'Lunch Break'
+    and task not in ('Lunch Break', 'Unable to Work')
     and date_time::date = '{date}'
 group by grouping sets ((task, detail), ())
 order by task nulls last, detail nulls last
