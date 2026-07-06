@@ -13,6 +13,7 @@ from __future__ import annotations
 import collections
 import datetime
 import http
+import json
 import logging
 import os
 from typing import Any
@@ -266,8 +267,6 @@ class Monday(core.Input):
 
 
 if __name__ == "__main__":
-    import json
-
     config_ = core.Configuration.from_default()
     monday = MondayConnector(**MONDAY_CREDENTIALS)
 
