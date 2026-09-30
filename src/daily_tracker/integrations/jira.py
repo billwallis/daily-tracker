@@ -15,7 +15,6 @@ TODO: This should be updated to pick up the API implementation from the Jira
     * https://jira.atlassian.com/browse/JRASERVER-68539
 """
 
-import base64
 import datetime
 import http
 import json
@@ -24,11 +23,13 @@ import os
 import re
 
 import requests
+import requests.auth
 
 from daily_tracker import core
 
 logger = logging.getLogger("integrations")
 
+TIMEOUT_SECONDS = 20
 JIRA_CREDENTIALS = {
     "domain": os.getenv("JIRA_DOMAIN"),
     "key": os.getenv("JIRA_KEY"),
@@ -46,24 +47,7 @@ class JiraConnector:
 
     def __init__(self, domain: str, key: str, secret: str) -> None:
         self._base_url = f"https://{domain}.atlassian.net/rest/api/3/"
-        self._api_key = key
-        self._api_secret = secret
-
-    @property
-    def auth_basic(self) -> str:
-        """
-        Encode the key and secret using Basic Authentication.
-
-        See more at the Atlassian documentation:
-            https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/#supply-basic-auth-headers
-        """
-
-        return (
-            "Basic "
-            + base64.b64encode(
-                f"{self._api_key}:{self._api_secret}".encode()
-            ).decode()
-        )
+        self.auth_basic = requests.auth.HTTPBasicAuth(key, secret)
 
     @property
     def request_headers(self) -> dict:
@@ -74,7 +58,6 @@ class JiraConnector:
         return {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "Authorization": self.auth_basic,
         }
 
     def get_projects_paginated(
@@ -88,11 +71,12 @@ class JiraConnector:
         """
 
         endpoint = "project/search"
-        return requests.request(  # noqa: S113
-            method="GET",
+        return requests.get(
             url=self._base_url + endpoint,
             headers=self.request_headers,
+            auth=self.auth_basic,
             params={"maxResults": max_results},
+            timeout=TIMEOUT_SECONDS,
         )
 
     def get_issue(self, issue_key: str) -> requests.Response:
@@ -103,18 +87,19 @@ class JiraConnector:
         """
 
         endpoint = f"issue/{issue_key}"
-        return requests.request(  # noqa: S113
-            method="GET",
+        return requests.get(
             url=self._base_url + endpoint,
             headers=self.request_headers,
+            auth=self.auth_basic,
             data={},
+            timeout=TIMEOUT_SECONDS,
         )
 
     def search_for_issues_using_jql(
         self,
         jql: str,
         fields: list[str],
-        start_at: int = 0,
+        next_page_token: str = "",
         max_results: int = 50,
     ) -> requests.Response:
         """
@@ -123,18 +108,21 @@ class JiraConnector:
         https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-rest-api-3-search-get
         """
 
-        endpoint = "search"
+        endpoint = "search/jql"
         params = {
             "jql": jql,
             "fields": fields,
-            "startAt": start_at,
             "maxResults": max_results,
         }
-        return requests.request(  # noqa: S113
-            method="GET",
+        if next_page_token:
+            params["nextPageToken"] = next_page_token
+
+        return requests.get(
             url=self._base_url + endpoint,
             headers=self.request_headers,
+            auth=self.auth_basic,
             params=params,
+            timeout=TIMEOUT_SECONDS,
         )
 
     def get_project_components(self, project_id: str) -> requests.Response:
@@ -145,11 +133,12 @@ class JiraConnector:
         """
 
         endpoint = f"project/{project_id}/components"
-        return requests.request(  # noqa: S113
-            method="GET",
+        return requests.get(
             url=self._base_url + endpoint,
             headers=self.request_headers,
+            auth=self.auth_basic,
             data={},
+            timeout=TIMEOUT_SECONDS,
         )
 
     def get_project_roles(self) -> requests.Response:
@@ -160,11 +149,12 @@ class JiraConnector:
         """
 
         endpoint = "role"
-        return requests.request(  # noqa: S113
-            method="GET",
+        return requests.get(
             url=self._base_url + endpoint,
             headers=self.request_headers,
+            auth=self.auth_basic,
             data={},
+            timeout=TIMEOUT_SECONDS,
         )
 
     def add_worklog(
@@ -215,11 +205,12 @@ class JiraConnector:
         )
 
         try:
-            return requests.request(  # noqa: S113
-                method="POST",
+            return requests.post(
                 url=self._base_url + endpoint,
                 headers=self.request_headers,
+                auth=self.auth_basic,
                 data=payload,
+                timeout=TIMEOUT_SECONDS,
             )
         except Exception as e:
             logger.debug(f"Could not add worklog: {e}")
@@ -264,11 +255,13 @@ class JiraConnector:
                 },
             }
         )
-        return requests.request(  # noqa: S113
-            method="POST",
+
+        return requests.post(
             url=self._base_url + endpoint,
             headers=self.request_headers,
+            auth=self.auth_basic,
             data=payload,
+            timeout=TIMEOUT_SECONDS,
         )
 
 
@@ -311,7 +304,7 @@ class Jira(core.Input, core.Output):
         Get the list of tickets in the active sprint for the current user.
         """
 
-        def get_batch_of_tickets(start_at: int) -> dict:
+        def get_batch_of_tickets(next_page_token: str = "") -> dict:
             """
             Inner function to loop over until all tickets have been retrieved.
             """
@@ -321,7 +314,7 @@ class Jira(core.Input, core.Output):
                     self.connector.search_for_issues_using_jql(
                         jql=self.configuration.jira_filter,
                         fields=["summary", "duedate", "assignee"],
-                        start_at=start_at,
+                        next_page_token=next_page_token,
                     ).text
                 )
             except (
@@ -331,11 +324,12 @@ class Jira(core.Input, core.Output):
                 return {"total": 1_000, "issues": []}
 
         results = []
+        next_token, is_last = "", False
         total = 999
         retries = 0
         max_retries = 5
-        while len(results) < total and retries < max_retries:
-            response = get_batch_of_tickets(start_at=len(results))
+        while len(results) < total and retries < max_retries and not is_last:
+            response = get_batch_of_tickets(next_page_token=next_token)
             if "errorMessages" in response:
                 error_message = " ".join(response["errorMessages"])
                 logger.warning(
@@ -343,7 +337,8 @@ class Jira(core.Input, core.Output):
                 )
                 return []
 
-            total = response["total"]
+            next_token = response["nextPageToken"]
+            is_last = response["isLast"]
             results += [
                 f"{issue['key']} {issue['fields']['summary']}"
                 for issue in response["issues"]
@@ -398,3 +393,28 @@ class Jira(core.Input, core.Output):
         elif response.status_code != http.HTTPStatus.CREATED:
             logger.debug(f"Response code: {response.status_code}")
             logger.debug(f"Could not post work log: {response.text}")
+
+
+if __name__ == "__main__":
+    config_ = core.Configuration.from_default()
+
+    def pp(response: requests.Response) -> None:
+        print(json.dumps(response.json(), indent=2))
+        print()
+
+    # jira_conn = JiraConnector(**JIRA_CREDENTIALS)
+    # pp(jira_conn.get_projects_paginated())
+    # pp(jira_conn.get_issue("DPP-10703"))
+    # pp(
+    #     jira_conn.search_for_issues_using_jql(
+    #         # jql=config_.jira_filter,
+    #         jql="sprint IN 'Sprint 195'",
+    #         fields=["summary", "duedate", "assignee"],
+    #     )
+    # )
+    #
+    # jira_: Jira = Jira(configuration=config_)
+    # tickets = jira_.get_tickets_in_sprint()
+    # print(f"found {len(tickets)} tickets:")
+    # for ticket in tickets:
+    #     print("\t", ticket)
