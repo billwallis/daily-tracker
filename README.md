@@ -57,6 +57,12 @@ On macOS, you will probably need to install [the Tcl/Tk framework](https://www.t
 brew install tcl-tk
 ```
 
+This expects `tcl-tk` to be version `9.0`; check your version with:
+
+```shell
+python3 -c 'import tkinter; print(tkinter.TkVersion)'
+```
+
 More details available at:
 
 - https://tkdocs.com/tutorial/install.html#install-macos

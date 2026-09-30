@@ -232,7 +232,9 @@ class TrackerForm:
         self.detail_text_box.text_box.bind("<KeyPress>", self.ok_shortcut)
 
         # self.project_text_box.text_box.bind("<Key>", self.on_project_change)
-        self.project_text_box.variable.trace("w", self.on_project_change)
+        self.project_text_box.variable.trace_add(
+            "write", self.on_project_change
+        )
 
     def set_buttons(self, button_frame: ttk.Frame) -> None:
         """
