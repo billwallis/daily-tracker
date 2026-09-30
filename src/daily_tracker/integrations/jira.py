@@ -103,9 +103,9 @@ class JiraConnector:
         max_results: int = 50,
     ) -> requests.Response:
         """
-        Call the "Search for issues using JQL (GET)" endpoint of the API.
+        Call the "Search for issues using JQL enhanced search (GET)" endpoint of the API.
 
-        https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-rest-api-3-search-get
+        https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-rest-api-3-search-jql-get
         """
 
         endpoint = "search/jql"
