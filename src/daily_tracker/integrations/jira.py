@@ -337,8 +337,8 @@ class Jira(core.Input, core.Output):
                 )
                 return []
 
-            next_token = response["nextPageToken"]
-            is_last = response["isLast"]
+            next_token = response.get("nextPageToken", "")
+            is_last = response.get("isLast", True)
             results += [
                 f"{issue['key']} {issue['fields']['summary']}"
                 for issue in response["issues"]

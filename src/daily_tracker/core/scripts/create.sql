@@ -71,6 +71,7 @@ values
     ('Adhoc Chat'),
     ('Adhoc Task'),
     ('Documentation'),
+    ('Peer Review'),
     ('Personal Development'),
     ('Unable to Work')
 ;
