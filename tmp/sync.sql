@@ -2,7 +2,7 @@
 select version();
 
 use ods.daily_tracker;
-attach 'src/daily_tracker/tracker.db' as local_tracker;
+attach '~/.local/share/daily-tracker/tracker.db' as local_tracker;
 
 /* Insert into MotherDuck */
 insert into ods.daily_tracker.tracker
