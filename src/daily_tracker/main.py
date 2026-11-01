@@ -62,7 +62,7 @@ def main(debug_mode: bool = False) -> None:
     if not APPLICATION_CREATED:
         # create.create_env()
         db_handler = database.Database(  # noqa: F841
-            utils.DAILY_TRACKER / "tracker.db",
+            utils.DB,
             core.Configuration.from_default(),
         )
         # db_handler.import_history(utils.ROOT / "tracker.csv")

@@ -2,11 +2,25 @@
 Utilities to use throughout the modules.
 """
 
+import os
 import pathlib
+
+# https://specifications.freedesktop.org/basedir/latest/
+_get = os.environ.get
+HOME = pathlib.Path(_get("HOME", _get("USERPROFILE", "."))).resolve()
+DATA_HOME = (
+    pathlib.Path(_get("XDG_DATA_HOME", HOME / ".local/share")) / "daily-tracker"
+)
+STATE_HOME = (
+    pathlib.Path(_get("XDG_STATE_HOME", HOME / ".local/state"))
+    / "daily-tracker"
+)
+for d in [DATA_HOME, STATE_HOME]:
+    d.mkdir(parents=True, exist_ok=True)
 
 DAILY_TRACKER = pathlib.Path(__file__).parent  # `src/daily_tracker/`
 ROOT = DAILY_TRACKER.parent.parent
-DB = DAILY_TRACKER / "tracker.db"
+DB = DATA_HOME / "tracker.db"
 
 
 def pascal_to_snake(text: str) -> str:

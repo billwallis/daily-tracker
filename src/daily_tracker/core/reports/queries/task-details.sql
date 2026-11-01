@@ -1,4 +1,4 @@
--- attach 'src/daily_tracker/tracker.db' as tracker;
+-- attach '~/.local/share/daily-tracker/tracker.db' as tracker;
 select
     task,
     detail,
