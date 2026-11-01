@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import argparse
 import importlib.metadata
-import json
 from collections.abc import Sequence
+from typing import Any
 
 import daily_tracker
 
@@ -38,7 +38,51 @@ def _run(args: argparse.Namespace) -> int:
     return SUCCESS
 
 
-def _report(args: argparse.Namespace) -> int:
+def _parse_values(key: str, values: list) -> tuple[str, Any]:
+    if len(values) == 0:
+        if key.startswith("no-"):
+            return key[3:], False
+        else:
+            return key, True
+    elif len(values) == 1:
+        return key, values[0]
+    else:
+        return key, values
+
+
+def _collect_unknown_args(args: Sequence[str]) -> dict[str, str]:
+    if not args:
+        return {}
+    if not args[0].startswith("--"):
+        raise ValueError(
+            "could not parse unknown args: first argument must be a flag, not a value"
+        )
+
+    key, values = None, []
+    result = dict()
+    for item in args:
+        if item == "--":
+            raise ValueError("'--' is unsupported")
+        elif item.startswith("--"):
+            if key is not None:
+                assert isinstance(key, str)
+                k, v = _parse_values(key, values)
+                result[k] = v
+
+            key = item[2:]
+            values = []
+        else:
+            assert key is not None
+            values.append(item)
+
+    assert key is not None
+    k, v = _parse_values(key, values)
+    result[k] = v
+
+    return result
+
+
+def _report(args: argparse.Namespace, unknown_args: Sequence[str]) -> int:
     if args.list:
         out = ""
         for r in daily_tracker.get_reports():
@@ -51,12 +95,18 @@ def _report(args: argparse.Namespace) -> int:
         print(out.rstrip("\n"))
         return SUCCESS
 
-    params = args.params or "{}"
-    daily_tracker.report(
-        report_name=getattr(args, "report-name"),
-        params=json.loads(params),
-    )
-    return SUCCESS
+    try:
+        daily_tracker.report(
+            report_name=getattr(args, "report-name"),
+            params=_collect_unknown_args(unknown_args),
+        )
+        return SUCCESS
+    except KeyError as err:
+        missing_key = str(err)[1:-1]  # trim surrounding quotation marks
+        print(
+            f"daily-tracker report: error: the following arguments are required: --{missing_key}"
+        )
+        return FAILURE
 
 
 def _debug() -> int:
@@ -101,10 +151,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Name of the report to run.",
     )
     parser__report.add_argument(
-        "--params",
-        help="JSON value of parameters to pass to the report query.",
-    )
-    parser__report.add_argument(
         "--list",
         action=argparse.BooleanOptionalAction,
         default=False,
@@ -113,11 +159,11 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     subparsers.add_parser("debug")
 
-    args = parser.parse_args(argv)
+    args, unknown_args = parser.parse_known_args(argv)
     if args.command == "run":
         return _run(args)
     if args.command == "report":
-        return _report(args)
+        return _report(args, unknown_args)
     if args.command == "debug":
         return _debug()
 
