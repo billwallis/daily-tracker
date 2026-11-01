@@ -56,6 +56,7 @@ class GitHubConnector:
 
         # `params` is encoding the search incorrectly?!
         endpoint = f"search/issues?q={search}"
+        logger.debug(f"sending GET request to: {endpoint}")
 
         return requests.get(
             url=BASE_URL + endpoint,
@@ -90,21 +91,29 @@ class GitHub(core.Input):
         Cachable ``on_event`` action.
         """
 
+        last_week = datetime.date.today() - datetime.timedelta(days=7)
+        last_week_filter = f"+updated:%3E={last_week:%Y-%m-%d}"
         try:
-            search_results = self.connector.search_issues(
-                self.configuration.github_issues_search
-            ).json()
+            search_response = self.connector.search_issues(
+                self.configuration.github_issues_search + last_week_filter
+            )
         except (
-            # from `.search_issues(...)`
             requests.exceptions.ConnectionError,
             requests.exceptions.ReadTimeout,
-            # from `.json()`
-            requests.exceptions.JSONDecodeError,
         ):
             return []
 
+        logger.debug(search_response)
+        try:
+            search_results = search_response.json()
+        except requests.exceptions.JSONDecodeError:
+            return []
+
         details = set()
-        for item in search_results.get("items", []):
+        items = search_results.get("items", [])
+        logger.debug(f"Found {len(items)} pull requests from GitHub")
+        for item in items:
+            logger.debug(f"    found PR: {item}")
             details.add(
                 ""
                 + item["repository_url"].removeprefix(
