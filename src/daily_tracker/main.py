@@ -6,14 +6,28 @@ objects.
 import datetime
 import logging
 import logging.config
+import tomllib
 
-import yaml
-from wakepy import keep
+import wakepy
 
 from daily_tracker import _actions, core, integrations, utils
 from daily_tracker.core import apis, database, scheduler
 
 APPLICATION_CREATED = True
+
+
+def configure_logging() -> None:
+    with open(utils.DAILY_TRACKER / "logger.toml", "rb") as f:
+        config = tomllib.load(f)
+
+    # ensure log destinations exist
+    for handler in config.get("handlers", {}).values():
+        if "filename" in handler:
+            filename = utils.STATE_HOME / handler["filename"]
+            filename.parent.mkdir(parents=True, exist_ok=True)
+            handler["filename"] = filename
+
+    logging.config.dictConfig(config)
 
 
 def configure_integrations(config: core.configuration.Configuration) -> None:
@@ -46,10 +60,7 @@ def main(debug_mode: bool = False) -> None:
     Entry point into this project.
     """
 
-    (utils.ROOT / "logs").mkdir(exist_ok=True)
-    with open(utils.DAILY_TRACKER / "logger.yaml") as f:
-        logging.config.dictConfig(yaml.safe_load(f.read()))
-
+    configure_logging()
     _in_debug_mode = " in debug mode" if debug_mode else ""
     logging.info(f"Starting tracker{_in_debug_mode}...")
     logging.debug(f"Setting root directory to {utils.ROOT}")
@@ -72,7 +83,7 @@ def main(debug_mode: bool = False) -> None:
         return
 
     if config.keep_awake:
-        with keep.presenting():
+        with wakepy.keep.presenting():
             indefinite_scheduler.schedule_first()
     else:
         indefinite_scheduler.schedule_first()
