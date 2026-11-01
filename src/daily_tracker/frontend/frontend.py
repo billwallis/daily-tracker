@@ -217,7 +217,7 @@ def save_changes_callback(edited_records: pandas.DataFrame) -> None:
 
     state = streamlit.session_state["tracker-editor"]
     for index, changes in state["edited_rows"].items():
-        assert isinstance(changes, dict)  # noqa: S101
+        assert isinstance(changes, dict)
         # Get the PK from the Pandas index
         date_time = edited_records.loc[index, "date_time"]
         update_row(date_time, changes)
