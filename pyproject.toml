@@ -1,16 +1,26 @@
 # yaml-language-server: $schema=https://json.schemastore.org/pyproject.json
 [build-system]
-requires = ["uv_build"]
-build-backend = "uv_build"
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "daily-tracker"
 version = "0.0.0"
 description = "An application for keeping track of tasks throughout the day."
 authors = [{name = "billwallis"}]
+maintainers = [{name = "billwallis"}]
 readme = "README.md"
+urls.Homepage = "https://github.com/billwallis/daily-tracker"
+urls.Repository = "https://github.com/billwallis/daily-tracker"
+urls.Issues = "https://github.com/billwallis/daily-tracker/issues"
+urls.Documentation = "https://github.com/billwallis/daily-tracker/blob/main/README.md"
+license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
 requires-python = ">=3.12,<3.13"  # Capped by `pywin32`
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
 dependencies = [
     "cachetools>=6.2.6",
     "duckdb>=1.4.4",
@@ -24,13 +34,13 @@ scripts.daily-tracker = "daily_tracker.cli:main"
 
 [dependency-groups]
 dev = [
-    "poethepoet>=0.46.0",
-    "pre-commit>=4.6.0",
+    "poethepoet>=0.48.0",
+    "pre-commit>=4.6.2",
 ]
 test = [
-    "coverage>=7.13.5",
     "covdefaults>=2.3.0",
-    "pytest>=9.0.3",
+    "coverage>=7.16.0",
+    "pytest>=9.1.1",
 ]
 # integrations
 google-calendar = [
@@ -47,8 +57,18 @@ slack = [
 ]
 
 
-[tool.uv]
-default-groups = "all"
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+
+[tool.coverage]
+run.source = ["src", "tests"]
+run.plugins = ["covdefaults"]  # https://youtu.be/70T6OxKwxm0
+report.fail_under = 10
+report.exclude_lines = [
+    "@pytest.mark.skip",
+    "@pytest.mark.xfail",
+]
 
 
 [tool.poe]
@@ -57,17 +77,23 @@ envfile.optional = ".env"
 
 [tool.poe.tasks]
 install.shell = """
-    uv sync --refresh
-    uv run pre-commit install --install-hooks
-"""
-upgrade.shell = """
-    uv sync --refresh --upgrade
-    uv run pre-commit autoupdate
+    pip install \
+        --editable . \
+        --requirement requirements.txt \
+        --group dev \
+        --group test \
+        --group google-calendar \
+        --group outlook \
+        --group slack \
+        --force-reinstall
+    pre-commit install --install-hooks
 """
 test.shell = """
-    uv run coverage run -m pytest -vvv
-    uv run coverage report --no-skip-covered
-    uv run coverage xml --quiet
+    coverage erase
+    coverage run -m pytest -vvv
+    coverage xml --quiet
+    coverage report --no-skip-covered --include 'tests/*' --fail-under 100
+    coverage report --no-skip-covered --include 'src/*'
 """
 
 [tool.poe.tasks.lint]
@@ -77,74 +103,15 @@ control.expr = "sys.platform"
 case = "win32"
 shell = """
     echo '=== pre-commit checks ==='
-    SKIP=identity uv run pre-commit run --all-files --hook-stage pre-commit
+    SKIP=identity pre-commit run --all-files --hook-stage pre-commit
     echo '=== pre-push checks ==='
-    SKIP=identity uv run pre-commit run --all-files --hook-stage pre-push
+    SKIP=identity pre-commit run --all-files --hook-stage pre-push
 """
 
 [[tool.poe.tasks.lint.switch]]
 shell = """
     echo '\\033[0;34mpre-commit checks\\033[0m'
-    SKIP=identity uv run pre-commit run --all-files --hook-stage pre-commit
+    SKIP=identity pre-commit run --all-files --hook-stage pre-commit
     echo '\\033[0;34mpre-push checks\\033[0m'
-    SKIP=identity uv run pre-commit run --all-files --hook-stage pre-push
+    SKIP=identity pre-commit run --all-files --hook-stage pre-push
 """
-
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-
-[tool.coverage]
-run.plugins = ["covdefaults"]  # https://youtu.be/70T6OxKwxm0
-report.fail_under = 10
-report.exclude_lines = [
-    "@pytest.mark.skip",
-    "@pytest.mark.xfail",
-]
-
-
-[tool.ruff]
-line-length = 80
-indent-width = 4
-target-version = "py311"
-
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-skip-magic-trailing-comma = false
-line-ending = "auto"
-
-[tool.ruff.lint]
-select = [
-    "ANN",   # flake8-annotations
-    "B",     # flake8-bugbear
-    "E",     # pycodestyle-error
-    "F",     # Pyflakes
-    "FURB",  # refurb
-    "I",     # isort
-    "N",     # pep8-naming
-    "PL",    # Pylint
-    "PERF",  # Perflint
-    "RUF",   # Ruff-specific
-    "S",     # flake8-bandit
-    "UP",    # pyupgrade
-    "W",     # pycodestyle-warning
-]
-ignore = [
-    "S101",    # Use of `assert` detected
-    "ANN401",  # Dynamically typed expressions (typing.Any) are disallowed
-    "E501",    # Line too long
-]
-fixable = ["ALL"]
-unfixable = []
-# Allow unused variables when underscore-prefixed
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
-# https://github.com/astral-sh/ruff/issues/4368
-[tool.ruff.lint.extend-per-file-ignores]
-"tests/**/*.py" = [
-    "ANN001",   # Missing type annotation for function argument
-    "ANN201",   # Missing return type annotation for public function
-    "PLR2004",  # Magic value used in comparison
-    "PLR0913",  # Too many arguments in function definition
-]
