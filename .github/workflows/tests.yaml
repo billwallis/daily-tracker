@@ -15,14 +15,25 @@ jobs:
         os: ["windows-latest", "macos-latest"]
     steps:
       - name: 🛎️ Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 
-      - name: 📦 Set up uv
-        uses: astral-sh/setup-uv@v7
-        with: { enable-cache: true }
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version-file: pyproject.toml
+          cache: "pip"
 
       - name: 🔨 Install dependencies
-        run: uv sync --no-default-groups --group test
+        run: >
+          pip install --editable .
+          --requirement requirements.txt
+          --group test
+          --group google-calendar
+          --group outlook
+          --group slack
 
       - name: ✅ Run unit tests
-        run: uv run pytest -vvv
+        run: |
+          coverage run -m pytest -vvv --color yes
+          coverage report --no-skip-covered --include 'tests/*' --fail-under 100
+          coverage report --no-skip-covered --include 'src/*'
